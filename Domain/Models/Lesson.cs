@@ -7,6 +7,7 @@ public class Lesson
     public TimeSlot TimeSlot { get; }
     public Teacher Teacher { get; }
     public StudyGroup StudyGroup { get; }
+    public Classroom Classroom { get; }
     public string Comment { get; }
     public bool IsConflict { get; }
 }
