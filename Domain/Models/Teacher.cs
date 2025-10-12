@@ -1,11 +1,12 @@
 namespace Domain.Models;
 
-public record Teacher(
+public class Teacher(
+    int Id,
     string Name,
     string Surname,
     string MiddleName,
-    SchoolSubject[] Specializations,
-    StudyGroup[] StudyGroups,
+    List<SchoolSubject> Specializations,
+    List<StudyGroup> StudyGroups,
     string? Description = null)
 {
 }
