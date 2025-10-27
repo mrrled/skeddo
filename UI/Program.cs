@@ -1,4 +1,6 @@
-﻿using Infrastructure;
+﻿using Domain;
+using Infrastructure;
+using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,5 +47,6 @@ class Program
                 {
                     options.UseSqlite(context.Configuration.GetConnectionString("DefaultConnection")); 
                 });
+                services.AddScoped<IScheduleRepository, ScheduleRepository>();
             });
 }
