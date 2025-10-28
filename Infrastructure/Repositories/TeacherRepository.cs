@@ -5,7 +5,7 @@ namespace Infrastructure.Repositories;
 
 public class TeacherRepository : IScheduleRepository
 {
-    public static List<Teacher> GetTeachers()
+    public List<Teacher> GetTeachers()
     {
         return Teachers;
     }
