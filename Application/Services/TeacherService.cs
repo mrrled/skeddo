@@ -1,7 +1,6 @@
 using Application.Converters;
 using Application.UIModels;
 using Domain;
-using Infrastructure.Repositories;
 
 namespace Application.Services;
 

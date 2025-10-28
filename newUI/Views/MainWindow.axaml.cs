@@ -6,10 +6,10 @@ namespace newUI.Views
 {
     public partial class MainWindow : Window
     {
-        public MainWindow(ITeacherService teacherService)
+        public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = new MainViewModel(teacherService); 
+            DataContext = viewModel; // ViewModel внедряется через DI
         }
     }
 }

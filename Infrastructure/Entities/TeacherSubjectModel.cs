@@ -6,6 +6,6 @@ namespace Infrastructure.Entities;
 public class TeacherSubjectModel
 {
     public int TeacherId { get; set; }
-    public string SchoolSubject { get; set; }
+    public required string SchoolSubject { get; set; }
     public int GroupId { get; set; }
 }

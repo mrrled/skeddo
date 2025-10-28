@@ -1,29 +1,66 @@
+using System;
+using System.IO;
 using Application.Services;
-using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Domain;
+using Infrastructure;
 using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using newUI.ViewModels;
 using newUI.Views;
 
 namespace newUI;
 
 public partial class App : Avalonia.Application
 {
+    public static IServiceProvider Services { get; private set; }
+    public static IConfiguration Configuration { get; private set; }
+
     public override void Initialize()
     {
-        teacherService = new TeacherService(new TeacherRepository());
         AvaloniaXamlLoader.Load(this);
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
+        Configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
+        var services = new ServiceCollection();
+        services.AddLogging(configure =>
+        {
+            configure.AddConsole();
+            configure.SetMinimumLevel(LogLevel.Information);
+        });
+
+        services.AddSingleton<ITeacherService, TeacherService>();
+        services.AddSingleton<IScheduleRepository, ScheduleRepository>();
+        services.AddDbContext<ScheduleDbContext>(options =>
+        {
+            options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+        });
+        services.AddTransient<MainViewModel>();
+        services.AddTransient<MainWindow>();
+
+        Services = services.BuildServiceProvider();
+        using (var scope = Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<ScheduleDbContext>();
+            context.Database.EnsureCreated();
+            var sqlScript = File.ReadAllText("CreateDB.sql");
+            context.Database.ExecuteSqlRaw(sqlScript);
+        }
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow(teacherService);
+            desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }
 
         base.OnFrameworkInitializationCompleted();
     }
-    
-    private ITeacherService teacherService;
 }
