@@ -9,4 +9,8 @@ public class Teacher(
     List<StudyGroup> StudyGroups,
     string? Description = null)
 {
+    public string Name { get; } = Name;
+    public string Surname { get; } = Surname;
+    public string MiddleName { get; } = MiddleName;
+    public List<SchoolSubject> Specializations { get; } = Specializations;
 }
