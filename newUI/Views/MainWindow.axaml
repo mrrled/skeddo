@@ -1,0 +1,47 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:newUI.ViewModels"
+        xmlns:viewModels="clr-namespace:newUI.ViewModels"
+        x:Class="newUI.Views.MainWindow"
+        Title="Avalonia List App"
+        x:DataType="viewModels:MainViewModel">
+
+    <Design.DataContext>
+        <vm:MainViewModel/>
+    </Design.DataContext>
+    
+    <StackPanel Margin="20">
+        
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Загрузить список учителей" 
+                    Command="{Binding LoadItemsCommand}" 
+                    HorizontalAlignment="Left"
+                    Margin="0 0 0 15"/>
+        
+            <Button Content="Скрыть список учителей" 
+                    Command="{Binding HideTeachersCommand}" 
+                    HorizontalAlignment="Right"
+                    Margin="0 0 0 15"/>
+            
+        </StackPanel>
+        
+        <ListBox ItemsSource="{Binding Items}" Height="350" BorderBrush="#CCCCCC" BorderThickness="1">
+            
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="5" BorderThickness="0 0 0 1" BorderBrush="#EEEEEE">
+                        <StackPanel Orientation="Vertical" Spacing="5">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock Text="Name:" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Name}" Foreground="#333333"/>
+                                <TextBlock Text="{Binding Surname}"/>
+                                <TextBlock Text="{Binding MiddleName}"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding Specialty}" FontSize="11" FontStyle="Italic" Margin="0 0 0 5"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>
+</Window>

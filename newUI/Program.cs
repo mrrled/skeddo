@@ -1,4 +1,3 @@
-﻿using Domain;
 using Infrastructure;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+
+namespace newUI;
 
 class Program
 {
@@ -33,6 +34,9 @@ class Program
                 scope.ServiceProvider.GetRequiredService<ILogger<Program>>().LogError("Error initializing DB script");
             }
         }
+        
+        BuildAvaloniaApp()
+            .StartWithClassicDesktopLifetime(args);
     }
     
     public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -49,4 +53,11 @@ class Program
                 });
                 services.AddScoped<IScheduleRepository, ScheduleRepository>();
             });
+    
+    public static AppBuilder BuildAvaloniaApp()
+        => AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+            .WithInterFont()
+            .LogToTrace();
+    
 }

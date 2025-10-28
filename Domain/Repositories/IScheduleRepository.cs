@@ -4,5 +4,5 @@ namespace Domain;
 
 public interface IScheduleRepository
 {
-    List<Teacher> GetTeachers();
+    public List<Teacher> GetTeachers();
 }
