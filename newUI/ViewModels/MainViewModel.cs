@@ -1,14 +1,13 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Application;
 using Application.UIModels;
 using Avalonia.Collections;
 
 namespace newUI.ViewModels
 {
-    // Наследуемся от нашего базового класса
     public class MainViewModel : ViewModelBase
     {
-        // AvaloniaList автоматически уведомляет View при добавлении/удалении элементов.
         private AvaloniaList<Teacher> items = new();
         public AvaloniaList<Teacher> Items
         {
@@ -16,15 +15,23 @@ namespace newUI.ViewModels
             set => SetProperty(ref items, value);
         }
         public ICommand LoadItemsCommand { get; }
+        public ICommand HideTeachersCommand { get; }
 
         public MainViewModel()
         {
             LoadItemsCommand = new AsyncRelayCommand(LoadItems);
+            HideTeachersCommand = new AsyncRelayCommand(HideItems);
+        }
+
+        private Task HideItems()
+        {
+            Items.Clear();
+            return Task.CompletedTask;
         }
 
         private Task LoadItems()
         {
-            var fetchedItems =  Application.ItemFetcher.FetchTeachersFromBackend();
+            var fetchedItems =  ItemFetcher.FetchTeachersFromBackend();
             Items.Clear();
             Items.AddRange(fetchedItems);
             return Task.CompletedTask;

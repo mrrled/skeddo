@@ -12,10 +12,18 @@
     
     <StackPanel Margin="20">
         
-        <Button Content="Загрузить список учителей" 
-                Command="{Binding LoadItemsCommand}" 
-                HorizontalAlignment="Center"
-                Margin="0 0 0 15"/>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Загрузить список учителей" 
+                    Command="{Binding LoadItemsCommand}" 
+                    HorizontalAlignment="Left"
+                    Margin="0 0 0 15"/>
+        
+            <Button Content="Скрыть список учителей" 
+                    Command="{Binding HideTeachersCommand}" 
+                    HorizontalAlignment="Right"
+                    Margin="0 0 0 15"/>
+            
+        </StackPanel>
         
         <ListBox ItemsSource="{Binding Items}" Height="350" BorderBrush="#CCCCCC" BorderThickness="1">
             
