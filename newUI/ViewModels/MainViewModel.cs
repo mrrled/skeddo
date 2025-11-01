@@ -9,9 +9,9 @@ namespace newUI.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private AvaloniaList<Teacher> items = new();
-        private ITeacherService service;
-        public AvaloniaList<Teacher> Items
+        private AvaloniaList<TeacherDto> items = new();
+        private IService service;
+        public AvaloniaList<TeacherDto> Items
         {
             get => items;
             set => SetProperty(ref items, value);
@@ -19,7 +19,7 @@ namespace newUI.ViewModels
         public ICommand LoadItemsCommand { get; }
         public ICommand HideTeachersCommand { get; }
 
-        public MainViewModel(ITeacherService service)
+        public MainViewModel(IService service)
         {
             this.service = service;
             LoadItemsCommand = new AsyncRelayCommand(LoadItems);

@@ -3,7 +3,7 @@
 namespace Infrastructure.Entities;
 
 [Table("StudyGroupTeacher")]
-public class TeacherStudyGroupModel
+public class TeacherStudyGroupDbo
 {
     public int TeacherId { get; set; }
     public string StudyGroup { get; set; }

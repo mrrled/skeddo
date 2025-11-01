@@ -35,7 +35,7 @@
                                 <TextBlock Text="Name:" FontWeight="Bold"/>
                                 <TextBlock Text="{Binding Name}" Foreground="#333333"/>
                                 <TextBlock Text="{Binding Surname}"/>
-                                <TextBlock Text="{Binding MiddleName}"/>
+                                <TextBlock Text="{Binding Patronymic}"/>
                             </StackPanel>
                             <TextBlock Text="{Binding Specialty}" FontSize="11" FontStyle="Italic" Margin="0 0 0 5"/>
                         </StackPanel>

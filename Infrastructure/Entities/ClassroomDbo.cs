@@ -3,7 +3,7 @@
 namespace Infrastructure.Entities;
 
 [Table("Classrooms")]
-public class ClassroomEntity
+public class ClassroomDbo
 {
     public int GroupId { get; set; }
     public string Name { get; set; } = string.Empty;
