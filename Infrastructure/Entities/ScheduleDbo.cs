@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Entities;
 
 [PrimaryKey(nameof(Id))]
-[Table("ScheduleGroups")]
-public class ScheduleGroupEntity
+[Table("Schedules")]
+public class ScheduleDbo
 {
     public int Id { get; set; }
+    public int GroupId { get; set; }
 }

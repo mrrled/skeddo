@@ -5,7 +5,7 @@ namespace Infrastructure.Entities;
 
 [PrimaryKey(nameof(Id))]
 [Table("Lessons")]
-public class LessonEntity
+public class LessonDbo
 {
     public int Id { get; set; }
     public int ScheduleId { get; set; }

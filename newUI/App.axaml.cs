@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Application.Mapping;
 using Application.Services;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -37,8 +38,9 @@ public partial class App : Avalonia.Application
             configure.AddConsole();
             configure.SetMinimumLevel(LogLevel.Information);
         });
+        services.AddAutoMapper(_ => { }, typeof(TeacherProfile));
 
-        services.AddSingleton<ITeacherService, TeacherService>();
+        services.AddSingleton<IService, Service>();
         services.AddSingleton<IScheduleRepository, ScheduleRepository>();
         services.AddDbContext<ScheduleDbContext>(options =>
         {

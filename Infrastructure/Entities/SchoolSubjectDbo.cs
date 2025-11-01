@@ -2,8 +2,8 @@
 
 namespace Infrastructure.Entities;
 
-[Table("StudyGroups")]
-public class StudyGroupEntity
+[Table("SchoolSubjects")]
+public class SchoolSubjectDbo
 {
     public int GroupId { get; set; }
     public string Name { get; set; } = string.Empty;
