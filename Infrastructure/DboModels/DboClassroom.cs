@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Infrastructure.Entities;
+namespace Infrastructure.DboModels;
 
-[Table("StudyGroups")]
-public class StudyGroupDbo
+[Table("Classrooms")]
+public class DboClassroom
 {
     public int GroupId { get; set; }
     public string Name { get; set; } = string.Empty;

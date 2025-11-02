@@ -2,16 +2,16 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Application;
 using Application.Services;
-using Application.UIModels;
+using Application.DtoModels;
 using Avalonia.Collections;
 
 namespace newUI.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private AvaloniaList<TeacherDto> items = new();
+        private AvaloniaList<DtoTeacher> items = new();
         private IService service;
-        public AvaloniaList<TeacherDto> Items
+        public AvaloniaList<DtoTeacher> Items
         {
             get => items;
             set => SetProperty(ref items, value);

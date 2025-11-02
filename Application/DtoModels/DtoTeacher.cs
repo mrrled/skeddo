@@ -1,6 +1,6 @@
-namespace Application.UIModels;
+namespace Application.DtoModels;
 
-public class TeacherDto
+public class DtoTeacher
 {
     public string Name { get; set; } = string.Empty;
     public string Surname { get; set; } = string.Empty;

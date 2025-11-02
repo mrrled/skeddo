@@ -1,4 +1,4 @@
-﻿using Application.UIModels;
+﻿using Application.DtoModels;
 using AutoMapper;
 using Domain.Models;
 
@@ -8,7 +8,7 @@ public class TeacherProfile : Profile
 {
     public TeacherProfile()
     {
-        CreateMap<Teacher, TeacherDto>()
+        CreateMap<Teacher, DtoTeacher>()
             .ForMember(dest => dest.Specialty,
                 opt => opt.MapFrom(src => src.Specializations.FirstOrDefault()!.Name));
     }

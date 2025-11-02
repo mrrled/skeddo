@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Entities;
+namespace Infrastructure.DboModels;
 
 [PrimaryKey(nameof(Id))]
-[Table("ScheduleGroups")]
-public class ScheduleGroupDbo
+[Table("Schedules")]
+public class DboSchedule
 {
     public int Id { get; set; }
+    public int GroupId { get; set; }
 }

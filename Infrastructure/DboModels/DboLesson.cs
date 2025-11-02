@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Entities;
+namespace Infrastructure.DboModels;
 
 [PrimaryKey(nameof(Id))]
 [Table("Lessons")]
-public class LessonDbo
+public class DboLesson
 {
     public int Id { get; set; }
     public int ScheduleId { get; set; }

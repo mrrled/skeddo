@@ -1,4 +1,4 @@
-﻿using Application.UIModels;
+﻿using Application.DtoModels;
 using AutoMapper;
 using Domain.Models;
 
@@ -8,6 +8,6 @@ public class TimeSlotProfile : Profile
 {
     public TimeSlotProfile()
     {
-        CreateMap<TimeSlot, TimeSlotDto>();
+        CreateMap<TimeSlot, DtoTimeSlot>();
     }
 }

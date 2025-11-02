@@ -1,4 +1,4 @@
-﻿using Application.UIModels;
+﻿using Application.DtoModels;
 using AutoMapper;
 using Domain.Models;
 
@@ -8,6 +8,6 @@ public class SchoolSubjectProfile : Profile
 {
     public SchoolSubjectProfile()
     {
-        CreateMap<SchoolSubject, SchoolSubjectDto>();
+        CreateMap<SchoolSubject, DtoSchoolSubject>();
     }
 }

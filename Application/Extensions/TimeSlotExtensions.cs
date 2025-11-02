@@ -1,4 +1,4 @@
-﻿using Application.UIModels;
+﻿using Application.DtoModels;
 using AutoMapper;
 using Domain.Models;
 
@@ -6,13 +6,25 @@ namespace Application.Extensions;
 
 public static class TimeSlotExtensions
 {
-    public static TimeSlotDto ToTimeSlotDto(this TimeSlot timeSlot, IMapper mapper)
+    public static DtoTimeSlot ToTimeSlotDto(this TimeSlot timeSlot, IMapper mapper)
     {
-        return mapper.Map<TimeSlotDto>(timeSlot);
+        return mapper.Map<DtoTimeSlot>(timeSlot);
     }
     
-    public static List<TimeSlotDto> ToTimeSlotDto(this List<TimeSlot> timeSlots, IMapper mapper)
+    public static DtoTimeSlot ToTimeSlotDto(this TimeSlot timeSlot, IMapper mapper,
+        Action<IMappingOperationOptions<object, DtoTimeSlot>> configure)
     {
-        return mapper.Map<List<TimeSlotDto>>(timeSlots);
+        return mapper.Map(timeSlot, configure);
+    }
+    
+    public static List<DtoTimeSlot> ToTimeSlotDto(this List<TimeSlot> timeSlots, IMapper mapper)
+    {
+        return mapper.Map<List<DtoTimeSlot>>(timeSlots);
+    }
+    
+    public static List<DtoTimeSlot> ToTimeSlotDto(this List<TimeSlot> timeSlots, IMapper mapper,
+        Action<IMappingOperationOptions<object, List<DtoTimeSlot>>> configure)
+    {
+        return mapper.Map(timeSlots, configure);
     }
 }
