@@ -1,8 +1,12 @@
 namespace Domain.Models;
 
-public class Schedule
+public class Schedule(
+    int id,
+    HashSet<Lesson> lessons
+)
 {
-    public int Id { get; set; }
-    private HashSet<Lesson> _lessons;
+    public int Id { get; set; } = id;
+
+    private HashSet<Lesson> _lessons = lessons;
     //таблица будет валидировать уроки
 }

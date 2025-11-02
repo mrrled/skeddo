@@ -6,13 +6,25 @@ namespace Infrastructure.DboExtensions;
 
 public static class DboScheduleExtensions
 {
-    public static Schedule ToScheduleDto(this DboSchedule dboSchedule, IMapper mapper)
+    public static Schedule ToSchedule(this DboSchedule dboSchedule, IMapper mapper)
     {
         return mapper.Map<Schedule>(dboSchedule);
     }
     
-    public static List<Schedule> ToScheduleDto(this List<DboSchedule> dboSchedules, IMapper mapper)
+    public static Schedule ToSchedule(this DboSchedule dboSchedule, IMapper mapper,
+        Action<IMappingOperationOptions<object, Schedule>> configure)
+    {
+        return mapper.Map(dboSchedule, configure);
+    }
+    
+    public static List<Schedule> ToSchedule(this List<DboSchedule> dboSchedules, IMapper mapper)
     {
         return mapper.Map<List<Schedule>>(dboSchedules);
+    }
+    
+    public static List<Schedule> ToSchedule(this List<DboSchedule> dboSchedules, IMapper mapper,
+        Action<IMappingOperationOptions<object, List<Schedule>>> configure)
+    {
+        return mapper.Map(dboSchedules, configure);
     }
 }

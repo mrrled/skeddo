@@ -6,6 +6,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Domain;
 using Infrastructure;
+using Infrastructure.DboMapping;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -38,7 +39,21 @@ public partial class App : Avalonia.Application
             configure.AddConsole();
             configure.SetMinimumLevel(LogLevel.Information);
         });
+        
+        services.AddAutoMapper(_ => { }, typeof(ClassroomProfile));
+        services.AddAutoMapper(_ => { }, typeof(LessonProfile));
+        services.AddAutoMapper(_ => { }, typeof(ScheduleProfile));
+        services.AddAutoMapper(_ => { }, typeof(SchoolSubjectProfile));
+        services.AddAutoMapper(_ => { }, typeof(StudyGroupProfile));
         services.AddAutoMapper(_ => { }, typeof(TeacherProfile));
+        services.AddAutoMapper(_ => { }, typeof(TimeSlotProfile));
+        
+        services.AddAutoMapper(_ => { }, typeof(DboClassroomProfile));
+        services.AddAutoMapper(_ => { }, typeof(DboLessonProfile));
+        services.AddAutoMapper(_ => { }, typeof(DboScheduleProfile));
+        services.AddAutoMapper(_ => { }, typeof(DboSchoolSubjectProfile));
+        services.AddAutoMapper(_ => { }, typeof(DboStudyGroupProfile));
+        services.AddAutoMapper(_ => { }, typeof(DboTeacherProfile));
 
         services.AddSingleton<IService, Service>();
         services.AddSingleton<IScheduleRepository, ScheduleRepository>();
