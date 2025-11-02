@@ -68,9 +68,7 @@ public partial class App : Avalonia.Application
         using (var scope = Services.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<ScheduleDbContext>();
-            context.Database.EnsureCreated();
-            var sqlScript = File.ReadAllText("CreateDB.sql");
-            context.Database.ExecuteSqlRaw(sqlScript);
+            context.Database.Migrate();
         }
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

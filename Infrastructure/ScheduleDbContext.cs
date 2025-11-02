@@ -1,4 +1,4 @@
-﻿using Infrastructure.DboModels;
+﻿using Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
@@ -9,18 +9,18 @@ public class ScheduleDbContext : DbContext
     {
     }
 
-    public DbSet<DboTeacher> Teachers { get; set; }
-    public DbSet<DboTeacherSubject> TeacherSubjects { get; set; }
-    public DbSet<DboTeacherStudyGroup> TeacherStudyGroups { get; set; }
+    public DbSet<TeacherDbo> Teachers { get; set; }
+    public DbSet<TeacherSubjectDbo> TeacherSubjects { get; set; }
+    public DbSet<TeacherStudyGroupDbo> TeacherStudyGroups { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<DboTeacherSubject>().HasNoKey();
-        modelBuilder.Entity<DboTeacherStudyGroup>().HasNoKey();
-        modelBuilder.Entity<DboSchoolSubject>().HasNoKey();
-        modelBuilder.Entity<DboStudyGroup>().HasNoKey();
-        modelBuilder.Entity<DboClassroom>().HasNoKey();
+        modelBuilder.Entity<TeacherSubjectDbo>().HasNoKey();
+        modelBuilder.Entity<TeacherStudyGroupDbo>().HasNoKey();
+        modelBuilder.Entity<SchoolSubjectDbo>().HasNoKey();
+        modelBuilder.Entity<StudyGroupDbo>().HasNoKey();
+        modelBuilder.Entity<ClassroomDbo>().HasNoKey();
     }
 }
