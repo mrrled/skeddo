@@ -31,7 +31,7 @@ public partial class App : Avalonia.Application
     {
         Configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("appsettings.json", optional: false)
             .Build();
         var services = new ServiceCollection();
         services.AddLogging(configure =>
@@ -55,8 +55,8 @@ public partial class App : Avalonia.Application
         services.AddAutoMapper(_ => { }, typeof(DboStudyGroupProfile));
         services.AddAutoMapper(_ => { }, typeof(DboTeacherProfile));
 
-        services.AddSingleton<IService, Service>();
-        services.AddSingleton<IScheduleRepository, ScheduleRepository>();
+        services.AddScoped<IService, Service>();
+        services.AddScoped<IScheduleRepository, ScheduleRepository>();
         services.AddDbContext<ScheduleDbContext>(options =>
         {
             options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
