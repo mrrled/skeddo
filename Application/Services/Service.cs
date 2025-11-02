@@ -1,5 +1,5 @@
 using Application.Extensions;
-using Application.UIModels;
+using Application.DtoModels;
 using AutoMapper;
 using Domain;
 
@@ -16,11 +16,11 @@ public class Service : IService
         this.mapper = mapper;
     }
     
-    // public List<TeacherDto> FetchClassroomsFromBackend() => repository.GetClassrooms().ToTeacherDto(mapper);
-    // public List<TeacherDto> FetchLessonsFromBackend() => repository.GetLessons().ToTeacherDto(mapper);
-    // public List<TeacherDto> FetchSchedulesFromBackend() => repository.GetSchedules().ToTeacherDto(mapper);
-    // public List<TeacherDto> FetchSchoolSubjectsFromBackend() => repository.GetSchoolSubjects().ToTeacherDto(mapper);
-    // public List<TeacherDto> FetchStudyGroupsFromBackend() => repository.GetStudyGroups().ToTeacherDto(mapper);
-    public List<TeacherDto> FetchTeachersFromBackend() => repository.GetTeachers().ToTeacherDto(mapper);
-    // public List<TeacherDto> FetchTimeSlotsFromBackend() => repository.GetTimeSlots().ToTeacherDto(mapper);
+    public List<DtoClassroom> FetchClassroomsFromBackend() => repository.GetClassrooms().ToClassroomDto(mapper);
+    public List<DtoLesson> FetchLessonsFromBackend() => repository.GetLessons().ToLessonDto(mapper);
+    public List<DtoSchedule> FetchSchedulesFromBackend() => repository.GetSchedules().ToScheduleDto(mapper);
+    public List<DtoSchoolSubject> FetchSchoolSubjectsFromBackend() => repository.GetSchoolSubjects().ToSchoolSubjectDto(mapper);
+    public List<DtoStudyGroup> FetchStudyGroupsFromBackend() => repository.GetStudyGroups().ToStudyGroupDto(mapper);
+    public List<DtoTeacher> FetchTeachersFromBackend() => repository.GetTeachers().ToTeacherDto(mapper);
+    public List<DtoTimeSlot> FetchTimeSlotsFromBackend() => repository.GetTimeSlots().ToTimeSlotDto(mapper);
 }
