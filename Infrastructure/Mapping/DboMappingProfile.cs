@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Models;
-using Infrastructure.Entities;
+using Infrastructure.DboModels;
 
 namespace Infrastructure.Mapping;
 

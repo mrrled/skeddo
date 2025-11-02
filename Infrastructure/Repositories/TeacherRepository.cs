@@ -5,9 +5,34 @@ namespace Infrastructure.Repositories;
 
 public class TeacherRepository : IScheduleRepository
 {
+    public List<Classroom> GetClassrooms()
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<Schedule> GetSchedules()
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<SchoolSubject> GetSchoolSubjects()
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<StudyGroup> GetStudyGroups()
+    {
+        throw new NotImplementedException();
+    }
+
     public List<Teacher> GetTeachers()
     {
         return Teachers;
+    }
+
+    public List<TimeSlot> GetTimeSlots()
+    {
+        throw new NotImplementedException();
     }
 
     public List<Lesson> GetLessonsByScheduleId(int scheduleId)

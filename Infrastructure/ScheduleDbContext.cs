@@ -1,4 +1,4 @@
-﻿using Infrastructure.Entities;
+﻿using Infrastructure.DboModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;

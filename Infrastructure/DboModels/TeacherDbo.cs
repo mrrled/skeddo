@@ -6,7 +6,7 @@ namespace Infrastructure.DboModels;
 
 [PrimaryKey(nameof(Id))]
 [Table("Teachers")]
-public class DboTeacher
+public class TeacherDbo
 {
     public int Id { get; set; }
     public int ScheduleGroupId { get; set; }

@@ -1,3 +1,4 @@
+using AutoMapper;
 using Domain;
 using Domain.Models;
 using Infrastructure.Extensions;
@@ -7,6 +8,26 @@ namespace Infrastructure.Repositories;
 
 public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : IScheduleRepository
 {
+    public List<Classroom> GetClassrooms()
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<Schedule> GetSchedules()
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<SchoolSubject> GetSchoolSubjects()
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<StudyGroup> GetStudyGroups()
+    {
+        throw new NotImplementedException();
+    }
+
     public List<Teacher> GetTeachers()
     {
         var teachers = context.Teachers
@@ -17,6 +38,11 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
 
         var result = teachers.ToTeacher(mapper);
         return teachers.ToTeacher(mapper);
+    }
+
+    public List<TimeSlot> GetTimeSlots()
+    {
+        throw new NotImplementedException();
     }
 
     public List<Lesson> GetLessonsByScheduleId(int scheduleId)

@@ -5,7 +5,7 @@ namespace Infrastructure.DboModels;
 
 [PrimaryKey(nameof(Id))]
 [Table("Lessons")]
-public class DboLesson
+public class LessonDbo
 {
     public int Id { get; set; }
     public int LessonNumber { get; set; }

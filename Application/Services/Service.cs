@@ -17,7 +17,7 @@ public class Service : IService
     }
     
     public List<DtoClassroom> FetchClassroomsFromBackend() => repository.GetClassrooms().ToClassroomDto(mapper);
-    public List<DtoLesson> FetchLessonsFromBackend() => repository.GetLessons().ToLessonDto(mapper);
+    public List<DtoLesson> FetchLessonsFromBackend() => repository.GetLessonsByScheduleId(1).ToLessonDto(mapper);
     public List<DtoSchedule> FetchSchedulesFromBackend() => repository.GetSchedules().ToScheduleDto(mapper);
     public List<DtoSchoolSubject> FetchSchoolSubjectsFromBackend() => repository.GetSchoolSubjects().ToSchoolSubjectDto(mapper);
     public List<DtoStudyGroup> FetchStudyGroupsFromBackend() => repository.GetStudyGroups().ToStudyGroupDto(mapper);

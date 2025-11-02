@@ -5,7 +5,7 @@ namespace Infrastructure.DboModels;
 
 [PrimaryKey(nameof(Id))]
 [Table("ScheduleGroups")]
-public class DboScheduleGroup
+public class ScheduleGroupDbo
 {
     public int Id { get; set; }
     public ICollection<ScheduleDbo> Schedules { get; set; } = new List<ScheduleDbo>();

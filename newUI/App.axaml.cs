@@ -48,12 +48,6 @@ public partial class App : Avalonia.Application
         services.AddAutoMapper(_ => { }, typeof(TeacherProfile));
         services.AddAutoMapper(_ => { }, typeof(TimeSlotProfile));
         
-        services.AddAutoMapper(_ => { }, typeof(DboClassroomProfile));
-        services.AddAutoMapper(_ => { }, typeof(DboLessonProfile));
-        services.AddAutoMapper(_ => { }, typeof(DboScheduleProfile));
-        services.AddAutoMapper(_ => { }, typeof(DboSchoolSubjectProfile));
-        services.AddAutoMapper(_ => { }, typeof(DboStudyGroupProfile));
-        services.AddAutoMapper(_ => { }, typeof(DboTeacherProfile));
         services.AddAutoMapper(_ => { }, typeof(TeacherProfile), typeof(DboMappingProfile));
 
         services.AddScoped<IService, Service>();
