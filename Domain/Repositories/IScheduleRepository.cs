@@ -4,11 +4,15 @@ namespace Domain;
 
 public interface IScheduleRepository
 {
-    public List<Classroom> GetClassrooms();
-    public List<Lesson> GetLessons();
-    public List<Schedule> GetSchedules();
-    public List<SchoolSubject> GetSchoolSubjects();
-    public List<StudyGroup> GetStudyGroups();
-    public List<Teacher> GetTeachers();
-    public List<TimeSlot> GetTimeSlots();
+    List<Classroom> GetClassrooms();
+    List<Schedule> GetSchedules();
+    List<SchoolSubject> GetSchoolSubjects();
+    List<StudyGroup> GetStudyGroups();
+    List<Teacher> GetTeachers();
+    List<TimeSlot> GetTimeSlots();
+    List<Lesson> GetLessonsByScheduleId(int scheduleId);
+    void AddTeacher(Teacher teacher);
+    void AddLesson(Lesson lesson);
+    void AddClassroom(Classroom classroom);
+    void AddStudyGroup(StudyGroup studyGroup);
 }

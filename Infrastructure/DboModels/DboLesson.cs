@@ -8,10 +8,15 @@ namespace Infrastructure.DboModels;
 public class DboLesson
 {
     public int Id { get; set; }
-    public int ScheduleId { get; set; }
-    public int TeacherId { get; set; }
     public int LessonNumber { get; set; }
-    public string StudyGroup { get; set; } = string.Empty;
-    public string Classroom { get; set; } = string.Empty;
-    public string SchoolSubject { get; set; } = string.Empty;
+    public int StudyGroupId { get; set; }
+    public int ClassroomId { get; set; }
+    public int SchoolSubjectId { get; set; }
+    public int TeacherId { get; set; }
+    public int ScheduleId { get; set; }
+    public StudyGroupDbo StudyGroup { get; set; }
+    public ClassroomDbo Classroom { get; set; }
+    public SchoolSubjectDbo SchoolSubject { get; set; }
+    public TeacherDbo Teacher { get; set; }
+    public ScheduleDbo Schedule { get; set; }
 }

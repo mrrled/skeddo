@@ -1,59 +1,50 @@
-﻿using AutoMapper;
 using Domain;
 using Domain.Models;
-using Infrastructure.DboExtensions;
+using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class ScheduleRepository : IScheduleRepository
+public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : IScheduleRepository
 {
-    
-    private readonly ScheduleDbContext _context;
-    private readonly IMapper mapper;
-
-    public ScheduleRepository(ScheduleDbContext context, IMapper mapper)
-    {
-        _context = context;
-        this.mapper = mapper;
-    }
-
-    public List<Classroom> GetClassrooms() => new();
-    public List<Lesson> GetLessons() => new();
-    public List<Schedule> GetSchedules() => new();
-    public List<SchoolSubject> GetSchoolSubjects() => new();
-    public List<StudyGroup> GetStudyGroups() => new();
-
     public List<Teacher> GetTeachers()
     {
-        var teachers = _context.Teachers.Where(x => x.GroupId == 1).ToList();
-    
-        var teacherSubjects = _context
-            .TeacherSubjects
-            .Where(x => x.GroupId == 1)
-            .AsEnumerable()
-            .GroupBy(x => x.TeacherId)
-            .ToDictionary(
-                x => x.Key,
-                x => x.Select(t => new SchoolSubject(t.SchoolSubject)).ToList()
-            );
-    
-        var teacherStudyGroups = _context
-            .TeacherStudyGroups
-            .Where(x => x.GroupId == 1)
-            .AsEnumerable()
-            .GroupBy(x => x.TeacherId)
-            .ToDictionary(
-                x => x.Key,
-                x => x.Select(t => new StudyGroup(t.StudyGroup)).ToList()
-            );
-        
-        return teachers.ToTeacher(mapper, opts => 
-        {
-            opts.Items["SpecializationsByTeacher"] = teacherSubjects;
-            opts.Items["StudyGroupsByTeacher"] = teacherStudyGroups;
-        });
+        var teachers = context.Teachers
+            .Where(x => x.ScheduleGroupId == 1)
+            .Include(teacherDbo => teacherDbo.SchoolSubjects)
+            .Include(teacherDbo => teacherDbo.StudyGroups)
+            .ToList();
+
+        var result = teachers.ToTeacher(mapper);
+        return teachers.ToTeacher(mapper);
     }
 
-    public List<TimeSlot> GetTimeSlots() => new();
+    public List<Lesson> GetLessonsByScheduleId(int scheduleId)
+    {
+        var lessons = context.Lessons.Where(x => x.ScheduleId == scheduleId)
+            .Include(x => x.Teacher)
+            .ToList();
+        var result = lessons.ToLesson(mapper);
+        return result;
+    }
+
+    public void AddTeacher(Teacher teacher)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddLesson(Lesson lesson)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddClassroom(Classroom classroom)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddStudyGroup(StudyGroup studyGroup)
+    {
+        throw new NotImplementedException();
+    }
 }

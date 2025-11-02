@@ -10,6 +10,12 @@ public class TeacherProfile : Profile
     {
         CreateMap<Teacher, DtoTeacher>()
             .ForMember(dest => dest.Specialty,
-                opt => opt.MapFrom(src => src.Specializations.FirstOrDefault()!.Name));
+                opt => opt.MapFrom(src => src.SchoolSubjects.FirstOrDefault()!.Name))
+            .ForMember(dest => dest.Name,
+                opt => opt.MapFrom(src => src.FullName.FirstName))
+            .ForMember(dest => dest.Surname,
+                opt => opt.MapFrom(src => src.FullName.LastName))
+            .ForMember(dest => dest.Patronymic,
+                opt => opt.MapFrom(src => src.FullName.Patronymic));
     }
 }

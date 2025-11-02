@@ -10,17 +10,12 @@ public class ScheduleDbContext : DbContext
     }
 
     public DbSet<TeacherDbo> Teachers { get; set; }
-    public DbSet<TeacherSubjectDbo> TeacherSubjects { get; set; }
-    public DbSet<TeacherStudyGroupDbo> TeacherStudyGroups { get; set; }
+    public DbSet<LessonDbo> Lessons { get; set; }
+    public DbSet<ScheduleDbo> Schedules { get; set; }
+    public DbSet<ScheduleGroupDbo> ScheduleGroups { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<TeacherSubjectDbo>().HasNoKey();
-        modelBuilder.Entity<TeacherStudyGroupDbo>().HasNoKey();
-        modelBuilder.Entity<SchoolSubjectDbo>().HasNoKey();
-        modelBuilder.Entity<StudyGroupDbo>().HasNoKey();
-        modelBuilder.Entity<ClassroomDbo>().HasNoKey();
     }
 }

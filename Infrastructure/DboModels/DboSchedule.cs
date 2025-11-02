@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.DboModels;
@@ -8,5 +9,7 @@ namespace Infrastructure.DboModels;
 public class DboSchedule
 {
     public int Id { get; set; }
-    public int GroupId { get; set; }
+    public int ScheduleGroupId { get; set; }
+    public ScheduleGroupDbo ScheduleGroup { get; set; }
+    public ICollection<LessonDbo> Lessons { get; set; } 
 }
