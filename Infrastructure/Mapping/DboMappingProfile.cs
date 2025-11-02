@@ -27,7 +27,6 @@ public class DboMappingProfile : Profile
                 ctx.Mapper.Map<Teacher>(src.Teacher),
                 ctx.Mapper.Map<StudyGroup>(src.StudyGroup),
                 ctx.Mapper.Map<Classroom>(src.Classroom)
-            ))
-            .ForAllMembers(opt => opt.Ignore());
+            ));
     }
 }

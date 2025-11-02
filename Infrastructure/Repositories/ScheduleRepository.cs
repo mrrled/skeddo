@@ -35,8 +35,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
             .Include(teacherDbo => teacherDbo.SchoolSubjects)
             .Include(teacherDbo => teacherDbo.StudyGroups)
             .ToList();
-
-        var result = teachers.ToTeacher(mapper);
+        
         return teachers.ToTeacher(mapper);
     }
 
@@ -49,9 +48,11 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
     {
         var lessons = context.Lessons.Where(x => x.ScheduleId == scheduleId)
             .Include(x => x.Teacher)
+            .Include(x => x.Classroom)
+            .Include(x => x.StudyGroup)
+            .Include(x => x.SchoolSubject)
             .ToList();
-        var result = lessons.ToLesson(mapper);
-        return result;
+        return lessons.ToLesson(mapper);
     }
 
     public void AddTeacher(Teacher teacher)

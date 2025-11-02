@@ -10,12 +10,12 @@ public class Lesson(int Id,
     bool IsConflict = false
     )
 {
-    public int Id { get; }
-    public SchoolSubject Subject { get; }
-    public LessonNumber LessonNumber { get; }
-    public Teacher Teacher { get; }
-    public StudyGroup StudyGroup { get; }
-    public Classroom Classroom { get; }
-    public string Comment { get; }
-    public bool IsConflict { get; }
+    public int Id { get; } = Id;
+    public SchoolSubject Subject { get; } = Subject;
+    public LessonNumber LessonNumber { get; } = LessonNumber;
+    public Teacher Teacher { get; } = Teacher;
+    public StudyGroup StudyGroup { get; } = StudyGroup;
+    public Classroom Classroom { get; } = Classroom;
+    public string Comment { get; } = Comment;
+    public bool IsConflict { get; } = IsConflict;
 }

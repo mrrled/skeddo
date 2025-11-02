@@ -2,5 +2,5 @@
 
 public class LessonNumber(int Number)
 {
-    public int Number { get; }
+    public int Number { get; } = Number;
 }
