@@ -1,21 +1,20 @@
 namespace Domain.Models;
 
-public class Lesson(int Id,
-    SchoolSubject Subject,
-    LessonNumber LessonNumber,
-    Teacher Teacher,
-    StudyGroup StudyGroup,
-    Classroom Classroom,
-    string Comment = "",
-    bool IsConflict = false
-    )
+public class Lesson(int id,
+    SchoolSubject subject,
+    LessonNumber lessonNumber,
+    Teacher teacher,
+    StudyGroup studyGroup,
+    Classroom classroom,
+    string comment = "",
+    bool isConflict = false
+    ) : Entity<int>(id)
 {
-    public int Id { get; }
-    public SchoolSubject Subject { get; }
-    public LessonNumber LessonNumber { get; }
-    public Teacher Teacher { get; }
-    public StudyGroup StudyGroup { get; }
-    public Classroom Classroom { get; }
-    public string Comment { get; }
-    public bool IsConflict { get; }
+    public SchoolSubject Subject { get; } = subject;
+    public LessonNumber LessonNumber { get; } = lessonNumber;
+    public Teacher Teacher { get; } = teacher;
+    public StudyGroup StudyGroup { get; } = studyGroup;
+    public Classroom Classroom { get; } = classroom;
+    public string Comment { get; } = comment;
+    public bool IsConflict { get; } = isConflict;
 }
