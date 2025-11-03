@@ -4,10 +4,14 @@ using Domain.Models;
 
 namespace Application.Mapping;
 
-public class TeacherProfile : Profile
+public class DtoMappingProfile : Profile
 {
-    public TeacherProfile()
+    public DtoMappingProfile()
     {
+        CreateMap<Classroom, DtoClassroom>();
+        CreateMap<Lesson, DtoLesson>();
+        CreateMap<Schedule, DtoSchedule>();
+        CreateMap<SchoolSubject, DtoSchoolSubject>();
         CreateMap<Teacher, DtoTeacher>()
             .ForMember(dest => dest.Specialty,
                 opt => opt.MapFrom(src => src.SchoolSubjects.FirstOrDefault()!.Name))
@@ -17,5 +21,7 @@ public class TeacherProfile : Profile
                 opt => opt.MapFrom(src => src.FullName.LastName))
             .ForMember(dest => dest.Patronymic,
                 opt => opt.MapFrom(src => src.FullName.Patronymic));
+        CreateMap<StudyGroup, DtoStudyGroup>();
+        CreateMap<TimeSlot, DtoTimeSlot>();
     }
 }

@@ -40,15 +40,8 @@ public partial class App : Avalonia.Application
             configure.SetMinimumLevel(LogLevel.Information);
         });
         
-        services.AddAutoMapper(_ => { }, typeof(ClassroomProfile));
-        services.AddAutoMapper(_ => { }, typeof(LessonProfile));
-        services.AddAutoMapper(_ => { }, typeof(ScheduleProfile));
-        services.AddAutoMapper(_ => { }, typeof(SchoolSubjectProfile));
-        services.AddAutoMapper(_ => { }, typeof(StudyGroupProfile));
-        services.AddAutoMapper(_ => { }, typeof(TeacherProfile));
-        services.AddAutoMapper(_ => { }, typeof(TimeSlotProfile));
-        
-        services.AddAutoMapper(_ => { }, typeof(TeacherProfile), typeof(DboMappingProfile));
+        services.AddAutoMapper(_ => { }, typeof(DtoMappingProfile));
+        services.AddAutoMapper(_ => { }, typeof(DboMappingProfile));
 
         services.AddScoped<IService, Service>();
         services.AddScoped<IScheduleRepository, ScheduleRepository>();
