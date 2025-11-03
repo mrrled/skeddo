@@ -3,10 +3,8 @@ namespace Domain.Models;
 public class Schedule(
     int id,
     HashSet<Lesson> lessons
-)
+) : Entity<int>(id)
 {
-    public int Id { get; set; } = id;
-
-    private HashSet<Lesson> _lessons = lessons;
+    private HashSet<Lesson> lessons = lessons;
     //таблица будет валидировать уроки
 }
