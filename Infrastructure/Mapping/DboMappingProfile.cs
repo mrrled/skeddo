@@ -8,8 +8,8 @@ public class DboMappingProfile : Profile
 {
     public DboMappingProfile()
     {
-        CreateMap<SchoolSubjectDbo, SchoolSubject>();
-        CreateMap<StudyGroupDbo, StudyGroup>();
+        CreateMap<SchoolSubjectDbo, SchoolSubject>().ReverseMap();
+        CreateMap<StudyGroupDbo, StudyGroup>().ReverseMap();
         CreateMap<TeacherDbo, Teacher>()
             .ConstructUsing((src, ctx) => new Teacher(
                 src.Id,
@@ -18,7 +18,7 @@ public class DboMappingProfile : Profile
                 ctx.Mapper.Map<List<StudyGroup>>(src.StudyGroups)
             ))
             .ForAllMembers(opt => opt.Ignore());;
-        CreateMap<ClassroomDbo, Classroom>();
+        CreateMap<ClassroomDbo, Classroom>().ReverseMap();
         CreateMap<LessonDbo, Lesson>()
             .ConstructUsing((src, ctx) => new Lesson(
                 src.Id,
@@ -28,5 +28,13 @@ public class DboMappingProfile : Profile
                 ctx.Mapper.Map<StudyGroup>(src.StudyGroup),
                 ctx.Mapper.Map<Classroom>(src.Classroom)
             ));
+        CreateMap<Lesson, LessonDbo>();
+        CreateMap<Teacher, TeacherDbo>()
+            .ForMember(x => x.FirstName,
+                opt => opt.MapFrom(t => t.FullName.FirstName))
+            .ForMember(x => x.LastName,
+                opt => opt.MapFrom(t => t.FullName.LastName))
+            .ForMember(x => x.Patronymic,
+                opt => opt.MapFrom(t => t.FullName.Patronymic));
     }
 }

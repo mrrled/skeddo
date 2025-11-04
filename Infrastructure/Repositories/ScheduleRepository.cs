@@ -57,7 +57,14 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
 
     public void AddTeacher(Teacher teacher)
     {
-        throw new NotImplementedException();
+        var scheduleGroupId = 1;
+        var dbo = teacher.ToTeacherDbo(mapper);
+        context.Teachers.Add(dbo);
+        var scheduleGroup = context.ScheduleGroups.FirstOrDefault(x => x.Id == 1);
+        if (scheduleGroup is null)
+            throw new ArgumentException($"Schedule group with {scheduleGroupId} id not found");
+        scheduleGroup.Teachers.Add(dbo);
+        context.SaveChanges();
     }
 
     public void AddLesson(Lesson lesson)
