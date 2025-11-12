@@ -30,12 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Views\MainWindow.axaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -44,5 +38,16 @@
   <ItemGroup>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\MainWindow\MainWindow.axaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>MainWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Views\MainWindow\MainWindow.axaml" />
   </ItemGroup>
 </Project>

@@ -1,8 +1,7 @@
-using Application.Services;
 using Avalonia.Controls;
 using newUI.ViewModels;
 
-namespace newUI.Views
+namespace newUI.Views.MainWindow
 {
     public partial class MainWindow : Window
     {

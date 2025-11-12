@@ -1,0 +1,78 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:newUI.ViewModels"
+        xmlns:viewModels="clr-namespace:newUI.ViewModels"
+        xmlns:views="clr-namespace:newUI.Views.LessonCard"  
+        x:Class="newUI.Views.MainWindow.MainWindow"
+        Title="Avalonia List App"
+        x:DataType="viewModels:MainViewModel">
+
+    <Design.DataContext>
+        <vm:MainViewModel/>
+    </Design.DataContext>
+    
+    <ScrollViewer>
+        <StackPanel Margin="20">
+            
+            <TextBlock Text="Список учителей (Пример)" FontWeight="Bold" Margin="0 0 0 5"/>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Загрузить учителей"
+                        Command="{Binding LoadTeachersCommand}"
+                        HorizontalAlignment="Left"
+                        Margin="0 0 10 15"/>
+            
+                <Button Content="Скрыть учителей"
+                        Command="{Binding HideTeachersCommand}"
+                        HorizontalAlignment="Right"
+                        Margin="0 0 0 15"/>
+            </StackPanel>
+            
+            <ListBox ItemsSource="{Binding Teachers}" Height="200" BorderBrush="#CCCCCC" BorderThickness="1" Margin="0 0 0 20">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Text="{Binding Surname}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Name}"/>
+                            <TextBlock Text="{Binding Patronymic}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <TextBlock Text="Список уроков" FontWeight="Bold" Margin="0 0 0 5"/>
+            <StackPanel Orientation="Horizontal">
+            <Button Content="Загрузить список уроков" 
+                    Command="{Binding LoadLessonsCommand}" 
+                    HorizontalAlignment="Left"
+                    Margin="0 0 0 15"/>
+            
+            <Button Content="Скрыть список уроков" 
+                    Command="{Binding HideLessonsCommand}" 
+                    HorizontalAlignment="Right"
+                    Margin="0 0 0 15"/>
+            </StackPanel>
+            
+            <ListBox ItemsSource="{Binding LessonCards}" 
+                     Height="400" 
+                     BorderBrush="#CCCCCC" 
+                     BorderThickness="1"
+                     HorizontalAlignment="Center"
+                     Background="#F5F5F5">
+    
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" ItemWidth="180" Margin="5"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:LessonCardViewModel">
+                        <views:LessonCard Margin="5" Width="160" Height="150"
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Stretch"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

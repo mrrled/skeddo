@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:newUI.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="newUI.Views.LessonCard.LessonCard"
+             x:DataType="viewModels:LessonCardViewModel">
+    
+    <Design.DataContext>
+        <viewModels:LessonCardViewModel/>
+    </Design.DataContext>
+    
+    <Border CornerRadius="6"
+            Background="White"
+            BorderBrush="#E0E0E0"
+            BorderThickness="1"
+            Padding="12"
+            MinWidth="140">
+        
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="5">
+            <TextBlock Text="{Binding Lesson.SchoolSubject}" FontWeight="Bold" FontSize="14"/>
+            <TextBlock FontSize="12" Foreground="Gray">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0} {1} {2}">
+                        <Binding Path="Lesson.Teacher.Name"/>
+                        <Binding Path="Lesson.Teacher.Surname"/>
+                        <Binding Path="Lesson.Teacher.Patronymic"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+            <TextBlock Text="{Binding Lesson.Classroom.Name}" FontSize="12" Foreground="Gray"/>
+            <TextBlock Text="{Binding Lesson.StudyGroup.Name}" FontSize="12" Foreground="Gray"/>
+            <TextBlock Text="{Binding Lesson.TimeSlot.Number }" FontSize="12" Foreground="Gray"/>
+        </StackPanel>
+    </Border>
+</UserControl>

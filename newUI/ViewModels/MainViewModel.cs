@@ -1,43 +1,76 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Application.Services;
 using Application.DtoModels;
-using Application.IServices;
 using Avalonia.Collections;
 
 namespace newUI.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private AvaloniaList<TeacherDto> items = new();
-        private ITeacherServices teacherService;
-
-        public AvaloniaList<TeacherDto> Items
+        private AvaloniaList<DtoTeacher> teachers = new(); 
+        private AvaloniaList<LessonCardViewModel> lessonCards = new();
+        
+        private IService service;
+        public AvaloniaList<DtoTeacher> Teachers
         {
-            get => items;
-            set => SetProperty(ref items, value);
+            get => teachers;
+            set => SetProperty(ref teachers, value);
+        }
+        
+        public AvaloniaList<LessonCardViewModel> LessonCards
+        {
+            get => lessonCards;
+            set => SetProperty(ref lessonCards, value);
         }
 
-        public ICommand LoadItemsCommand { get; }
+        public ICommand LoadTeachersCommand { get; }
         public ICommand HideTeachersCommand { get; }
+        
+        public ICommand LoadLessonsCommand { get; }
+        public ICommand HideLessonsCommand { get; }
 
-        public MainViewModel(ITeacherServices teacherService)
+        public MainViewModel(IService service)
         {
-            this.teacherService = teacherService;
-            LoadItemsCommand = new RelayCommandAsync(LoadItems);
-            HideTeachersCommand = new RelayCommandAsync(HideItems);
+            this.service = service;
+            HideLessonsCommand = new AsyncRelayCommand(HideLessons);
+            LoadTeachersCommand = new AsyncRelayCommand(LoadTeachers);
+            HideTeachersCommand = new AsyncRelayCommand(HideTeachers);
+            LoadLessonsCommand = new AsyncRelayCommand(LoadLessons);
         }
-
-        private Task HideItems()
+        
+        private Task HideTeachers()
         {
-            Items.Clear();
+            Teachers.Clear();
             return Task.CompletedTask;
         }
-
-        private async Task LoadItems()
+        
+        private Task LoadTeachers()
         {
-            var fetchedItems = await teacherService.FetchTeachersFromBackendAsync();
-            Items.Clear();
-            Items.AddRange(fetchedItems);
+            var fetchedItems =  service.FetchTeachersFromBackend();
+            var newTeachersList = new AvaloniaList<DtoTeacher>(fetchedItems);
+            Teachers = newTeachersList;
+            return Task.CompletedTask;
+        }
+        
+        private Task HideLessons()
+        {
+            LessonCards.Clear();
+            return Task.CompletedTask;
+        }
+        
+        private Task LoadLessons()
+        {
+            var fetchedLessons = service.FetchLessonsFromBackend();
+            LessonCards.Clear();
+    
+            foreach (var dtoLesson in fetchedLessons)
+            {
+                var cardVm = new LessonCardViewModel(service) { Lesson = dtoLesson };
+                LessonCards.Add(cardVm);
+            }
+    
+            return Task.CompletedTask;
         }
     }
 }
