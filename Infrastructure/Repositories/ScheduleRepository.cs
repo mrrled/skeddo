@@ -8,76 +8,86 @@ namespace Infrastructure.Repositories;
 
 public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : IScheduleRepository
 {
-    public List<Classroom> GetClassrooms()
+    public async Task<List<Classroom>> GetClassroomListAsync()
     {
         throw new NotImplementedException();
     }
 
-    public List<Schedule> GetSchedules()
+    public async Task<List<Lesson>> GetLessonListAsync()
     {
         throw new NotImplementedException();
     }
 
-    public List<SchoolSubject> GetSchoolSubjects()
+    public async Task<List<Schedule>> GetScheduleListAsync()
     {
         throw new NotImplementedException();
     }
 
-    public List<StudyGroup> GetStudyGroups()
+    public async Task<List<SchoolSubject>> GetSchoolSubjectListAsync()
     {
         throw new NotImplementedException();
     }
 
-    public List<Teacher> GetTeachers()
+    public async Task<List<StudyGroup>> GetStudyGroupListAsync()
     {
-        var teachers = context.Teachers
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<Teacher>> GetTeacherListAsync()
+    {
+        var teachers = await context.Teachers
             .Where(x => x.ScheduleGroupId == 1)
             .Include(teacherDbo => teacherDbo.SchoolSubjects)
             .Include(teacherDbo => teacherDbo.StudyGroups)
-            .ToList();
-        
+            .ToListAsync();
+
         return teachers.ToTeacher(mapper);
     }
 
-    public List<TimeSlot> GetTimeSlots()
+    public async Task<List<TimeSlot>> GetTimeSlotListAsync()
     {
         throw new NotImplementedException();
     }
 
-    public List<Lesson> GetLessonsByScheduleId(int scheduleId)
+    public async Task<List<Lesson>> GetLessonsByScheduleIdAsync(int scheduleId)
     {
-        var lessons = context.Lessons.Where(x => x.ScheduleId == scheduleId)
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<Lesson>> GetLessonListByScheduleIdAsync(int scheduleId)
+    {
+        var lessons = await context.Lessons.Where(x => x.ScheduleId == scheduleId)
             .Include(x => x.Teacher)
             .Include(x => x.Classroom)
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
-            .ToList();
+            .ToListAsync();
         return lessons.ToLesson(mapper);
     }
 
-    public void AddTeacher(Teacher teacher)
+    public async Task AddTeacherAsync(Teacher teacher)
     {
         var scheduleGroupId = 1;
         var dbo = teacher.ToTeacherDbo(mapper);
-        context.Teachers.Add(dbo);
-        var scheduleGroup = context.ScheduleGroups.FirstOrDefault(x => x.Id == 1);
+        await context.Teachers.AddAsync(dbo);
+        var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync(x => x.Id == 1);
         if (scheduleGroup is null)
             throw new ArgumentException($"Schedule group with {scheduleGroupId} id not found");
         scheduleGroup.Teachers.Add(dbo);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 
-    public void AddLesson(Lesson lesson)
+    public async Task AddLessonAsync(Lesson lesson)
     {
         throw new NotImplementedException();
     }
 
-    public void AddClassroom(Classroom classroom)
+    public async Task AddClassroomAsync(Classroom classroom)
     {
         throw new NotImplementedException();
     }
 
-    public void AddStudyGroup(StudyGroup studyGroup)
+    public async Task AddStudyGroupAsync(StudyGroup studyGroup)
     {
         throw new NotImplementedException();
     }

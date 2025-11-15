@@ -6,11 +6,11 @@ namespace Application.Services;
 
 public interface IService
 {
-    public List<DtoClassroom> FetchClassroomsFromBackend();
-    public List<DtoLesson> FetchLessonsFromBackend();
-    public List<DtoSchedule> FetchSchedulesFromBackend();
-    public List<DtoSchoolSubject> FetchSchoolSubjectsFromBackend();
-    public List<DtoStudyGroup> FetchStudyGroupsFromBackend();
-    public List<DtoTeacher> FetchTeachersFromBackend();
-    public List<DtoTimeSlot> FetchTimeSlotsFromBackend();
+    public Task<List<DtoClassroom>> FetchClassroomsFromBackendAsync();
+    public Task<List<DtoLesson>> FetchLessonsFromBackendAsync();
+    public Task<List<DtoSchedule>> FetchSchedulesFromBackendAsync();
+    public Task<List<DtoSchoolSubject>> FetchSchoolSubjectsFromBackendAsync();
+    public Task<List<DtoStudyGroup>> FetchStudyGroupsFromBackendAsync();
+    public Task<List<DtoTeacher>> FetchTeachersFromBackendAsync();
+    public Task<List<DtoTimeSlot>> FetchTimeSlotsFromBackendAsync();
 }
