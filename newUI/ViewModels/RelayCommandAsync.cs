@@ -4,14 +4,14 @@ using System.Windows.Input;
 
 namespace newUI.ViewModels
 {
-    public class AsyncRelayCommand : ICommand
+    public class RelayCommandAsync : ICommand
     {
         private readonly Func<Task> execute;
         private readonly Func<bool>? canExecute;
 
         public event EventHandler? CanExecuteChanged;
 
-        public AsyncRelayCommand(Func<Task> execute, Func<bool>? canExecute = null)
+        public RelayCommandAsync(Func<Task> execute, Func<bool>? canExecute = null)
         {
             this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
             this.canExecute = canExecute;
@@ -21,9 +21,16 @@ namespace newUI.ViewModels
         
         public async void Execute(object? parameter)
         {
-            if (CanExecute(parameter))
+            if (!CanExecute(parameter))
+                return;
+
+            try
             {
                 await execute();
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 

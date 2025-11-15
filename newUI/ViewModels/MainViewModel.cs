@@ -11,19 +11,21 @@ namespace newUI.ViewModels
     {
         private AvaloniaList<DtoTeacher> items = new();
         private IService service;
+
         public AvaloniaList<DtoTeacher> Items
         {
             get => items;
             set => SetProperty(ref items, value);
         }
+
         public ICommand LoadItemsCommand { get; }
         public ICommand HideTeachersCommand { get; }
 
         public MainViewModel(IService service)
         {
             this.service = service;
-            LoadItemsCommand = new AsyncRelayCommand(LoadItems);
-            HideTeachersCommand = new AsyncRelayCommand(HideItems);
+            LoadItemsCommand = new RelayCommandAsync(LoadItems);
+            HideTeachersCommand = new RelayCommandAsync(HideItems);
         }
 
         private Task HideItems()
@@ -32,12 +34,11 @@ namespace newUI.ViewModels
             return Task.CompletedTask;
         }
 
-        private Task LoadItems()
+        private async Task LoadItems()
         {
-            var fetchedItems =  service.FetchTeachersFromBackend();
+            var fetchedItems = await service.FetchTeachersFromBackendAsync();
             Items.Clear();
             Items.AddRange(fetchedItems);
-            return Task.CompletedTask;
         }
     }
 }
