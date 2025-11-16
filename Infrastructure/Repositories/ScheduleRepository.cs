@@ -1,6 +1,7 @@
 using AutoMapper;
 using Domain;
 using Domain.Models;
+using Infrastructure.DboModels;
 using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -90,5 +91,21 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
     public async Task AddStudyGroupAsync(StudyGroup studyGroup)
     {
         throw new NotImplementedException();
+    }
+
+    public void Update(Lesson lesson)
+    {
+        var lessonDbo = context.Lessons.FirstOrDefault(x => x.Id == lesson.Id);
+        mapper.Map(lesson, lessonDbo);
+        //_unitOfWork.SaveChangesAsync() в Application
+    }
+
+    public void UpdateClassroom(Lesson lesson, Classroom classroom)
+    {
+        var lessonDbo = context.Lessons.FirstOrDefault(x => x.Id == lesson.Id);
+        if (lessonDbo is null)
+            throw new ArgumentException($"Lesson id {lesson.Id} not found");
+        lessonDbo.Classroom = mapper.Map<ClassroomDbo>(classroom);
+        //_unitOfWork.SaveChangesAsync() в Application
     }
 }
