@@ -45,17 +45,102 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
         return teachers.ToTeacher(mapper);
     }
 
-    public async Task<List<TimeSlot>> GetTimeSlotListAsync()
+    public Task<List<LessonNumber>> GetLessonNumbersByScheduleIdAsync(int scheduleId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Lesson> GetLessonByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Teacher> GetTeacherByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Schedule> GetScheduleByIdAsync(int scheduleId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddAsync(Teacher teacher)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddAsync(Classroom classroom)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddAsync(StudyGroup studyGroup)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddAsync(SchoolSubject schoolSubject)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddAsync(LessonNumber lessonNumber, int scheduleId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(Teacher teacher)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(Classroom oldClassroom, Classroom newClassroom)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(StudyGroup oldStudyGroup, StudyGroup newStudyGroup)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(SchoolSubject oldSchoolSubject, SchoolSubject newSchoolSubject)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(LessonNumber oldLessonNumber, LessonNumber newLessonNumber)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task Delete(Teacher teacher)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task Delete(Classroom classroom)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task Delete(StudyGroup studyGroup)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task Delete(SchoolSubject schoolSubject)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task Delete(LessonNumber lessonNumber)
     {
         throw new NotImplementedException();
     }
 
     public async Task<List<Lesson>> GetLessonsByScheduleIdAsync(int scheduleId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<List<Lesson>> GetLessonListByScheduleIdAsync(int scheduleId)
     {
         var lessons = await context.Lessons.Where(x => x.ScheduleId == scheduleId)
             .Include(x => x.Teacher)

@@ -8,6 +8,44 @@ public class Schedule(
     private HashSet<Lesson> _lessons = lessons;
     public IReadOnlyCollection<Lesson> Lessons => _lessons;
 
+    public static Teacher CreateTeacher(int teacherId,
+        string? name, string? surname, string? patronymic,
+        List<string> schoolSubjects, List<string> studyGroups)
+    {
+        if (name is null || surname is null || patronymic is null)
+            throw new ArgumentNullException();
+        var subjects = schoolSubjects.Select(CreateSchoolSubject).ToList();
+        var groups = studyGroups.Select(CreateStudyGroup).ToList();
+        return new Teacher(teacherId, name, surname, patronymic, subjects, groups);
+    }
+
+    public static SchoolSubject CreateSchoolSubject(string? name)
+    {
+        if (name is null)
+            throw new ArgumentNullException();
+        return new SchoolSubject(name);
+    }
+    
+    public static StudyGroup CreateStudyGroup(string? name)
+    {
+        if (name is null)
+            throw new ArgumentNullException();
+        return new StudyGroup(name);
+    }
+
+    public static Classroom CreateClassroom(string? name, string? description)
+    {
+        if (name is null)
+            throw new ArgumentNullException();
+        return new Classroom(name, description);
+    }
+    
+    public static LessonNumber CreateLessonNumber(int lessonNumber, string? time)
+    {
+        if (lessonNumber < 0)
+            throw new ArgumentException();
+        return new LessonNumber(lessonNumber, time);
+    }
     public Lesson AddLesson(int id, string subject, int lessonNumber, Teacher? teacher, string? studyGroup,
         string? classroom)
     {
@@ -16,7 +54,7 @@ public class Schedule(
             warningType = WarningType.Conflict;
         var lesson = new Lesson(id,
             new SchoolSubject(subject),
-            new LessonNumber(lessonNumber), //а если не указан?
+            new LessonNumber(lessonNumber, null), //а если не указан lessonNumber?
             teacher,
             studyGroup is null ? null : new StudyGroup(studyGroup),
             classroom is null ? null : new Classroom(classroom),

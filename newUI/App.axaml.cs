@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Application;
 using Application.Mapping;
 using Application.Services;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -51,6 +52,7 @@ public partial class App : Avalonia.Application
         });
         services.AddTransient<MainViewModel>();
         services.AddTransient<MainWindow>();
+        services.AddSingleton<IUnitOfWork, UnitOfWork>();
 
         Services = services.BuildServiceProvider();
         using (var scope = Services.CreateScope())
