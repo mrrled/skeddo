@@ -14,6 +14,7 @@ public class LessonDbo
     public int SchoolSubjectId { get; set; }
     public int TeacherId { get; set; }
     public int ScheduleId { get; set; }
+    public int WarningType { get; set; }
     public LessonNumberDbo LessonNumber { get; set; }
     public StudyGroupDbo StudyGroup { get; set; }
     public ClassroomDbo Classroom { get; set; }
