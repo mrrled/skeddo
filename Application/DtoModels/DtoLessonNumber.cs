@@ -1,6 +1,6 @@
 ﻿namespace Application.DtoModels;
 
-public class DtoTimeSlot
+public class DtoLessonNumber
 {
     
 }

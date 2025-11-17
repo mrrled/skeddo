@@ -11,20 +11,19 @@ public static class ClassroomExtensions
         return mapper.Map<DtoClassroom>(classroom);
     }
     
-    public static DtoClassroom ToClassroomDto(this Classroom classroom, IMapper mapper,
-        Action<IMappingOperationOptions<object, DtoClassroom>> configure)
-    {
-        return mapper.Map(classroom, configure);
-    }
-    
-    public static List<DtoClassroom> ToClassroomDto(this List<Classroom> classrooms, IMapper mapper)
+    public static List<DtoClassroom> ToClassroomDto(this ICollection<Classroom> classrooms, IMapper mapper)
     {
         return mapper.Map<List<DtoClassroom>>(classrooms);
     }
     
-    public static List<DtoClassroom> ToClassroomDto(this List<Classroom> classrooms, IMapper mapper,
-        Action<IMappingOperationOptions<object, List<DtoClassroom>>> configure)
+    public static Classroom ToClassroom(this DtoClassroom classroom, IMapper mapper)
     {
-        return mapper.Map(classrooms, configure);
+        return mapper.Map<Classroom>(classroom);
     }
+    
+    public static List<Classroom> ToClassroom(this ICollection<DtoClassroom> classrooms, IMapper mapper)
+    {
+        return mapper.Map<List<Classroom>>(classrooms);
+    }
+    
 }

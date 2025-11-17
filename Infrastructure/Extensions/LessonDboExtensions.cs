@@ -15,4 +15,14 @@ public static class LessonDboExtensions
     {
         return mapper.Map<List<Lesson>>(lessons);
     }
+    
+    public static LessonDbo ToLesson(this Lesson lesson, IMapper mapper)
+    {
+        return mapper.Map<LessonDbo>(lesson);
+    }
+    
+    public static List<LessonDbo> ToLesson(this ICollection<Lesson> lessons, IMapper mapper)
+    {
+        return mapper.Map<List<LessonDbo>>(lessons);
+    }
 }

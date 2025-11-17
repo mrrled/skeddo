@@ -11,20 +11,18 @@ public static class LessonExtensions
         return mapper.Map<DtoLesson>(lesson);
     }
     
-    public static DtoLesson ToLessonDto(this Lesson lesson, IMapper mapper,
-        Action<IMappingOperationOptions<object, DtoLesson>> configure)
-    {
-        return mapper.Map(lesson, configure);
-    }
-    
-    public static List<DtoLesson> ToLessonDto(this List<Lesson> lessons, IMapper mapper)
+    public static List<DtoLesson> ToLessonDto(this ICollection<Lesson> lessons, IMapper mapper)
     {
         return mapper.Map<List<DtoLesson>>(lessons);
     }
     
-    public static List<DtoLesson> ToLessonDto(this List<Lesson> lessons, IMapper mapper,
-        Action<IMappingOperationOptions<object, List<DtoLesson>>> configure)
+    public static Lesson ToLesson(this DtoLesson lesson, IMapper mapper)
     {
-        return mapper.Map(lessons, configure);
+        return mapper.Map<Lesson>(lesson);
+    }
+    
+    public static List<Lesson> ToLesson(this ICollection<DtoLesson> lessons, IMapper mapper)
+    {
+        return mapper.Map<List<Lesson>>(lessons);
     }
 }

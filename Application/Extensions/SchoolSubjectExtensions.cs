@@ -11,20 +11,18 @@ public static class SchoolSubjectExtensions
         return mapper.Map<DtoSchoolSubject>(schoolSubject);
     }
     
-    public static DtoSchoolSubject ToSchoolSubjectDto(this SchoolSubject schoolSubject, IMapper mapper,
-        Action<IMappingOperationOptions<object, DtoSchoolSubject>> configure)
-    {
-        return mapper.Map(schoolSubject, configure);
-    }
-    
-    public static List<DtoSchoolSubject> ToSchoolSubjectDto(this List<SchoolSubject> schoolSubjects, IMapper mapper)
+    public static List<DtoSchoolSubject> ToSchoolSubjectDto(this ICollection<SchoolSubject> schoolSubjects, IMapper mapper)
     {
         return mapper.Map<List<DtoSchoolSubject>>(schoolSubjects);
     }
     
-    public static List<DtoSchoolSubject> ToSchoolSubjectDto(this List<SchoolSubject> schoolSubjects, IMapper mapper,
-        Action<IMappingOperationOptions<object, List<DtoSchoolSubject>>> configure)
+    public static SchoolSubject ToSchoolSubject(this DtoSchoolSubject schoolSubject, IMapper mapper)
     {
-        return mapper.Map(schoolSubjects, configure);
+        return mapper.Map<SchoolSubject>(schoolSubject);
+    }
+    
+    public static List<SchoolSubject> ToSchoolSubject(this ICollection<DtoSchoolSubject> schoolSubjects, IMapper mapper)
+    {
+        return mapper.Map<List<SchoolSubject>>(schoolSubjects);
     }
 }

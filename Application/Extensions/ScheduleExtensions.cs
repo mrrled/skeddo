@@ -11,20 +11,18 @@ public static class ScheduleExtensions
         return mapper.Map<DtoSchedule>(schedule);
     }
     
-    public static DtoSchedule ToScheduleDto(this Schedule schedule, IMapper mapper,
-        Action<IMappingOperationOptions<object, DtoSchedule>> configure)
-    {
-        return mapper.Map(schedule, configure);
-    }
-    
-    public static List<DtoSchedule> ToScheduleDto(this List<Schedule> schedules, IMapper mapper)
+    public static List<DtoSchedule> ToScheduleDto(this ICollection<Schedule> schedules, IMapper mapper)
     {
         return mapper.Map<List<DtoSchedule>>(schedules);
     }
     
-    public static List<DtoSchedule> ToScheduleDto(this List<Schedule> schedules, IMapper mapper,
-        Action<IMappingOperationOptions<object, List<DtoSchedule>>> configure)
+    public static Schedule ToSchedule(this DtoSchedule schedule, IMapper mapper)
     {
-        return mapper.Map(schedules, configure);
+        return mapper.Map<Schedule>(schedule);
+    }
+    
+    public static List<Schedule> ToSchedule(this ICollection<DtoSchedule> schedules, IMapper mapper)
+    {
+        return mapper.Map<List<Schedule>>(schedules);
     }
 }

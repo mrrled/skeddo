@@ -11,20 +11,18 @@ public static class TeacherExtensions
         return mapper.Map<DtoTeacher>(teacher);
     }
     
-    public static DtoTeacher ToTeacherDto(this Teacher teacher, IMapper mapper,
-        Action<IMappingOperationOptions<object, DtoTeacher>> configure)
-    {
-        return mapper.Map(teacher, configure);
-    }
-    
-    public static List<DtoTeacher> ToTeacherDto(this List<Teacher> teachers, IMapper mapper)
+    public static List<DtoTeacher> ToTeacherDto(this ICollection<Teacher> teachers, IMapper mapper)
     {
         return mapper.Map<List<DtoTeacher>>(teachers);
     }
     
-    public static List<DtoTeacher> ToTeacherDto(this List<Teacher> teachers, IMapper mapper,
-        Action<IMappingOperationOptions<object, List<DtoTeacher>>> configure)
+    public static Teacher ToTeacher(this DtoTeacher teacher, IMapper mapper)
     {
-        return mapper.Map(teachers, configure);
+        return mapper.Map<Teacher>(teacher);
+    }
+    
+    public static List<Teacher> ToTeacher(this ICollection<DtoTeacher> teachers, IMapper mapper)
+    {
+        return mapper.Map<List<Teacher>>(teachers);
     }
 }

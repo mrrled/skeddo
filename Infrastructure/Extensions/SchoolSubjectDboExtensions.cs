@@ -15,4 +15,14 @@ public static class SchoolSubjectDboExtensions
     {
         return mapper.Map<List<SchoolSubject>>(schoolSubjects);
     }
+    
+    public static SchoolSubjectDbo ToSchoolSubjectDbo(this SchoolSubject schoolSubject, IMapper mapper)
+    {
+        return mapper.Map<SchoolSubjectDbo>(schoolSubject);
+    }
+    
+    public static List<SchoolSubjectDbo> ToSchoolSubjectDbo(this ICollection<SchoolSubject> schoolSubjects, IMapper mapper)
+    {
+        return mapper.Map<List<SchoolSubjectDbo>>(schoolSubjects);
+    }
 }
