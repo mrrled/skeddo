@@ -50,4 +50,9 @@
   <ItemGroup>
     <AdditionalFiles Include="Views\MainWindow\MainWindow.axaml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\BufferWindow\" />
+    <Folder Include="Views\ObjectList\" />
+  </ItemGroup>
 </Project>

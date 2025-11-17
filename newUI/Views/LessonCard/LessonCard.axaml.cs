@@ -1,7 +1,6 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using newUI.ViewModels;
+using newUI.ViewModels.Lessons;
 
 namespace newUI.Views.LessonCard;
 
@@ -16,5 +15,7 @@ public partial class LessonCard : UserControl
     {
         InitializeComponent();
         DataContext = viewModel;
+        viewModel.Height = Cell.Height;
+        viewModel.Width = Cell.Width;
     }
 }

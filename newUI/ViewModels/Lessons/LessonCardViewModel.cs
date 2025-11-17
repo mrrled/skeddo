@@ -3,15 +3,16 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.Services;
-using Avalonia.Media;
 
-namespace newUI.ViewModels;
+namespace newUI.ViewModels.Lessons;
 
 public class LessonCardViewModel : ViewModelBase
 {
     private DtoLesson lesson;
-    
     public IService Service;
+    
+    public double Width { get; set; }
+    public double Height { get; set; }
 
     public LessonCardViewModel(IService service)
     {
@@ -24,9 +25,9 @@ public class LessonCardViewModel : ViewModelBase
         set => SetProperty(ref lesson, value);
     }
 
-    public void SetOnClickCommand(Func<Task> loadItemsCommand)
+    public void SetOnClickCommand(Func<Task> command)
     {
-        OnClickCommand = new AsyncRelayCommand(loadItemsCommand);
+        OnClickCommand = new AsyncRelayCommand(command);
     }
     
     public ICommand? OnClickCommand { get; private set; } 
