@@ -2,6 +2,7 @@
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ScheduleDbContext))]
-    partial class ScheduleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251117172809_AddLessonNumber")]
+    partial class AddLessonNumber
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
@@ -45,7 +48,7 @@ namespace Infrastructure.Migrations
                     b.Property<int>("ClassroomId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("LessonNumberId")
+                    b.Property<int>("LessonNumber")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ScheduleId")
@@ -64,8 +67,6 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ClassroomId");
 
-                    b.HasIndex("LessonNumberId");
-
                     b.HasIndex("ScheduleId");
 
                     b.HasIndex("SchoolSubjectId");
@@ -75,26 +76,6 @@ namespace Infrastructure.Migrations
                     b.HasIndex("TeacherId");
 
                     b.ToTable("Lessons");
-                });
-
-            modelBuilder.Entity("Infrastructure.DboModels.LessonNumberDbo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ScheduleId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Time")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ScheduleId");
-
-                    b.ToTable("LessonNumbers");
                 });
 
             modelBuilder.Entity("Infrastructure.DboModels.ScheduleDbo", b =>
@@ -244,12 +225,6 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.DboModels.LessonNumberDbo", "LessonNumber")
-                        .WithMany()
-                        .HasForeignKey("LessonNumberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Infrastructure.DboModels.ScheduleDbo", "Schedule")
                         .WithMany("Lessons")
                         .HasForeignKey("ScheduleId")
@@ -276,8 +251,6 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Classroom");
 
-                    b.Navigation("LessonNumber");
-
                     b.Navigation("Schedule");
 
                     b.Navigation("SchoolSubject");
@@ -285,17 +258,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("StudyGroup");
 
                     b.Navigation("Teacher");
-                });
-
-            modelBuilder.Entity("Infrastructure.DboModels.LessonNumberDbo", b =>
-                {
-                    b.HasOne("Infrastructure.DboModels.ScheduleDbo", "Schedule")
-                        .WithMany("LessonNumbers")
-                        .HasForeignKey("ScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Schedule");
                 });
 
             modelBuilder.Entity("Infrastructure.DboModels.ScheduleDbo", b =>
@@ -374,8 +336,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.DboModels.ScheduleDbo", b =>
                 {
-                    b.Navigation("LessonNumbers");
-
                     b.Navigation("Lessons");
                 });
 

@@ -2,6 +2,7 @@
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ScheduleDbContext))]
-    partial class ScheduleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251117173559_DeleteOldLessonNumber")]
+    partial class DeleteOldLessonNumber
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
@@ -63,8 +66,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClassroomId");
-
-                    b.HasIndex("LessonNumberId");
 
                     b.HasIndex("ScheduleId");
 
@@ -244,12 +245,6 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.DboModels.LessonNumberDbo", "LessonNumber")
-                        .WithMany()
-                        .HasForeignKey("LessonNumberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Infrastructure.DboModels.ScheduleDbo", "Schedule")
                         .WithMany("Lessons")
                         .HasForeignKey("ScheduleId")
@@ -275,8 +270,6 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Classroom");
-
-                    b.Navigation("LessonNumber");
 
                     b.Navigation("Schedule");
 
