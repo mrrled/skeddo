@@ -2,11 +2,13 @@ namespace Domain.Models;
 
 public class Schedule(
     int id,
+    string Name,
     HashSet<Lesson> lessons
 ) : Entity<int>(id)
 {
     private HashSet<Lesson> _lessons = lessons;
     public IReadOnlyCollection<Lesson> Lessons => _lessons;
+    public string Name { get; } = Name;
 
     public static Teacher CreateTeacher(int teacherId,
         string? name, string? surname, string? patronymic,
