@@ -2,6 +2,6 @@
 
 public class DtoLessonNumber
 {
-    public int LessonNumber { get; set; }
+    public int Number { get; set; }
     public string? Time { get; set; } = string.Empty;
 }

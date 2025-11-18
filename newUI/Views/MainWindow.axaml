@@ -37,7 +37,7 @@
                                 <TextBlock Text="{Binding Surname}"/>
                                 <TextBlock Text="{Binding Patronymic}"/>
                             </StackPanel>
-                            <TextBlock Text="{Binding Specialty}" FontSize="11" FontStyle="Italic" Margin="0 0 0 5"/>
+                            <TextBlock Text="{Binding SchoolSubjects}" FontSize="11" FontStyle="Italic" Margin="0 0 0 5"/>
                         </StackPanel>
                     </Border>
                 </DataTemplate>

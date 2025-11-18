@@ -6,23 +6,23 @@ namespace Infrastructure.Extensions;
 
 public static class LessonDboExtensions
 {
-    public static Lesson ToLesson(this LessonDbo lesson, IMapper mapper)
+    public static Lesson ToLesson(this LessonDbo lessonNumber, IMapper mapper)
     {
-        return mapper.Map<Lesson>(lesson);
+        return mapper.Map<Lesson>(lessonNumber);
     }
     
-    public static List<Lesson> ToLesson(this ICollection<LessonDbo> lessons, IMapper mapper)
+    public static List<Lesson> ToLesson(this ICollection<LessonDbo> lessonNumbers, IMapper mapper)
     {
-        return mapper.Map<List<Lesson>>(lessons);
+        return mapper.Map<List<Lesson>>(lessonNumbers);
     }
     
-    public static LessonDbo ToLesson(this Lesson lesson, IMapper mapper)
+    public static LessonDbo ToLessonDbo(this Lesson lessonNumber, IMapper mapper)
     {
-        return mapper.Map<LessonDbo>(lesson);
+        return mapper.Map<LessonDbo>(lessonNumber);
     }
     
-    public static List<LessonDbo> ToLesson(this ICollection<Lesson> lessons, IMapper mapper)
+    public static List<LessonDbo> ToLessonDbo(this ICollection<Lesson> lessonNumbers, IMapper mapper)
     {
-        return mapper.Map<List<LessonDbo>>(lessons);
+        return mapper.Map<List<LessonDbo>>(lessonNumbers);
     }
 }

@@ -11,7 +11,7 @@ public interface IScheduleRepository
     Task<List<Teacher>> GetTeacherListAsync();
     Task<List<Lesson>> GetLessonsByScheduleIdAsync(int scheduleId);
     Task<List<LessonNumber>> GetLessonNumbersByScheduleIdAsync(int scheduleId);
-    Task<Lesson> GetLessonByIdAsync(int id);
+    Task<Lesson> GetLessonByIdAsync(int id, int scheduleId);
     Task<Teacher> GetTeacherByIdAsync(int id);
     Task<Schedule> GetScheduleByIdAsync(int scheduleId);
     Task AddAsync(Teacher teacher);
@@ -23,10 +23,10 @@ public interface IScheduleRepository
     Task UpdateAsync(Classroom oldClassroom, Classroom newClassroom);
     Task UpdateAsync(StudyGroup oldStudyGroup, StudyGroup newStudyGroup);
     Task UpdateAsync(SchoolSubject oldSchoolSubject, SchoolSubject newSchoolSubject);
-    Task UpdateAsync(LessonNumber oldLessonNumber, LessonNumber newLessonNumber);   //можем поменять только время, но не номер
+    Task UpdateAsync(LessonNumber oldLessonNumber, LessonNumber newLessonNumber, int scheduleId);   //можем поменять только время, но не номер
     Task Delete(Teacher teacher);
     Task Delete(Classroom classroom);
     Task Delete(StudyGroup studyGroup);
     Task Delete(SchoolSubject schoolSubject);
-    Task Delete(LessonNumber lessonNumber);
+    Task Delete(LessonNumber lessonNumber, int scheduleId);
 }

@@ -13,9 +13,10 @@ public class DtoMappingProfile : Profile
         CreateMap<Schedule, DtoSchedule>().ReverseMap();
         CreateMap<SchoolSubject, DtoSchoolSubject>().ReverseMap();
         CreateMap<Teacher, DtoTeacher>()
-            .ForMember(dest => dest.Specialty,
-                opt => opt.MapFrom(src => src.SchoolSubjects.FirstOrDefault()!.Name))
-            .ReverseMap();
+            .ForMember(dest => dest.SchoolSubjects,
+                opt => opt.MapFrom(src => src.SchoolSubjects.Select(x => x.Name).ToList()))
+            .ForMember(dest => dest.StudyGroups,
+                opt => opt.MapFrom(src => src.StudyGroups.Select(x => x.Name).ToList()));
         CreateMap<StudyGroup, DtoStudyGroup>().ReverseMap();
         CreateMap<LessonNumber, DtoLessonNumber>().ReverseMap();
     }

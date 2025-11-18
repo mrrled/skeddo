@@ -22,7 +22,7 @@ public interface IService
     public Task EditTeacher(DtoTeacher teacherDto);
     public Task EditClassroom(DtoClassroom oldClassroomDto, DtoClassroom newClassroomDto);
     public Task EditStudyGroup(DtoStudyGroup oldStudyGroupDto, DtoStudyGroup newStudyGroupDto);
-    public Task EditLessonNumber(DtoLessonNumber oldLessonNumberDto, DtoLessonNumber newLessonNumberDto);
+    public Task EditLessonNumber(DtoLessonNumber oldLessonNumberDto, DtoLessonNumber newLessonNumberDto, int scheduleId);
     public Task EditSchedule(DtoSchedule oldScheduleDto, DtoSchedule newScheduleDto);
     public Task EditSchoolSubject(DtoSchoolSubject oldSubjectDto, DtoSchoolSubject newSubjectDto);
     public Task DeleteTeacher(DtoTeacher teacherDto);

@@ -11,6 +11,7 @@ public class DboMappingProfile : Profile
         CreateMap<SchoolSubjectDbo, SchoolSubject>().ReverseMap();
         CreateMap<StudyGroupDbo, StudyGroup>().ReverseMap();
         CreateMap<LessonNumberDbo, LessonNumber>().ReverseMap();
+        CreateMap<ScheduleDbo, Schedule>().ReverseMap();
         CreateMap<TeacherDbo, Teacher>()
             .ConstructUsing((src, ctx) => new Teacher(
                 src.Id,
@@ -18,7 +19,6 @@ public class DboMappingProfile : Profile
                 ctx.Mapper.Map<List<SchoolSubject>>(src.SchoolSubjects),
                 ctx.Mapper.Map<List<StudyGroup>>(src.StudyGroups)
             ))
-            .ReverseMap()
             .ForAllMembers(opt => opt.Ignore());
         CreateMap<ClassroomDbo, Classroom>().ReverseMap();
         CreateMap<LessonDbo, Lesson>()
@@ -29,9 +29,6 @@ public class DboMappingProfile : Profile
                 ctx.Mapper.Map<Teacher>(src.Teacher),
                 ctx.Mapper.Map<StudyGroup>(src.StudyGroup),
                 ctx.Mapper.Map<Classroom>(src.Classroom)
-            ))
-            .ReverseMap();
-        CreateMap<Lesson, LessonDbo>().ReverseMap();
-        CreateMap<Teacher, TeacherDbo>().ReverseMap();
+            ));
     }
 }

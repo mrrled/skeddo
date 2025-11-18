@@ -6,6 +6,7 @@ public class DtoTeacher
     public string Name { get; set; } = string.Empty;
     public string Surname { get; set; } = string.Empty;
     public string Patronymic { get; set; } = string.Empty;
-    public List<string> Specialty { get; set; }
+    public string? Description { get; set; } = string.Empty;
+    public List<string> SchoolSubjects { get; set; }
     public List<string> StudyGroups { get; set; }
 }

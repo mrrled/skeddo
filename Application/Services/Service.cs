@@ -70,7 +70,7 @@ public class Service : IService
     public async Task AddTeacher(DtoTeacher teacherDto)
     {
         var teacher = Schedule.CreateTeacher(teacherDto.Id, teacherDto.Name, teacherDto.Surname,
-            teacherDto.Patronymic, teacherDto.Specialty, teacherDto.StudyGroups);
+            teacherDto.Patronymic, teacherDto.SchoolSubjects, teacherDto.StudyGroups);
         await repository.AddAsync(teacher);
         await unitOfWork.SaveChangesAsync();
     }
@@ -98,7 +98,7 @@ public class Service : IService
 
     public async Task AddLessonNumber(DtoLessonNumber lessonNumberDto, int scheduleId)
     {
-        var lessonNumber = Schedule.CreateLessonNumber(lessonNumberDto.LessonNumber, lessonNumberDto.Time);
+        var lessonNumber = Schedule.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
         await repository.AddAsync(lessonNumber, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
@@ -112,7 +112,7 @@ public class Service : IService
     {
         var teacher = await repository.GetTeacherByIdAsync(teacherDto.Id);
         teacher.Update(teacherDto.Name, teacherDto.Surname, teacherDto.Patronymic, 
-            teacherDto.Specialty,
+            teacherDto.SchoolSubjects,
             teacherDto.StudyGroups);
         await repository.UpdateAsync(teacher);
         await unitOfWork.SaveChangesAsync();
@@ -134,11 +134,11 @@ public class Service : IService
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditLessonNumber(DtoLessonNumber oldLessonNumberDto, DtoLessonNumber newLessonNumberDto)
+    public async Task EditLessonNumber(DtoLessonNumber oldLessonNumberDto, DtoLessonNumber newLessonNumberDto, int scheduleId)
     {
-        var oldLessonNumber = Schedule.CreateLessonNumber(oldLessonNumberDto.LessonNumber, oldLessonNumberDto.Time);
-        var newLessonNumber = Schedule.CreateLessonNumber(newLessonNumberDto.LessonNumber, newLessonNumberDto.Time);
-        await repository.UpdateAsync(oldLessonNumber, newLessonNumber);
+        var oldLessonNumber = Schedule.CreateLessonNumber(oldLessonNumberDto.Number, oldLessonNumberDto.Time);
+        var newLessonNumber = Schedule.CreateLessonNumber(newLessonNumberDto.Number, newLessonNumberDto.Time);
+        await repository.UpdateAsync(oldLessonNumber, newLessonNumber, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
     
