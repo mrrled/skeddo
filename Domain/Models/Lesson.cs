@@ -1,7 +1,7 @@
 namespace Domain.Models;
 
 public class Lesson(int id,
-    SchoolSubject subject,
+    SchoolSubject? subject,
     LessonNumber lessonNumber,
     Teacher? teacher,
     StudyGroup? studyGroup,

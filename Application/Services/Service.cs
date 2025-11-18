@@ -108,10 +108,41 @@ public class Service : IService
         throw new NotImplementedException();
     }
 
+    public async Task AddLesson(DtoLesson lessonDto, int scheduleId)
+    {
+        Teacher? teacher = null;
+        var schedule = await repository.GetScheduleByIdAsync(scheduleId);
+        var teacherDto = lessonDto.Teacher;
+        if (teacherDto is not null)
+            teacher = Schedule.CreateTeacher(
+                teacherDto.Id,
+                teacherDto.Name,
+                teacherDto.Surname,
+                teacherDto.Patronymic,
+                teacherDto.SchoolSubjects,
+                teacherDto.StudyGroups);
+        var lesson = schedule.AddLesson(
+            lessonDto.Id,
+            lessonDto.Subject?.Name,
+            lessonDto.LessonNumber.Number,
+            teacher,
+            lessonDto.StudyGroup?.Name,
+            lessonDto.Classroom?.Name,
+            lessonDto.Classroom?.Description
+        );
+        await repository.AddAsync(lesson, scheduleId);
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task EditLesson(DtoLesson lessonDto, int scheduleId)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task EditTeacher(DtoTeacher teacherDto)
     {
         var teacher = await repository.GetTeacherByIdAsync(teacherDto.Id);
-        teacher.Update(teacherDto.Name, teacherDto.Surname, teacherDto.Patronymic, 
+        teacher.Update(teacherDto.Name, teacherDto.Surname, teacherDto.Patronymic,
             teacherDto.SchoolSubjects,
             teacherDto.StudyGroups);
         await repository.UpdateAsync(teacher);
@@ -134,20 +165,31 @@ public class Service : IService
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditLessonNumber(DtoLessonNumber oldLessonNumberDto, DtoLessonNumber newLessonNumberDto, int scheduleId)
+    public async Task EditLessonNumber(DtoLessonNumber oldLessonNumberDto, DtoLessonNumber newLessonNumberDto,
+        int scheduleId)
     {
         var oldLessonNumber = Schedule.CreateLessonNumber(oldLessonNumberDto.Number, oldLessonNumberDto.Time);
         var newLessonNumber = Schedule.CreateLessonNumber(newLessonNumberDto.Number, newLessonNumberDto.Time);
         await repository.UpdateAsync(oldLessonNumber, newLessonNumber, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
-    
+
     public async Task EditSchoolSubject(DtoSchoolSubject oldSubjectDto, DtoSchoolSubject newSubjectDto)
     {
         var oldSchoolSubject = Schedule.CreateSchoolSubject(oldSubjectDto.Name);
         var newSchoolSubject = Schedule.CreateSchoolSubject(newSubjectDto.Name);
         await repository.UpdateAsync(oldSchoolSubject, newSchoolSubject);
         await unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task DeleteLesson(DtoLesson lessonDto, int scheduleId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task DeleteLessonNumber(DtoLesson lessonNumberDto, int scheduleId)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task EditSchedule(DtoSchedule oldScheduleDto, DtoSchedule newScheduleDto)

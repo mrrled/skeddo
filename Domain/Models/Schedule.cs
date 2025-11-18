@@ -46,18 +46,18 @@ public class Schedule(
             throw new ArgumentException();
         return new LessonNumber(lessonNumber, time);
     }
-    public Lesson AddLesson(int id, string subject, int lessonNumber, Teacher? teacher, string? studyGroup,
-        string? classroom)
+    public Lesson AddLesson(int id, string? subject, int lessonNumber, Teacher? teacher, string? studyGroup,
+        string? classroom, string? classroomDescription)
     {
         var warningType = WarningType.Normal;
         if (teacher is null || classroom is null)
             warningType = WarningType.Conflict;
         var lesson = new Lesson(id,
-            new SchoolSubject(subject),
+            subject is null ? null : CreateSchoolSubject(subject),
             new LessonNumber(lessonNumber, null), //а если не указан lessonNumber?
             teacher,
-            studyGroup is null ? null : new StudyGroup(studyGroup),
-            classroom is null ? null : new Classroom(classroom),
+            studyGroup is null ? null : CreateStudyGroup(studyGroup),
+            classroom is null ? null : CreateClassroom(classroom, classroomDescription),
             warningType: warningType);
         _lessons.Add(lesson);
         UpdateByLesson(lesson);

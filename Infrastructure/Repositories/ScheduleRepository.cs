@@ -156,6 +156,17 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
         scheduleGroup.SchoolSubjects.Add(schoolSubjectDbo);
     }
 
+    public async Task AddAsync(Lesson lesson, int scheduleId)
+    {
+        var lessonDbo = lesson.ToLessonDbo(mapper);
+        var schedule = await context.Schedules
+            .Where(x => x.Id == scheduleId)
+            .FirstOrDefaultAsync();
+        if (schedule is null)
+            throw new NullReferenceException();
+        schedule.Lessons.Add(lessonDbo);
+    }
+
     public async Task AddAsync(LessonNumber lessonNumber, int scheduleId)
     {
         var lessonNumberDbo = lessonNumber.ToLessonNumberDbo(mapper);

@@ -19,12 +19,16 @@ public interface IService
     public Task AddLessonNumber(DtoLessonNumber lessonNumberDto, int scheduleId);
     public Task AddSchoolSubject(DtoSchoolSubject schoolSubjectDto);
     public Task AddSchedule(DtoSchedule scheduleDto);
+    public Task AddLesson(DtoLesson lessonDto, int scheduleId);
+    public Task EditLesson(DtoLesson lessonDto, int scheduleId);
     public Task EditTeacher(DtoTeacher teacherDto);
     public Task EditClassroom(DtoClassroom oldClassroomDto, DtoClassroom newClassroomDto);
     public Task EditStudyGroup(DtoStudyGroup oldStudyGroupDto, DtoStudyGroup newStudyGroupDto);
     public Task EditLessonNumber(DtoLessonNumber oldLessonNumberDto, DtoLessonNumber newLessonNumberDto, int scheduleId);
     public Task EditSchedule(DtoSchedule oldScheduleDto, DtoSchedule newScheduleDto);
     public Task EditSchoolSubject(DtoSchoolSubject oldSubjectDto, DtoSchoolSubject newSubjectDto);
+    public Task DeleteLesson(DtoLesson lessonDto, int scheduleId);
+    public Task DeleteLessonNumber(DtoLesson lessonNumberDto, int scheduleId);
     public Task DeleteTeacher(DtoTeacher teacherDto);
     public Task DeleteClassroom(DtoClassroom classroomDto);
     public Task DeleteStudyGroup(DtoStudyGroup studyGroupDto);

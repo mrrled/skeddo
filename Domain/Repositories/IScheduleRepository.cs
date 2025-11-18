@@ -18,6 +18,7 @@ public interface IScheduleRepository
     Task AddAsync(Classroom classroom);
     Task AddAsync(StudyGroup studyGroup);
     Task AddAsync(SchoolSubject schoolSubject);
+    Task AddAsync(Lesson lesson, int scheduleId);
     Task AddAsync(LessonNumber lessonNumber, int scheduleId);
     Task UpdateAsync(Teacher teacher);
     Task UpdateAsync(Classroom oldClassroom, Classroom newClassroom);
