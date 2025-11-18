@@ -9,6 +9,7 @@ public class LessonNumberDbo
 {
     public int Id { get; set; }
     public int ScheduleId { get; set; }
+    public int Number { get; set; }
     public string Time { get; set; } = string.Empty;
     public ScheduleDbo Schedule { get; set; }
 }
