@@ -1,4 +1,5 @@
 ﻿using Application.DtoModels;
+using Application.Mapping;
 using AutoMapper;
 using Domain.Models;
 
@@ -6,23 +7,23 @@ namespace Application.Extensions;
 
 public static class LessonExtensions
 {
-    public static DtoLesson ToLessonDto(this Lesson lesson, IMapper mapper)
+    public static LessonDto ToLessonDto(this Lesson lesson)
     {
-        return mapper.Map<DtoLesson>(lesson);
+        return DtoMapper.ToLessonDto(lesson);
     }
     
-    public static List<DtoLesson> ToLessonDto(this ICollection<Lesson> lessons, IMapper mapper)
+    public static List<LessonDto> ToLessonDto(this ICollection<Lesson> lessons)
     {
-        return mapper.Map<List<DtoLesson>>(lessons);
+        return DtoMapper.ToLessonDto(lessons);
     }
     
-    public static Lesson ToLesson(this DtoLesson lesson, IMapper mapper)
+    public static Lesson ToLesson(this LessonDto lesson)
     {
-        return mapper.Map<Lesson>(lesson);
+        return DtoMapper.ToLesson(lesson);
     }
     
-    public static List<Lesson> ToLesson(this ICollection<DtoLesson> lessons, IMapper mapper)
+    public static List<Lesson> ToLesson(this ICollection<LessonDto> lessons)
     {
-        return mapper.Map<List<Lesson>>(lessons);
+        return DtoMapper.ToLesson(lessons);
     }
 }

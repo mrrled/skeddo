@@ -1,4 +1,5 @@
 ﻿using Application.DtoModels;
+using Application.Mapping;
 using AutoMapper;
 using Domain.Models;
 
@@ -6,23 +7,23 @@ namespace Application.Extensions;
 
 public static class ScheduleExtensions
 {
-    public static DtoSchedule ToScheduleDto(this Schedule schedule, IMapper mapper)
+    public static ScheduleDto ToScheduleDto(this Schedule schedule)
     {
-        return mapper.Map<DtoSchedule>(schedule);
+        return DtoMapper.ToScheduleDto(schedule);
     }
     
-    public static List<DtoSchedule> ToScheduleDto(this ICollection<Schedule> schedules, IMapper mapper)
+    public static List<ScheduleDto> ToScheduleDto(this ICollection<Schedule> schedules)
     {
-        return mapper.Map<List<DtoSchedule>>(schedules);
+        return DtoMapper.ToScheduleDto(schedules);
     }
     
-    public static Schedule ToSchedule(this DtoSchedule schedule, IMapper mapper)
+    public static Schedule ToSchedule(this ScheduleDto schedule)
     {
-        return mapper.Map<Schedule>(schedule);
+        return DtoMapper.ToSchedule(schedule);
     }
     
-    public static List<Schedule> ToSchedule(this ICollection<DtoSchedule> schedules, IMapper mapper)
+    public static List<Schedule> ToSchedule(this ICollection<ScheduleDto> schedules)
     {
-        return mapper.Map<List<Schedule>>(schedules);
+        return DtoMapper.ToSchedule(schedules);
     }
 }

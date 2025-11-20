@@ -1,28 +1,29 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using Infrastructure.DboModels;
+using Infrastructure.Mapping;
 
 namespace Infrastructure.Extensions;
 
 public static class TeacherDboExtensions
 {
-    public static Teacher ToTeacher(this TeacherDbo teacher, IMapper mapper)
+    public static Teacher ToTeacher(this TeacherDbo teacher)
     {
-        return mapper.Map<Teacher>(teacher);
+        return DboMapper.ToTeacher(teacher);
     }
     
-    public static List<Teacher> ToTeacher(this ICollection<TeacherDbo> teachers, IMapper mapper)
+    public static List<Teacher> ToTeacher(this ICollection<TeacherDbo> teachers)
     {
-        return mapper.Map<List<Teacher>>(teachers);
+        return DboMapper.ToTeacher(teachers);
     }
     
-    public static TeacherDbo ToTeacherDbo(this Teacher teacher, IMapper mapper)
+    public static TeacherDbo ToTeacherDbo(this Teacher teacher)
     {
-        return mapper.Map<TeacherDbo>(teacher);
+        return DboMapper.ToTeacherDbo(teacher);
     }
     
-    public static List<TeacherDbo> ToTeacherDbo(this ICollection<Teacher> teachers, IMapper mapper)
+    public static List<TeacherDbo> ToTeacherDbo(this ICollection<Teacher> teachers)
     {
-        return mapper.Map<List<TeacherDbo>>(teachers);
+        return DboMapper.ToTeacherDbo(teachers);
     }
 }

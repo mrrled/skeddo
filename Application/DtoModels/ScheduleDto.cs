@@ -1,6 +1,6 @@
 ﻿namespace Application.DtoModels;
 
-public class DtoSchedule
+public class ScheduleDto
 {
     public int Id { get; set; }
 }

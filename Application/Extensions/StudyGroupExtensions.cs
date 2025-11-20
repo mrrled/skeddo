@@ -1,4 +1,5 @@
 ﻿using Application.DtoModels;
+using Application.Mapping;
 using AutoMapper;
 using Domain.Models;
 
@@ -6,22 +7,22 @@ namespace Application.Extensions;
 
 public static class StudyGroupExtensions
 {
-    public static DtoStudyGroup ToStudyGroupDto(this StudyGroup studyGroup, IMapper mapper)
+    public static StudyGroupDto ToStudyGroupDto(this StudyGroup studyGroup)
     {
-        return mapper.Map<DtoStudyGroup>(studyGroup);
+        return DtoMapper.ToStudyGroupDto(studyGroup);
     }
     
-    public static List<DtoStudyGroup> ToStudyGroupDto(this ICollection<StudyGroup> studyGroups, IMapper mapper)
+    public static List<StudyGroupDto> ToStudyGroupDto(this ICollection<StudyGroup> studyGroups)
     {
-        return mapper.Map<List<DtoStudyGroup>>(studyGroups);
+        return DtoMapper.ToStudyGroupDto(studyGroups);
     }
-    public static StudyGroup ToStudyGroup(this DtoStudyGroup studyGroup, IMapper mapper)
+    public static StudyGroup ToStudyGroup(this StudyGroupDto studyGroup)
     {
-        return mapper.Map<StudyGroup>(studyGroup);
+        return DtoMapper.ToStudyGroup(studyGroup);
     }
     
-    public static List<StudyGroup> ToStudyGroup(this ICollection<DtoStudyGroup> studyGroups, IMapper mapper)
+    public static List<StudyGroup> ToStudyGroup(this ICollection<StudyGroupDto> studyGroups)
     {
-        return mapper.Map<List<StudyGroup>>(studyGroups);
+        return DtoMapper.ToStudyGroup(studyGroups);
     }
 }

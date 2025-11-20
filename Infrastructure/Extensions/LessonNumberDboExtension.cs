@@ -1,28 +1,29 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using Infrastructure.DboModels;
+using Infrastructure.Mapping;
 
 namespace Infrastructure.Extensions;
 
 public static class LessonNumberDboExtension
 {
-    public static LessonNumber ToLessonNumber(this LessonNumberDbo lesson, IMapper mapper)
+    public static LessonNumber ToLessonNumber(this LessonNumberDbo lesson)
     {
-        return mapper.Map<LessonNumber>(lesson);
+        return DboMapper.ToLessonNumber(lesson);
     }
     
-    public static List<LessonNumber> ToLessonNumber(this ICollection<LessonNumberDbo> lessons, IMapper mapper)
+    public static List<LessonNumber> ToLessonNumber(this ICollection<LessonNumberDbo> lessons)
     {
-        return mapper.Map<List<LessonNumber>>(lessons);
+        return DboMapper.ToLessonNumber(lessons);
     }
     
-    public static LessonNumberDbo ToLessonNumberDbo(this LessonNumber lesson, IMapper mapper)
+    public static LessonNumberDbo ToLessonNumberDbo(this LessonNumber lesson)
     {
-        return mapper.Map<LessonNumberDbo>(lesson);
+        return DboMapper.ToLessonNumberDbo(lesson);
     }
     
-    public static List<LessonNumberDbo> ToLessonNumberDbo(this ICollection<LessonNumber> lessons, IMapper mapper)
+    public static List<LessonNumberDbo> ToLessonNumberDbo(this ICollection<LessonNumber> lessons)
     {
-        return mapper.Map<List<LessonNumberDbo>>(lessons);
+        return DboMapper.ToLessonNumberDbo(lessons);
     }
 }

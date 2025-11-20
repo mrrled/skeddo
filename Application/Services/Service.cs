@@ -1,5 +1,6 @@
 using Application.Extensions;
 using Application.DtoModels;
+using Application.Mapping;
 using AutoMapper;
 using Domain;
 using Domain.Models;
@@ -19,55 +20,55 @@ public class Service : IService
         this.unitOfWork = unitOfWork;
     }
 
-    public async Task<List<DtoClassroom>> FetchClassroomsFromBackendAsync()
+    public async Task<List<ClassroomDto>> FetchClassroomsFromBackendAsync()
     {
         var classroomList = await repository.GetClassroomListAsync();
-        return classroomList.ToClassroomDto(mapper);
+        return classroomList.ToClassroomDto();
     }
 
-    public async Task<List<DtoSchedule>> FetchSchedulesFromBackendAsync()
+    public async Task<List<ScheduleDto>> FetchSchedulesFromBackendAsync()
     {
         var scheduleList = await repository.GetScheduleListAsync();
-        return scheduleList.ToScheduleDto(mapper);
+        return scheduleList.ToScheduleDto();
     }
 
-    public async Task<List<DtoSchoolSubject>> FetchSchoolSubjectsFromBackendAsync()
+    public async Task<List<SchoolSubjectDto>> FetchSchoolSubjectsFromBackendAsync()
     {
         var schoolSubjectList = await repository.GetSchoolSubjectListAsync();
-        return schoolSubjectList.ToSchoolSubjectDto(mapper);
+        return schoolSubjectList.ToSchoolSubjectDto();
     }
 
-    public async Task<List<DtoStudyGroup>> FetchStudyGroupsFromBackendAsync()
+    public async Task<List<StudyGroupDto>> FetchStudyGroupsFromBackendAsync()
     {
         var studyGroupList = await repository.GetStudyGroupListAsync();
-        return studyGroupList.ToStudyGroupDto(mapper);
+        return studyGroupList.ToStudyGroupDto();
     }
 
-    public async Task<List<DtoTeacher>> FetchTeachersFromBackendAsync()
+    public async Task<List<TeacherDto>> FetchTeachersFromBackendAsync()
     {
         var teacherList = await repository.GetTeacherListAsync();
-        return teacherList.ToTeacherDto(mapper);
+        return teacherList.ToTeacherDto();
     }
 
-    public async Task<List<DtoLessonNumber>> GetLessonNumbersByScheduleId(int scheduleId)
+    public async Task<List<LessonNumberDto>> GetLessonNumbersByScheduleId(int scheduleId)
     {
         var lessonNumbers = await repository.GetLessonNumbersByScheduleIdAsync(scheduleId);
-        return lessonNumbers.ToLessonNumberDto(mapper);
+        return lessonNumbers.ToLessonNumberDto();
     }
 
-    public async Task<List<DtoLesson>> GetLessonsByScheduleId(int scheduleId)
+    public async Task<List<LessonDto>> GetLessonsByScheduleId(int scheduleId)
     {
         var lessonList = await repository.GetLessonsByScheduleIdAsync(scheduleId);
-        return lessonList.ToLessonDto(mapper);
+        return lessonList.ToLessonDto();
     }
 
-    public async Task<DtoTeacher> GetTeacherById(int id)
+    public async Task<TeacherDto> GetTeacherById(int id)
     {
         var teacher = await repository.GetTeacherByIdAsync(id);
-        return teacher.ToTeacherDto(mapper);
+        return teacher.ToTeacherDto();
     }
 
-    public async Task AddTeacher(DtoTeacher teacherDto)
+    public async Task AddTeacher(TeacherDto teacherDto)
     {
         var teacher = Schedule.CreateTeacher(teacherDto.Id, teacherDto.Name, teacherDto.Surname,
             teacherDto.Patronymic, teacherDto.SchoolSubjects, teacherDto.StudyGroups);
@@ -75,40 +76,40 @@ public class Service : IService
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task AddClassroom(DtoClassroom classroomDto)
+    public async Task AddClassroom(ClassroomDto classroomDto)
     {
         var classroom = Schedule.CreateClassroom(classroomDto.Name, classroomDto.Description);
         await repository.AddAsync(classroom);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task AddStudyGroup(DtoStudyGroup studyGroupDto)
+    public async Task AddStudyGroup(StudyGroupDto studyGroupDto)
     {
         var studyGroup = Schedule.CreateStudyGroup(studyGroupDto.Name);
         await repository.AddAsync(studyGroup);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task AddSchoolSubject(DtoSchoolSubject schoolSubjectDto)
+    public async Task AddSchoolSubject(SchoolSubjectDto schoolSubjectDto)
     {
         var schoolSubject = Schedule.CreateSchoolSubject(schoolSubjectDto.Name);
         await repository.AddAsync(schoolSubject);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task AddLessonNumber(DtoLessonNumber lessonNumberDto, int scheduleId)
+    public async Task AddLessonNumber(LessonNumberDto lessonNumberDto, int scheduleId)
     {
         var lessonNumber = Schedule.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
         await repository.AddAsync(lessonNumber, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task AddSchedule(DtoSchedule scheduleDto)
+    public async Task AddSchedule(ScheduleDto scheduleDto)
     {
         throw new NotImplementedException();
     }
 
-    public async Task AddLesson(DtoLesson lessonDto, int scheduleId)
+    public async Task AddLesson(LessonDto lessonDto, int scheduleId)
     {
         Teacher? teacher = null;
         var schedule = await repository.GetScheduleByIdAsync(scheduleId);
@@ -134,12 +135,12 @@ public class Service : IService
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditLesson(DtoLesson lessonDto, int scheduleId)
+    public async Task EditLesson(LessonDto lessonDto, int scheduleId)
     {
         throw new NotImplementedException();
     }
 
-    public async Task EditTeacher(DtoTeacher teacherDto)
+    public async Task EditTeacher(TeacherDto teacherDto)
     {
         var teacher = await repository.GetTeacherByIdAsync(teacherDto.Id);
         teacher.Update(teacherDto.Name, teacherDto.Surname, teacherDto.Patronymic,
@@ -149,7 +150,7 @@ public class Service : IService
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditClassroom(DtoClassroom oldClassroomDto, DtoClassroom newClassroomDto)
+    public async Task EditClassroom(ClassroomDto oldClassroomDto, ClassroomDto newClassroomDto)
     {
         var oldClassroom = Schedule.CreateClassroom(oldClassroomDto.Name, oldClassroomDto.Description);
         var newClassroom = Schedule.CreateClassroom(newClassroomDto.Name, newClassroomDto.Description);
@@ -157,7 +158,7 @@ public class Service : IService
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditStudyGroup(DtoStudyGroup oldStudyGroupDto, DtoStudyGroup newStudyGroupDto)
+    public async Task EditStudyGroup(StudyGroupDto oldStudyGroupDto, StudyGroupDto newStudyGroupDto)
     {
         var oldStudyGroup = Schedule.CreateStudyGroup(oldStudyGroupDto.Name);
         var newStudyGroup = Schedule.CreateStudyGroup(newStudyGroupDto.Name);
@@ -165,7 +166,7 @@ public class Service : IService
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditLessonNumber(DtoLessonNumber oldLessonNumberDto, DtoLessonNumber newLessonNumberDto,
+    public async Task EditLessonNumber(LessonNumberDto oldLessonNumberDto, LessonNumberDto newLessonNumberDto,
         int scheduleId)
     {
         var oldLessonNumber = Schedule.CreateLessonNumber(oldLessonNumberDto.Number, oldLessonNumberDto.Time);
@@ -174,58 +175,58 @@ public class Service : IService
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditSchoolSubject(DtoSchoolSubject oldSubjectDto, DtoSchoolSubject newSubjectDto)
+    public async Task EditSchoolSubject(SchoolSubjectDto oldSubjectSchoolSubjectDto, SchoolSubjectDto newSubjectSchoolSubjectDto)
     {
-        var oldSchoolSubject = Schedule.CreateSchoolSubject(oldSubjectDto.Name);
-        var newSchoolSubject = Schedule.CreateSchoolSubject(newSubjectDto.Name);
+        var oldSchoolSubject = Schedule.CreateSchoolSubject(oldSubjectSchoolSubjectDto.Name);
+        var newSchoolSubject = Schedule.CreateSchoolSubject(newSubjectSchoolSubjectDto.Name);
         await repository.UpdateAsync(oldSchoolSubject, newSchoolSubject);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task DeleteLesson(DtoLesson lessonDto, int scheduleId)
+    public async Task DeleteLesson(LessonDto lessonDto, int scheduleId)
     {
         throw new NotImplementedException();
     }
 
-    public async Task DeleteLessonNumber(DtoLesson lessonNumberDto, int scheduleId)
+    public async Task DeleteLessonNumber(LessonDto numberLessonDto, int scheduleId)
     {
         throw new NotImplementedException();
     }
 
-    public async Task EditSchedule(DtoSchedule oldScheduleDto, DtoSchedule newScheduleDto)
+    public async Task EditSchedule(ScheduleDto oldScheduleDto, ScheduleDto newScheduleDto)
     {
         throw new NotImplementedException();
     }
 
-    public async Task DeleteTeacher(DtoTeacher teacherDto)
+    public async Task DeleteTeacher(TeacherDto teacherDto)
     {
         var teacher = await repository.GetTeacherByIdAsync(teacherDto.Id);
         await repository.Delete(teacher);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task DeleteClassroom(DtoClassroom classroomDto)
+    public async Task DeleteClassroom(ClassroomDto classroomDto)
     {
         var classroom = Schedule.CreateClassroom(classroomDto.Name, classroomDto.Description);
         await repository.Delete(classroom);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task DeleteStudyGroup(DtoStudyGroup studyGroupDto)
+    public async Task DeleteStudyGroup(StudyGroupDto studyGroupDto)
     {
         var studyGroup = Schedule.CreateStudyGroup(studyGroupDto.Name);
         await repository.Delete(studyGroup);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task DeleteSchoolSubject(DtoSchoolSubject schoolSubjectDto)
+    public async Task DeleteSchoolSubject(SchoolSubjectDto schoolSubjectDto)
     {
         var schoolSubject = Schedule.CreateSchoolSubject(schoolSubjectDto.Name);
         await repository.Delete(schoolSubject);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task DeleteSchedule(DtoSchedule scheduleDto)
+    public async Task DeleteSchedule(ScheduleDto scheduleDto)
     {
         throw new NotImplementedException();
     }

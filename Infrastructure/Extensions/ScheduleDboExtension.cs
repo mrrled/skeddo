@@ -1,28 +1,29 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using Infrastructure.DboModels;
+using Infrastructure.Mapping;
 
 namespace Infrastructure.Extensions;
 
 public static class ScheduleDboExtension
 {
-    public static Schedule ToSchedule(this ScheduleDbo schedule, IMapper mapper)
+    public static Schedule ToSchedule(this ScheduleDbo schedule)
     {
-        return mapper.Map<Schedule>(schedule);
+        return DboMapper.ToSchedule(schedule);
     }
     
-    public static List<Schedule> ToSchedule(this ICollection<ScheduleDbo> schedules, IMapper mapper)
+    public static List<Schedule> ToSchedule(this ICollection<ScheduleDbo> schedules)
     {
-        return mapper.Map<List<Schedule>>(schedules);
+        return DboMapper.ToSchedule(schedules);
     }
     
-    public static ScheduleDbo ToScheduleDbo(this Schedule schedule, IMapper mapper)
+    public static ScheduleDbo ToScheduleDbo(this Schedule schedule)
     {
-        return mapper.Map<ScheduleDbo>(schedule);
+        return DboMapper.ToScheduleDbo(schedule);
     }
     
-    public static List<ScheduleDbo> ToScheduleDbo(this ICollection<Schedule> schedules, IMapper mapper)
+    public static List<ScheduleDbo> ToScheduleDbo(this ICollection<Schedule> schedules)
     {
-        return mapper.Map<List<ScheduleDbo>>(schedules);
+        return DboMapper.ToScheduleDbo(schedules);
     }
 }
