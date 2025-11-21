@@ -17,12 +17,12 @@ public class ObjectListViewModel<TObject> : ViewModelBase
     {
         this.service = service;
         var selectItemCommand1 = command != null 
-            ? new AsyncRelayCommand(command) 
+            ? new RelayCommandAsync(command) 
             : null;
-        ShowItemsCommand = new AsyncRelayCommand(Show);
-        HideItemsCommand = new AsyncRelayCommand(Hide);
-        LoadItemsCommand = new AsyncRelayCommand(LoadObjects);
-        SelectItemCommand = selectItemCommand1 ?? new AsyncRelayCommand(OnItemSelected);
+        ShowItemsCommand = new RelayCommandAsync(Show);
+        HideItemsCommand = new RelayCommandAsync(Hide);
+        LoadItemsCommand = new RelayCommandAsync(LoadObjects);
+        SelectItemCommand = selectItemCommand1 ?? new RelayCommandAsync(OnItemSelected);
     }
     
     public TObject? SelectedItem

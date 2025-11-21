@@ -19,7 +19,7 @@ public class TeacherCreationViewModel : ViewModelBase
     public TeacherCreationViewModel(IService service)
     {
         this.service = service;
-        SaveChangesCommand = new AsyncRelayCommand(SaveChanges);
+        SaveChangesCommand = new RelayCommandAsync(SaveChanges);
     }
     
     public ICommand SaveChangesCommand { get; set; }

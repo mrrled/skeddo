@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Application.DtoModels;
 
-namespace newUI.ViewModels;
+namespace newUI.ViewModels.Lessons;
 
 public class LessonCreationViewModel : ViewModelBase
 {
@@ -17,14 +17,14 @@ public class LessonCreationViewModel : ViewModelBase
     public void SetClassroom(DtoClassroom classroom) => lesson.Classroom = classroom;
 
     public void SetTimeSlot(int number) =>
-        lesson.TimeSlot = new DtoTimeSlot
+        lesson.LessonNumber = new DtoLessonNumber()
         {
             Number = number
         };
 
     public void SetStudyGroup(DtoStudyGroup studyGroup) => lesson.StudyGroup = studyGroup;
 
-    public void SetSubject(DtoSchoolSubject subject) => lesson.SchoolSubject = subject;
+    public void SetSubject(DtoSchoolSubject subject) => lesson.Subject = subject;
 
     public async Task<DtoLesson> CreateLesson()
     {

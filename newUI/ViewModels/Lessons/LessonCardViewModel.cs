@@ -27,7 +27,7 @@ public class LessonCardViewModel : ViewModelBase
 
     public void SetOnClickCommand(Func<Task> command)
     {
-        OnClickCommand = new AsyncRelayCommand(command);
+        OnClickCommand = new RelayCommandAsync(command);
     }
     
     public ICommand? OnClickCommand { get; private set; } 

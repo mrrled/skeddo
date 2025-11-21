@@ -17,7 +17,7 @@ public class TeacherListItem : ViewModelBase, IObjectListItem<TeacherListItem>
         
     public static AvaloniaList<TeacherListItem> FetchFromBackend(IService service)
     {
-        var teachers = service.FetchTeachersFromBackend();
+        var teachers = service.FetchTeachersFromBackendAsync().Result;
         return new AvaloniaList<TeacherListItem>(
             teachers.Select(teacher => new TeacherListItem{ Teacher = teacher })
         );
