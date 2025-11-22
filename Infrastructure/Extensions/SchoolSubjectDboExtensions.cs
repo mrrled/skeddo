@@ -1,28 +1,29 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using Infrastructure.DboModels;
+using Infrastructure.Mapping;
 
 namespace Infrastructure.Extensions;
 
 public static class SchoolSubjectDboExtensions
 {
-    public static SchoolSubject ToSchoolSubject(this SchoolSubjectDbo schoolSubject, IMapper mapper)
+    public static SchoolSubject ToSchoolSubject(this SchoolSubjectDbo schoolSubject)
     {
-        return mapper.Map<SchoolSubject>(schoolSubject);
+        return DboMapper.ToSchoolSubject(schoolSubject);
     }
     
-    public static List<SchoolSubject> ToSchoolSubject(this ICollection<SchoolSubjectDbo> schoolSubjects, IMapper mapper)
+    public static List<SchoolSubject> ToSchoolSubject(this ICollection<SchoolSubjectDbo> schoolSubjects)
     {
-        return mapper.Map<List<SchoolSubject>>(schoolSubjects);
+        return DboMapper.ToSchoolSubject(schoolSubjects);
     }
     
-    public static SchoolSubjectDbo ToSchoolSubjectDbo(this SchoolSubject schoolSubject, IMapper mapper)
+    public static SchoolSubjectDbo ToSchoolSubjectDbo(this SchoolSubject schoolSubject)
     {
-        return mapper.Map<SchoolSubjectDbo>(schoolSubject);
+        return DboMapper.ToSchoolSubjectDbo(schoolSubject);
     }
     
-    public static List<SchoolSubjectDbo> ToSchoolSubjectDbo(this ICollection<SchoolSubject> schoolSubjects, IMapper mapper)
+    public static List<SchoolSubjectDbo> ToSchoolSubjectDbo(this ICollection<SchoolSubject> schoolSubjects)
     {
-        return mapper.Map<List<SchoolSubjectDbo>>(schoolSubjects);
+        return DboMapper.ToSchoolSubjectDbo(schoolSubjects);
     }
 }

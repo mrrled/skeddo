@@ -16,7 +16,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
-        return scheduleGroup.Classrooms.ToClassroom(mapper);
+        return scheduleGroup.Classrooms.ToClassroom();
     }
 
     public async Task<List<SchoolSubject>> GetSchoolSubjectListAsync()
@@ -26,7 +26,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
-        return scheduleGroup.SchoolSubjects.ToSchoolSubject(mapper);
+        return scheduleGroup.SchoolSubjects.ToSchoolSubject();
     }
 
     public async Task<List<StudyGroup>> GetStudyGroupListAsync()
@@ -36,7 +36,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
-        return scheduleGroup.StudyGroups.ToStudyGroup(mapper);
+        return scheduleGroup.StudyGroups.ToStudyGroup();
     }
 
     public async Task<List<Teacher>> GetTeacherListAsync()
@@ -47,7 +47,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
             .Include(teacherDbo => teacherDbo.StudyGroups)
             .ToListAsync();
 
-        return teachers.ToTeacher(mapper);
+        return teachers.ToTeacher();
     }
 
     public async Task<List<LessonNumber>> GetLessonNumbersByScheduleIdAsync(int scheduleId)
@@ -57,7 +57,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
             .FirstOrDefaultAsync(x => x.Id == scheduleId);
         if (schedule is null)
             throw new NullReferenceException();
-        return schedule.LessonNumbers.ToLessonNumber(mapper);
+        return schedule.LessonNumbers.ToLessonNumber();
     }
     
     public async Task<List<Lesson>> GetLessonsByScheduleIdAsync(int scheduleId)
@@ -68,7 +68,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
             .ToListAsync();
-        return lessons.ToLesson(mapper);
+        return lessons.ToLesson();
     }
 
     public async Task<List<Schedule>> GetScheduleListAsync()
@@ -78,7 +78,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
-        return scheduleGroup.Schedules.ToSchedule(mapper);
+        return scheduleGroup.Schedules.ToSchedule();
     }
 
     public async Task<Lesson> GetLessonByIdAsync(int id, int scheduleId)
@@ -91,7 +91,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
         var lesson = schedule.Lessons.FirstOrDefault(x => x.Id == id);
         if (lesson is null)
             throw new NullReferenceException();
-        return lesson.ToLesson(mapper);
+        return lesson.ToLesson();
     }
 
     public async Task<Teacher> GetTeacherByIdAsync(int id)
@@ -104,7 +104,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
         var teacher = scheduleGroup.Teachers.FirstOrDefault(x => x.Id == id);
         if (teacher is null)
             throw new NullReferenceException();
-        return teacher.ToTeacher(mapper);
+        return teacher.ToTeacher();
     }
 
     public async Task<Schedule> GetScheduleByIdAsync(int scheduleId)
@@ -117,12 +117,12 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
         var schedule = scheduleGroup.Schedules.FirstOrDefault(x => x.Id == scheduleId);
         if (schedule is null)
             throw new NullReferenceException();
-        return schedule.ToSchedule(mapper);
+        return schedule.ToSchedule();
     }
 
     public async Task AddAsync(Teacher teacher)
     {
-        var teacherDbo = teacher.ToTeacherDbo(mapper);
+        var teacherDbo = teacher.ToTeacherDbo();
         var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
@@ -131,7 +131,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
 
     public async Task AddAsync(Classroom classroom)
     {
-        var classroomDbo = classroom.ToClassroomDbo(mapper);
+        var classroomDbo = classroom.ToClassroomDbo();
         var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
@@ -140,7 +140,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
 
     public async Task AddAsync(StudyGroup studyGroup)
     {
-        var studyGroupDbo = studyGroup.ToStudyGroupDbo(mapper);
+        var studyGroupDbo = studyGroup.ToStudyGroupDbo();
         var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
@@ -149,7 +149,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
 
     public async Task AddAsync(SchoolSubject schoolSubject)
     {
-        var schoolSubjectDbo = schoolSubject.ToSchoolSubjectDbo(mapper);
+        var schoolSubjectDbo = schoolSubject.ToSchoolSubjectDbo();
         var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
@@ -158,7 +158,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
 
     public async Task AddAsync(Lesson lesson, int scheduleId)
     {
-        var lessonDbo = lesson.ToLessonDbo(mapper);
+        var lessonDbo = lesson.ToLessonDbo();
         var schedule = await context.Schedules
             .Where(x => x.Id == scheduleId)
             .FirstOrDefaultAsync();
@@ -169,7 +169,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
 
     public async Task AddAsync(LessonNumber lessonNumber, int scheduleId)
     {
-        var lessonNumberDbo = lessonNumber.ToLessonNumberDbo(mapper);
+        var lessonNumberDbo = lessonNumber.ToLessonNumberDbo();
         var schedule = await context.Schedules
             .Where(x => x.Id == scheduleId)
             .FirstOrDefaultAsync();

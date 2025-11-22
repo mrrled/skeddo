@@ -1,4 +1,5 @@
 ﻿using Application.DtoModels;
+using Application.Mapping;
 using AutoMapper;
 using Domain.Models;
 
@@ -6,23 +7,23 @@ namespace Application.Extensions;
 
 public static class SchoolSubjectExtensions
 {
-    public static DtoSchoolSubject ToSchoolSubjectDto(this SchoolSubject schoolSubject, IMapper mapper)
+    public static SchoolSubjectDto ToSchoolSubjectDto(this SchoolSubject schoolSubject)
     {
-        return mapper.Map<DtoSchoolSubject>(schoolSubject);
+        return DtoMapper.ToSchoolSubjectDto(schoolSubject);
     }
     
-    public static List<DtoSchoolSubject> ToSchoolSubjectDto(this ICollection<SchoolSubject> schoolSubjects, IMapper mapper)
+    public static List<SchoolSubjectDto> ToSchoolSubjectDto(this ICollection<SchoolSubject> schoolSubjects)
     {
-        return mapper.Map<List<DtoSchoolSubject>>(schoolSubjects);
+        return DtoMapper.ToSchoolSubjectDto(schoolSubjects);
     }
     
-    public static SchoolSubject ToSchoolSubject(this DtoSchoolSubject schoolSubject, IMapper mapper)
+    public static SchoolSubject ToSchoolSubject(this SchoolSubjectDto schoolSubject)
     {
-        return mapper.Map<SchoolSubject>(schoolSubject);
+        return DtoMapper.ToSchoolSubject(schoolSubject);
     }
     
-    public static List<SchoolSubject> ToSchoolSubject(this ICollection<DtoSchoolSubject> schoolSubjects, IMapper mapper)
+    public static List<SchoolSubject> ToSchoolSubject(this ICollection<SchoolSubjectDto> schoolSubjects)
     {
-        return mapper.Map<List<SchoolSubject>>(schoolSubjects);
+        return DtoMapper.ToSchoolSubject(schoolSubjects);
     }
 }

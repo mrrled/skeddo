@@ -9,10 +9,10 @@ namespace newUI.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private AvaloniaList<DtoTeacher> items = new();
+        private AvaloniaList<TeacherDto> items = new();
         private IService service;
 
-        public AvaloniaList<DtoTeacher> Items
+        public AvaloniaList<TeacherDto> Items
         {
             get => items;
             set => SetProperty(ref items, value);
