@@ -67,6 +67,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
             .Include(x => x.Classroom)
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
+            .Include(x => x.LessonNumber)
             .ToListAsync();
         return lessons.ToLesson(mapper);
     }
