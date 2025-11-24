@@ -41,8 +41,16 @@ public partial class App : Avalonia.Application
             configure.SetMinimumLevel(LogLevel.Information);
         });
 
-        services.AddScoped<IService, Service>();
+        services.AddScoped<IClassroomServices, ClassroomServices>();
+        services.AddScoped<ILessonNumberServices, LessonNumberServices>();
+        services.AddScoped<ILessonServices, LessonServices>();
+        services.AddScoped<IScheduleServices, ScheduleServices>();
+        services.AddScoped<ISchoolSubjectServices, SchoolSubjectServices>();
+        services.AddScoped<IStudyGroupServices, StudyGroupServices>();
+        services.AddScoped<ITeacherServices, TeacherServices>();
+        
         services.AddScoped<IScheduleRepository, ScheduleRepository>();
+        
         services.AddDbContext<ScheduleDbContext>(options =>
         {
             options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
