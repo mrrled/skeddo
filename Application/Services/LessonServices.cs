@@ -1,8 +1,8 @@
 ﻿using Application.DtoModels;
 using Application.DtoExtensions;
+using Application.IServices;
 using Domain.Models;
-using Domain.Repositories;
-using Microsoft.Extensions.Primitives;
+using Domain.IRepositories;
 
 namespace Application.Services;
 

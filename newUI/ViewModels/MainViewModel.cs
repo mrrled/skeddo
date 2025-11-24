@@ -1,8 +1,7 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Application;
-using Application.Services;
 using Application.DtoModels;
+using Application.IServices;
 using Avalonia.Collections;
 
 namespace newUI.ViewModels

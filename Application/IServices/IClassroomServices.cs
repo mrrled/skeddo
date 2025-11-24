@@ -1,6 +1,6 @@
 ﻿using Application.DtoModels;
 
-namespace Application.Services;
+namespace Application.IServices;
 
 public interface IClassroomServices
 {
