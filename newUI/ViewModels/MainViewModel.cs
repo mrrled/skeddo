@@ -10,7 +10,7 @@ namespace newUI.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private AvaloniaList<TeacherDto> items = new();
-        private IService service;
+        private ITeacherServices teacherService;
 
         public AvaloniaList<TeacherDto> Items
         {
@@ -21,9 +21,9 @@ namespace newUI.ViewModels
         public ICommand LoadItemsCommand { get; }
         public ICommand HideTeachersCommand { get; }
 
-        public MainViewModel(IService service)
+        public MainViewModel(ITeacherServices teacherService)
         {
-            this.service = service;
+            this.teacherService = teacherService;
             LoadItemsCommand = new RelayCommandAsync(LoadItems);
             HideTeachersCommand = new RelayCommandAsync(HideItems);
         }
@@ -36,7 +36,7 @@ namespace newUI.ViewModels
 
         private async Task LoadItems()
         {
-            var fetchedItems = await service.FetchTeachersFromBackendAsync();
+            var fetchedItems = await teacherService.FetchTeachersFromBackendAsync();
             Items.Clear();
             Items.AddRange(fetchedItems);
         }
