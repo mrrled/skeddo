@@ -105,7 +105,9 @@ public class Service : IService
 
     public async Task AddSchedule(ScheduleDto scheduleDto)
     {
-        throw new NotImplementedException();
+        var schedule = new Schedule(scheduleDto.Id, scheduleDto.Name, []);
+        await repository.AddAsync(schedule);
+        await unitOfWork.SaveChangesAsync();
     }
 
     public async Task AddLesson(LessonDto lessonDto, int scheduleId)
@@ -136,7 +138,17 @@ public class Service : IService
 
     public async Task EditLesson(LessonDto lessonDto, int scheduleId)
     {
-        throw new NotImplementedException();
+        var lesson = await repository.GetLessonByIdAsync(lessonDto.Id, scheduleId);
+        lesson.Update(
+            lessonDto.Subject?.ToSchoolSubject(),
+            lessonDto.LessonNumber?.ToLessonNumber(),
+            lessonDto.Teacher?.ToTeacher(),
+            lessonDto.StudyGroup?.ToStudyGroup(),
+            lessonDto.Classroom?.ToClassroom(),
+            lessonDto.Comment
+        );
+        await repository.UpdateAsync(lesson, scheduleId);
+        await unitOfWork.SaveChangesAsync();
     }
 
     public async Task EditTeacher(TeacherDto teacherDto)
@@ -174,7 +186,8 @@ public class Service : IService
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditSchoolSubject(SchoolSubjectDto oldSubjectSchoolSubjectDto, SchoolSubjectDto newSubjectSchoolSubjectDto)
+    public async Task EditSchoolSubject(SchoolSubjectDto oldSubjectSchoolSubjectDto,
+        SchoolSubjectDto newSubjectSchoolSubjectDto)
     {
         var oldSchoolSubject = Schedule.CreateSchoolSubject(oldSubjectSchoolSubjectDto.Name);
         var newSchoolSubject = Schedule.CreateSchoolSubject(newSubjectSchoolSubjectDto.Name);
@@ -182,19 +195,26 @@ public class Service : IService
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task DeleteLesson(LessonDto lessonDto, int scheduleId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task DeleteLessonNumber(LessonDto numberLessonDto, int scheduleId)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task EditSchedule(ScheduleDto oldScheduleDto, ScheduleDto newScheduleDto)
     {
-        throw new NotImplementedException();
+        var oldSchoolSubject = new Schedule(oldScheduleDto.Id, newScheduleDto.Name, []);
+        var newSchoolSubject = new Schedule(oldScheduleDto.Id, newScheduleDto.Name, []);
+        await repository.UpdateAsync(oldSchoolSubject, newSchoolSubject);
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task DeleteLesson(LessonDto lessonDto, int scheduleId)
+    {
+        var lesson = await repository.GetLessonByIdAsync(lessonDto.Id, scheduleId);
+        await repository.Delete(lesson, scheduleId);
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task DeleteLessonNumber(LessonNumberDto lessonNumberDto, int scheduleId)
+    {
+        var lessonNumber = Schedule.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
+        await repository.Delete(lessonNumber, scheduleId);
+        await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteTeacher(TeacherDto teacherDto)
@@ -227,6 +247,8 @@ public class Service : IService
 
     public async Task DeleteSchedule(ScheduleDto scheduleDto)
     {
-        throw new NotImplementedException();
+        var schoolSubject = new Schedule(scheduleDto.Id, scheduleDto.Name, []);
+        await repository.Delete(schoolSubject);
+        await unitOfWork.SaveChangesAsync();
     }
 }

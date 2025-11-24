@@ -168,6 +168,15 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
         schedule.Lessons.Add(lessonDbo);
     }
 
+    public async Task AddAsync(Schedule schedule)
+    {
+        var scheduleDbo = schedule.ToScheduleDbo();
+        var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync();
+        if (scheduleGroup is null)
+            throw new NullReferenceException();
+        scheduleGroup.Schedules.Add(scheduleDbo);
+    }
+
     public async Task AddAsync(LessonNumber lessonNumber, int scheduleId)
     {
         var lessonNumberDbo = lessonNumber.ToLessonNumberDbo();
@@ -226,6 +235,32 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
         DboMapper.Mapper.Map(newSchoolSubject, schoolSubjectDbo);
     }
 
+    public async Task UpdateAsync(Lesson lesson, int scheduleId)
+    {
+        var schedule = await context.Schedules
+            .Include(scheduleDbo => scheduleDbo.Lessons)
+            .FirstOrDefaultAsync(x => x.Id == scheduleId);
+        if (schedule is null)
+            throw new NullReferenceException();
+        var lessonDbo = schedule.Lessons.FirstOrDefault(x => x.Id == lesson.Id);
+        if (lessonDbo is null)
+            throw new NullReferenceException();
+        DboMapper.Mapper.Map(lesson, lessonDbo);
+    }
+
+    public async Task UpdateAsync(Schedule oldSchedule, Schedule newSchedule)
+    {
+        var scheduleGroup = await context.ScheduleGroups
+            .Include(scheduleGroupDbo => scheduleGroupDbo.Schedules)
+            .FirstOrDefaultAsync();
+        if (scheduleGroup is null)
+            throw new NullReferenceException();
+        var scheduleDbo = scheduleGroup.Schedules.FirstOrDefault(x => x.Id == oldSchedule.Id);
+        if (scheduleDbo is null)
+            throw new NullReferenceException();
+        DboMapper.Mapper.Map(newSchedule, scheduleDbo);
+    }
+
     public async Task UpdateAsync(LessonNumber oldLessonNumber, LessonNumber newLessonNumber, int scheduleId)
     {
         var schedule = await context.Schedules
@@ -265,6 +300,19 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
         scheduleGroup.Classrooms.Remove(classroomDbo);
     }
 
+    public async Task Delete(Lesson lesson, int scheduleId)
+    {
+        var schedule = await context.Schedules
+            .Include(scheduleDbo => scheduleDbo.Lessons)
+            .FirstOrDefaultAsync(x => x.Id == scheduleId);
+        if (schedule is null)
+            throw new NullReferenceException();
+        var lessonDbo = schedule.Lessons.FirstOrDefault(x => x.Id == lesson.Id);
+        if (lessonDbo is null)
+            throw new NullReferenceException();
+        schedule.Lessons.Remove(lessonDbo);
+    }
+
     public async Task Delete(StudyGroup studyGroup)
     {
         var scheduleGroup = await context.ScheduleGroups
@@ -289,6 +337,19 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
         if (schoolSubjectDbo is null)
             throw new NullReferenceException();
         scheduleGroup.SchoolSubjects.Remove(schoolSubjectDbo);
+    }
+
+    public async Task Delete(Schedule schedule)
+    {
+        var scheduleGroup = await context.ScheduleGroups
+            .Include(scheduleGroupDbo => scheduleGroupDbo.Schedules)
+            .FirstOrDefaultAsync();
+        if (scheduleGroup is null)
+            throw new NullReferenceException();
+        var scheduleDbo = scheduleGroup.Schedules.FirstOrDefault(x => x.Id == schedule.Id);
+        if (scheduleDbo is null)
+            throw new NullReferenceException();
+        scheduleGroup.Schedules.Remove(scheduleDbo);
     }
 
     public async Task Delete(LessonNumber lessonNumber, int scheduleId)
