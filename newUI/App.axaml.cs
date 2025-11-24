@@ -1,14 +1,12 @@
 using System;
 using System.IO;
 using Application;
-using Application.Mapping;
 using Application.Services;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Domain;
 using Domain.Repositories;
 using Infrastructure;
-using Infrastructure.Mapping;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

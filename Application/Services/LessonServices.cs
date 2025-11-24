@@ -1,5 +1,5 @@
 ﻿using Application.DtoModels;
-using Application.Extensions;
+using Application.DtoExtensions;
 using Domain.Models;
 using Domain.Repositories;
 using Microsoft.Extensions.Primitives;
@@ -14,7 +14,7 @@ public class LessonServices(
     public async Task<List<LessonDto>> GetLessonsByScheduleId(int scheduleId)
     {
         var lessonList = await lessonRepository.GetLessonsByScheduleIdAsync(scheduleId);
-        return lessonList.ToLessonDto();
+        return lessonList.ToLessonsDto();
     }
 
     public async Task AddLesson(LessonDto lessonDto, int scheduleId)

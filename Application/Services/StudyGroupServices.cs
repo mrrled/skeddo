@@ -1,5 +1,5 @@
 ﻿using Application.DtoModels;
-using Application.Extensions;
+using Application.DtoExtensions;
 using Domain.Models;
 using Domain.Repositories;
 
@@ -10,7 +10,7 @@ public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUni
     public async Task<List<StudyGroupDto>> FetchStudyGroupsFromBackendAsync()
     {
         var studyGroupList = await studyGroupRepository.GetStudyGroupListAsync();
-        return studyGroupList.ToStudyGroupDto();
+        return studyGroupList.ToStudyGroupsDto();
     }
 
     public async Task AddStudyGroup(StudyGroupDto studyGroupDto)

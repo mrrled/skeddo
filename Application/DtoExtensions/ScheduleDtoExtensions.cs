@@ -1,18 +1,18 @@
 ﻿using Application.DtoModels;
-using Application.Mapping;
+using Application.DtoMapping;
 using AutoMapper;
 using Domain.Models;
 
-namespace Application.Extensions;
+namespace Application.DtoExtensions;
 
-public static class ScheduleExtensions
+public static class ScheduleDtoExtensions
 {
     public static ScheduleDto ToScheduleDto(this Schedule schedule)
     {
         return DtoMapper.ToScheduleDto(schedule);
     }
     
-    public static List<ScheduleDto> ToScheduleDto(this ICollection<Schedule> schedules)
+    public static List<ScheduleDto> ToSchedulesDto(this ICollection<Schedule> schedules)
     {
         return DtoMapper.ToScheduleDto(schedules);
     }
@@ -22,7 +22,7 @@ public static class ScheduleExtensions
         return DtoMapper.ToSchedule(schedule);
     }
     
-    public static List<Schedule> ToSchedule(this ICollection<ScheduleDto> schedules)
+    public static List<Schedule> ToSchedules(this ICollection<ScheduleDto> schedules)
     {
         return DtoMapper.ToSchedule(schedules);
     }

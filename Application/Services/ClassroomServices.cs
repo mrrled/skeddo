@@ -1,5 +1,5 @@
 ﻿using Application.DtoModels;
-using Application.Extensions;
+using Application.DtoExtensions;
 using Domain.Models;
 using Domain.Repositories;
 
@@ -10,7 +10,7 @@ public class ClassroomServices(IClassroomRepository classroomRepository, IUnitOf
     public async Task<List<ClassroomDto>> FetchClassroomsFromBackendAsync()
     {
         var classroomList = await classroomRepository.GetClassroomListAsync();
-        return classroomList.ToClassroomDto();
+        return classroomList.ToClassroomsDto();
     }
 
     public async Task AddClassroom(ClassroomDto classroomDto)
