@@ -1,16 +1,17 @@
 using Application.DtoModels;
 using AutoMapper;
 using Domain.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Mapping;
 
 public static class DtoMapper
 {
     
-    private static readonly IMapper Mapper = new MapperConfiguration(cfg =>
+    public static readonly IMapper Mapper = new MapperConfiguration(cfg =>
     {
         cfg.AddProfile<DtoMappingProfile>();
-    }, loggerFactory: null)
+    }, loggerFactory: new LoggerFactory())
         .CreateMapper();
     
     public static ClassroomDto ToClassroomDto(Classroom classroom)

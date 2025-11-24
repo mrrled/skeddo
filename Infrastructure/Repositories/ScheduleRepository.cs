@@ -3,11 +3,12 @@ using Domain;
 using Domain.Models;
 using Infrastructure.DboModels;
 using Infrastructure.Extensions;
+using Infrastructure.Mapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : IScheduleRepository
+public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
 {
     public async Task<List<Classroom>> GetClassroomListAsync()
     {
@@ -183,7 +184,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
         var teacherDbo = await context.Teachers.FirstOrDefaultAsync(x => x.Id == teacher.Id);
         if (teacherDbo is null)
             throw new ArgumentException();
-        mapper.Map(teacher, teacherDbo);
+        DboMapper.Mapper.Map(teacher, teacherDbo);
     }
 
     public async Task UpdateAsync(Classroom oldClassroom, Classroom newClassroom)
@@ -196,7 +197,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
         var classroomDbo = scheduleGroup.Classrooms.FirstOrDefault(x => x.Name == oldClassroom.Name);
         if (classroomDbo is null)
             throw new NullReferenceException();
-        mapper.Map(newClassroom, classroomDbo);
+        DboMapper.Mapper.Map(newClassroom, classroomDbo);
     }
 
     public async Task UpdateAsync(StudyGroup oldStudyGroup, StudyGroup newStudyGroup)
@@ -209,7 +210,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
         var studyGroupDbo = scheduleGroup.StudyGroups.FirstOrDefault(x => x.Name == oldStudyGroup.Name);
         if (studyGroupDbo is null)
             throw new NullReferenceException();
-        mapper.Map(newStudyGroup, studyGroupDbo);
+        DboMapper.Mapper.Map(newStudyGroup, studyGroupDbo);
     }
 
     public async Task UpdateAsync(SchoolSubject oldSchoolSubject, SchoolSubject newSchoolSubject)
@@ -222,7 +223,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
         var schoolSubjectDbo = scheduleGroup.Classrooms.FirstOrDefault(x => x.Name == oldSchoolSubject.Name);
         if (schoolSubjectDbo is null)
             throw new NullReferenceException();
-        mapper.Map(newSchoolSubject, schoolSubjectDbo);
+        DboMapper.Mapper.Map(newSchoolSubject, schoolSubjectDbo);
     }
 
     public async Task UpdateAsync(LessonNumber oldLessonNumber, LessonNumber newLessonNumber, int scheduleId)
@@ -235,7 +236,7 @@ public class ScheduleRepository(ScheduleDbContext context, IMapper mapper) : ISc
         var lessonNumberDbo = schedule.LessonNumbers.FirstOrDefault(x => x.Number == oldLessonNumber.Number);
         if (lessonNumberDbo is null)
             throw new NullReferenceException();
-        mapper.Map(newLessonNumber, lessonNumberDbo);
+        DboMapper.Mapper.Map(newLessonNumber, lessonNumberDbo);
     }
 
     public async Task Delete(Teacher teacher)

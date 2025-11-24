@@ -13,10 +13,9 @@ public class Service : IService
     private readonly IMapper mapper;
     private readonly IUnitOfWork unitOfWork;
 
-    public Service(IScheduleRepository repository, IMapper mapper, IUnitOfWork unitOfWork)
+    public Service(IScheduleRepository repository, IUnitOfWork unitOfWork)
     {
         this.repository = repository;
-        this.mapper = mapper;
         this.unitOfWork = unitOfWork;
     }
 

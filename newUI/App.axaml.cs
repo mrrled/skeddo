@@ -40,9 +40,6 @@ public partial class App : Avalonia.Application
             configure.AddConsole();
             configure.SetMinimumLevel(LogLevel.Information);
         });
-        
-        services.AddAutoMapper(_ => { }, typeof(DtoMappingProfile));
-        services.AddAutoMapper(_ => { }, typeof(DboMappingProfile));
 
         services.AddScoped<IService, Service>();
         services.AddScoped<IScheduleRepository, ScheduleRepository>();

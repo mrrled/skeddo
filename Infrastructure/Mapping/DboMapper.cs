@@ -1,13 +1,14 @@
 using AutoMapper;
 using Domain.Models;
 using Infrastructure.DboModels;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Mapping;
 
 public static class DboMapper
 {
-    private static readonly IMapper Mapper =
-        new MapperConfiguration(cfg => { cfg.AddProfile<DboMappingProfile>(); }, loggerFactory: null)
+    public static readonly IMapper Mapper =
+        new MapperConfiguration(cfg => { cfg.AddProfile<DboMappingProfile>(); }, loggerFactory: new LoggerFactory())
             .CreateMapper();
 
     public static ClassroomDbo ToClassroomDbo(Classroom classroom)
