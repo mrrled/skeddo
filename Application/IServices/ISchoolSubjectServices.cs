@@ -1,7 +1,7 @@
 ﻿using Application.DtoModels;
 using Domain.Models;
 
-namespace Application.Services;
+namespace Application.IServices;
 
 public interface ISchoolSubjectServices
 {

@@ -1,5 +1,5 @@
 using Domain.Models;
-using Domain.Repositories;
+using Domain.IRepositories;
 using Infrastructure.DboExtensions;
 using Infrastructure.DboMapping;
 using Microsoft.EntityFrameworkCore;
