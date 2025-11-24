@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using Infrastructure.DboModels;
-using Infrastructure.Mapping;
+using Infrastructure.DboMapping;
 
-namespace Infrastructure.Extensions;
+namespace Infrastructure.DboExtensions;
 
 public static class ScheduleDboExtension
 {
@@ -12,7 +12,7 @@ public static class ScheduleDboExtension
         return DboMapper.ToSchedule(schedule);
     }
     
-    public static List<Schedule> ToSchedule(this ICollection<ScheduleDbo> schedules)
+    public static List<Schedule> ToSchedules(this ICollection<ScheduleDbo> schedules)
     {
         return DboMapper.ToSchedule(schedules);
     }
@@ -22,7 +22,7 @@ public static class ScheduleDboExtension
         return DboMapper.ToScheduleDbo(schedule);
     }
     
-    public static List<ScheduleDbo> ToScheduleDbo(this ICollection<Schedule> schedules)
+    public static List<ScheduleDbo> ToSchedulesDbo(this ICollection<Schedule> schedules)
     {
         return DboMapper.ToScheduleDbo(schedules);
     }

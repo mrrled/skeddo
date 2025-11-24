@@ -1,7 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Repositories;
-using Infrastructure.Extensions;
-using Infrastructure.Mapping;
+using Infrastructure.DboExtensions;
+using Infrastructure.DboMapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -16,7 +16,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
             .ToListAsync();
-        return lessons.ToLesson();
+        return lessons.ToLessons();
     }
 
     public async Task<Lesson> GetLessonByIdAsync(int id, int scheduleId)

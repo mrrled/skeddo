@@ -2,7 +2,7 @@
 using AutoMapper;
 using Domain.Models;
 
-namespace Application.Mapping;
+namespace Application.DtoMapping;
 
 public class DtoMappingProfile : Profile
 {

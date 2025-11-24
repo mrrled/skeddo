@@ -1,18 +1,18 @@
 ﻿using Application.DtoModels;
-using Application.Mapping;
+using Application.DtoMapping;
 using AutoMapper;
 using Domain.Models;
 
-namespace Application.Extensions;
+namespace Application.DtoExtensions;
 
-public static class LessonExtensions
+public static class LessonDtoExtensions
 {
     public static LessonDto ToLessonDto(this Lesson lesson)
     {
         return DtoMapper.ToLessonDto(lesson);
     }
     
-    public static List<LessonDto> ToLessonDto(this ICollection<Lesson> lessons)
+    public static List<LessonDto> ToLessonsDto(this ICollection<Lesson> lessons)
     {
         return DtoMapper.ToLessonDto(lessons);
     }
@@ -22,7 +22,7 @@ public static class LessonExtensions
         return DtoMapper.ToLesson(lesson);
     }
     
-    public static List<Lesson> ToLesson(this ICollection<LessonDto> lessons)
+    public static List<Lesson> ToLessons(this ICollection<LessonDto> lessons)
     {
         return DtoMapper.ToLesson(lessons);
     }

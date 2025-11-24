@@ -1,5 +1,5 @@
 ﻿using Application.DtoModels;
-using Application.Extensions;
+using Application.DtoExtensions;
 using Domain.Models;
 using Domain.Repositories;
 
@@ -10,7 +10,7 @@ public class TeacherServices(ITeacherRepository teacherRepository, IUnitOfWork u
     public async Task<List<TeacherDto>> FetchTeachersFromBackendAsync()
     {
         var teacherList = await teacherRepository.GetTeacherListAsync();
-        return teacherList.ToTeacherDto();
+        return teacherList.ToTeachersDto();
     }
 
     public async Task<TeacherDto> GetTeacherById(int id)

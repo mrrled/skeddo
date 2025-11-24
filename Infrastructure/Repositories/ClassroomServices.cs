@@ -1,7 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Repositories;
-using Infrastructure.Extensions;
-using Infrastructure.Mapping;
+using Infrastructure.DboExtensions;
+using Infrastructure.DboMapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -15,7 +15,7 @@ public class ClassroomRepository(ScheduleDbContext context) : IClassroomReposito
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
-        return scheduleGroup.Classrooms.ToClassroom();
+        return scheduleGroup.Classrooms.ToClassrooms();
     }
     
     public async Task AddAsync(Classroom classroom)

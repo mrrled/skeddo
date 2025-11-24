@@ -1,5 +1,5 @@
 ﻿using Application.DtoModels;
-using Application.Extensions;
+using Application.DtoExtensions;
 using Domain.Models;
 using Domain.Repositories;
 
@@ -10,7 +10,7 @@ public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWor
     public async Task<List<ScheduleDto>> FetchSchedulesFromBackendAsync()
     {
         var scheduleList = await scheduleRepository.GetScheduleListAsync();
-        return scheduleList.ToScheduleDto();
+        return scheduleList.ToSchedulesDto();
     }
 
     public async Task AddSchedule(ScheduleDto scheduleDto)

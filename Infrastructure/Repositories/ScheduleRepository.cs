@@ -1,7 +1,7 @@
 using Domain.Models;
 using Domain.Repositories;
-using Infrastructure.Extensions;
-using Infrastructure.Mapping;
+using Infrastructure.DboExtensions;
+using Infrastructure.DboMapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -15,7 +15,7 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
-        return scheduleGroup.Schedules.ToSchedule();
+        return scheduleGroup.Schedules.ToSchedules();
     }
 
     public async Task<Schedule> GetScheduleByIdAsync(int scheduleId)

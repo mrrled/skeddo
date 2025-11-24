@@ -3,7 +3,7 @@ using AutoMapper;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Application.Mapping;
+namespace Application.DtoMapping;
 
 public static class DtoMapper
 {
