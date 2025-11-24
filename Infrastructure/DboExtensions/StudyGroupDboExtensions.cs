@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using Infrastructure.DboModels;
-using Infrastructure.Mapping;
+using Infrastructure.DboMapping;
 
-namespace Infrastructure.Extensions;
+namespace Infrastructure.DboExtensions;
 
 public static class StudyGroupDboExtensions
 {
@@ -12,7 +12,7 @@ public static class StudyGroupDboExtensions
         return DboMapper.ToStudyGroup(studyGroup);
     }
     
-    public static List<StudyGroup> ToStudyGroup(this ICollection<StudyGroupDbo> studyGroups)
+    public static List<StudyGroup> ToStudyGroups(this ICollection<StudyGroupDbo> studyGroups)
     {
         return DboMapper.ToStudyGroup(studyGroups);
     }
@@ -22,7 +22,7 @@ public static class StudyGroupDboExtensions
         return DboMapper.ToStudyGroupDbo(studyGroup);
     }
     
-    public static List<StudyGroupDbo> ToStudyGroupDbo(this ICollection<StudyGroup> studyGroups)
+    public static List<StudyGroupDbo> ToStudyGroupsDbo(this ICollection<StudyGroup> studyGroups)
     {
         return DboMapper.ToStudyGroupDbo(studyGroups);
     }

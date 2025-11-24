@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using Infrastructure.DboModels;
-using Infrastructure.Mapping;
+using Infrastructure.DboMapping;
 
-namespace Infrastructure.Extensions;
+namespace Infrastructure.DboExtensions;
 
 public static class LessonDboExtensions
 {
@@ -12,7 +12,7 @@ public static class LessonDboExtensions
         return DboMapper.ToLesson(lessonNumber);
     }
     
-    public static List<Lesson> ToLesson(this ICollection<LessonDbo> lessonNumbers)
+    public static List<Lesson> ToLessons(this ICollection<LessonDbo> lessonNumbers)
     {
         return DboMapper.ToLesson(lessonNumbers);
     }
@@ -22,7 +22,7 @@ public static class LessonDboExtensions
         return DboMapper.ToLessonDbo(lessonNumber);
     }
     
-    public static List<LessonDbo> ToLessonDbo(this ICollection<Lesson> lessonNumbers)
+    public static List<LessonDbo> ToLessonsDbo(this ICollection<Lesson> lessonNumbers)
     {
         return DboMapper.ToLessonDbo(lessonNumbers);
     }

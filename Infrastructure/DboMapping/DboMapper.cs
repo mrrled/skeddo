@@ -3,7 +3,7 @@ using Domain.Models;
 using Infrastructure.DboModels;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.Mapping;
+namespace Infrastructure.DboMapping;
 
 public static class DboMapper
 {

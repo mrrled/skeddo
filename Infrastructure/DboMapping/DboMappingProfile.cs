@@ -2,7 +2,7 @@
 using Domain.Models;
 using Infrastructure.DboModels;
 
-namespace Infrastructure.Mapping;
+namespace Infrastructure.DboMapping;
 
 public class DboMappingProfile : Profile
 {

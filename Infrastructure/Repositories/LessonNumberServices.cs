@@ -1,7 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Repositories;
-using Infrastructure.Extensions;
-using Infrastructure.Mapping;
+using Infrastructure.DboExtensions;
+using Infrastructure.DboMapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -15,7 +15,7 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
             .FirstOrDefaultAsync(x => x.Id == scheduleId);
         if (schedule is null)
             throw new NullReferenceException();
-        return schedule.LessonNumbers.ToLessonNumber();
+        return schedule.LessonNumbers.ToLessonNumbers();
     }
 
     public async Task AddAsync(LessonNumber lessonNumber, int scheduleId)
