@@ -1,22 +1,26 @@
 ﻿using Application.DtoModels;
 using Application.Extensions;
-using Domain;
 using Domain.Models;
+using Domain.Repositories;
+using Microsoft.Extensions.Primitives;
 
 namespace Application.Services;
 
-public class LessonServices(IScheduleRepository repository, IUnitOfWork unitOfWork) : ILessonServices
+public class LessonServices(
+    IScheduleRepository scheduleRepository,
+    ILessonRepository lessonRepository,
+    IUnitOfWork unitOfWork) : ILessonServices
 {
     public async Task<List<LessonDto>> GetLessonsByScheduleId(int scheduleId)
     {
-        var lessonList = await repository.GetLessonsByScheduleIdAsync(scheduleId);
+        var lessonList = await lessonRepository.GetLessonsByScheduleIdAsync(scheduleId);
         return lessonList.ToLessonDto();
     }
-    
+
     public async Task AddLesson(LessonDto lessonDto, int scheduleId)
     {
         Teacher? teacher = null;
-        var schedule = await repository.GetScheduleByIdAsync(scheduleId);
+        var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId);
         var teacherDto = lessonDto.Teacher;
         if (teacherDto is not null)
             teacher = Schedule.CreateTeacher(
@@ -35,13 +39,13 @@ public class LessonServices(IScheduleRepository repository, IUnitOfWork unitOfWo
             lessonDto.Classroom?.Name,
             lessonDto.Classroom?.Description
         );
-        await repository.AddAsync(lesson, scheduleId);
+        await lessonRepository.AddAsync(lesson, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task EditLesson(LessonDto lessonDto, int scheduleId)
     {
-        var lesson = await repository.GetLessonByIdAsync(lessonDto.Id, scheduleId);
+        var lesson = await lessonRepository.GetLessonByIdAsync(lessonDto.Id, scheduleId);
         lesson.Update(
             lessonDto.Subject?.ToSchoolSubject(),
             lessonDto.LessonNumber?.ToLessonNumber(),
@@ -50,14 +54,14 @@ public class LessonServices(IScheduleRepository repository, IUnitOfWork unitOfWo
             lessonDto.Classroom?.ToClassroom(),
             lessonDto.Comment
         );
-        await repository.UpdateAsync(lesson, scheduleId);
+        await lessonRepository.UpdateAsync(lesson, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteLesson(LessonDto lessonDto, int scheduleId)
     {
-        var lesson = await repository.GetLessonByIdAsync(lessonDto.Id, scheduleId);
-        await repository.Delete(lesson, scheduleId);
+        var lesson = await lessonRepository.GetLessonByIdAsync(lessonDto.Id, scheduleId);
+        await lessonRepository.Delete(lesson, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
 }

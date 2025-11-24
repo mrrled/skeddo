@@ -1,22 +1,22 @@
 ﻿using Application.DtoModels;
 using Application.Extensions;
-using Domain;
 using Domain.Models;
+using Domain.Repositories;
 
 namespace Application.Services;
 
-public class ClassroomServices(IScheduleRepository repository, IUnitOfWork unitOfWork) : IClassroomServices
+public class ClassroomServices(IClassroomRepository classroomRepository, IUnitOfWork unitOfWork) : IClassroomServices
 {
     public async Task<List<ClassroomDto>> FetchClassroomsFromBackendAsync()
     {
-        var classroomList = await repository.GetClassroomListAsync();
+        var classroomList = await classroomRepository.GetClassroomListAsync();
         return classroomList.ToClassroomDto();
     }
 
     public async Task AddClassroom(ClassroomDto classroomDto)
     {
         var classroom = Schedule.CreateClassroom(classroomDto.Name, classroomDto.Description);
-        await repository.AddAsync(classroom);
+        await classroomRepository.AddAsync(classroom);
         await unitOfWork.SaveChangesAsync();
     }
 
@@ -24,14 +24,14 @@ public class ClassroomServices(IScheduleRepository repository, IUnitOfWork unitO
     {
         var oldClassroom = Schedule.CreateClassroom(oldClassroomDto.Name, oldClassroomDto.Description);
         var newClassroom = Schedule.CreateClassroom(newClassroomDto.Name, newClassroomDto.Description);
-        await repository.UpdateAsync(oldClassroom, newClassroom);
+        await classroomRepository.UpdateAsync(oldClassroom, newClassroom);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteClassroom(ClassroomDto classroomDto)
     {
         var classroom = Schedule.CreateClassroom(classroomDto.Name, classroomDto.Description);
-        await repository.Delete(classroom);
+        await classroomRepository.Delete(classroom);
         await unitOfWork.SaveChangesAsync();
     }
 }

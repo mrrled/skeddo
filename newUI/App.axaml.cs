@@ -6,6 +6,7 @@ using Application.Services;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Domain;
+using Domain.Repositories;
 using Infrastructure;
 using Infrastructure.Mapping;
 using Infrastructure.Repositories;
@@ -49,7 +50,13 @@ public partial class App : Avalonia.Application
         services.AddScoped<IStudyGroupServices, StudyGroupServices>();
         services.AddScoped<ITeacherServices, TeacherServices>();
         
+        services.AddScoped<IClassroomRepository, ClassroomRepository>();
+        services.AddScoped<ILessonNumberRepository, LessonNumberRepository>();
+        services.AddScoped<ILessonRepository, LessonRepository>();
         services.AddScoped<IScheduleRepository, ScheduleRepository>();
+        services.AddScoped<ISchoolSubjectRepository, SchoolSubjectRepository>();
+        services.AddScoped<IStudyGroupRepository, StudyGroupRepository>();
+        services.AddScoped<ITeacherRepository, TeacherRepository>();
         
         services.AddDbContext<ScheduleDbContext>(options =>
         {

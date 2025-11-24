@@ -1,22 +1,22 @@
 ﻿using Application.DtoModels;
 using Application.Extensions;
-using Domain;
 using Domain.Models;
+using Domain.Repositories;
 
 namespace Application.Services;
 
-public class SchoolSubjectServices(IScheduleRepository repository, IUnitOfWork unitOfWork) : ISchoolSubjectServices
+public class SchoolSubjectServices(ISchoolSubjectRepository schoolSubjectRepository, IUnitOfWork unitOfWork) : ISchoolSubjectServices
 {
     public async Task<List<SchoolSubjectDto>> FetchSchoolSubjectsFromBackendAsync()
     {
-        var schoolSubjectList = await repository.GetSchoolSubjectListAsync();
+        var schoolSubjectList = await schoolSubjectRepository.GetSchoolSubjectListAsync();
         return schoolSubjectList.ToSchoolSubjectDto();
     }
 
     public async Task AddSchoolSubject(SchoolSubjectDto schoolSubjectDto)
     {
         var schoolSubject = Schedule.CreateSchoolSubject(schoolSubjectDto.Name);
-        await repository.AddAsync(schoolSubject);
+        await schoolSubjectRepository.AddAsync(schoolSubject);
         await unitOfWork.SaveChangesAsync();
     }
 
@@ -25,14 +25,14 @@ public class SchoolSubjectServices(IScheduleRepository repository, IUnitOfWork u
     {
         var oldSchoolSubject = Schedule.CreateSchoolSubject(oldSubjectSchoolSubjectDto.Name);
         var newSchoolSubject = Schedule.CreateSchoolSubject(newSubjectSchoolSubjectDto.Name);
-        await repository.UpdateAsync(oldSchoolSubject, newSchoolSubject);
+        await schoolSubjectRepository.UpdateAsync(oldSchoolSubject, newSchoolSubject);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteSchoolSubject(SchoolSubjectDto schoolSubjectDto)
     {
         var schoolSubject = Schedule.CreateSchoolSubject(schoolSubjectDto.Name);
-        await repository.Delete(schoolSubject);
+        await schoolSubjectRepository.Delete(schoolSubject);
         await unitOfWork.SaveChangesAsync();
     }
 }

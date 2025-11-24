@@ -1,23 +1,22 @@
 ﻿using Application.DtoModels;
 using Application.Extensions;
-using AutoMapper;
-using Domain;
 using Domain.Models;
+using Domain.Repositories;
 
 namespace Application.Services;
 
-public class LessonNumberServices(IScheduleRepository repository, IUnitOfWork unitOfWork) : ILessonNumberServices
+public class LessonNumberServices(ILessonNumberRepository lessonNumberRepository, IUnitOfWork unitOfWork) : ILessonNumberServices
 {
     public async Task<List<LessonNumberDto>> GetLessonNumbersByScheduleId(int scheduleId)
     {
-        var lessonNumbers = await repository.GetLessonNumbersByScheduleIdAsync(scheduleId);
+        var lessonNumbers = await lessonNumberRepository.GetLessonNumbersByScheduleIdAsync(scheduleId);
         return lessonNumbers.ToLessonNumberDto();
     }
 
     public async Task AddLessonNumber(LessonNumberDto lessonNumberDto, int scheduleId)
     {
         var lessonNumber = Schedule.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
-        await repository.AddAsync(lessonNumber, scheduleId);
+        await lessonNumberRepository.AddAsync(lessonNumber, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
 
@@ -26,14 +25,14 @@ public class LessonNumberServices(IScheduleRepository repository, IUnitOfWork un
     {
         var oldLessonNumber = Schedule.CreateLessonNumber(oldLessonNumberDto.Number, oldLessonNumberDto.Time);
         var newLessonNumber = Schedule.CreateLessonNumber(newLessonNumberDto.Number, newLessonNumberDto.Time);
-        await repository.UpdateAsync(oldLessonNumber, newLessonNumber, scheduleId);
+        await lessonNumberRepository.UpdateAsync(oldLessonNumber, newLessonNumber, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteLessonNumber(LessonNumberDto lessonNumberDto, int scheduleId)
     {
         var lessonNumber = Schedule.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
-        await repository.Delete(lessonNumber, scheduleId);
+        await lessonNumberRepository.Delete(lessonNumber, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
 }

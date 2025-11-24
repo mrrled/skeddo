@@ -1,21 +1,21 @@
 ﻿using Application.DtoModels;
 using Application.Extensions;
-using Domain;
 using Domain.Models;
+using Domain.Repositories;
 
 namespace Application.Services;
 
-public class TeacherServices(IScheduleRepository repository, IUnitOfWork unitOfWork) : ITeacherServices
+public class TeacherServices(ITeacherRepository teacherRepository, IUnitOfWork unitOfWork) : ITeacherServices
 {
     public async Task<List<TeacherDto>> FetchTeachersFromBackendAsync()
     {
-        var teacherList = await repository.GetTeacherListAsync();
+        var teacherList = await teacherRepository.GetTeacherListAsync();
         return teacherList.ToTeacherDto();
     }
 
     public async Task<TeacherDto> GetTeacherById(int id)
     {
-        var teacher = await repository.GetTeacherByIdAsync(id);
+        var teacher = await teacherRepository.GetTeacherByIdAsync(id);
         return teacher.ToTeacherDto();
     }
 
@@ -23,24 +23,24 @@ public class TeacherServices(IScheduleRepository repository, IUnitOfWork unitOfW
     {
         var teacher = Schedule.CreateTeacher(teacherDto.Id, teacherDto.Name, teacherDto.Surname,
             teacherDto.Patronymic, teacherDto.SchoolSubjects, teacherDto.StudyGroups);
-        await repository.AddAsync(teacher);
+        await teacherRepository.AddAsync(teacher);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task EditTeacher(TeacherDto teacherDto)
     {
-        var teacher = await repository.GetTeacherByIdAsync(teacherDto.Id);
+        var teacher = await teacherRepository.GetTeacherByIdAsync(teacherDto.Id);
         teacher.Update(teacherDto.Name, teacherDto.Surname, teacherDto.Patronymic,
             teacherDto.SchoolSubjects,
             teacherDto.StudyGroups);
-        await repository.UpdateAsync(teacher);
+        await teacherRepository.UpdateAsync(teacher);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteTeacher(TeacherDto teacherDto)
     {
-        var teacher = await repository.GetTeacherByIdAsync(teacherDto.Id);
-        await repository.Delete(teacher);
+        var teacher = await teacherRepository.GetTeacherByIdAsync(teacherDto.Id);
+        await teacherRepository.Delete(teacher);
         await unitOfWork.SaveChangesAsync();
     }
 }
