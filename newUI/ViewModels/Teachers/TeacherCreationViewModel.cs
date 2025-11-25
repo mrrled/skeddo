@@ -1,22 +1,23 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
+using Application.IServices;
 using Application.Services;
 
 namespace newUI.ViewModels;
 
 public class TeacherCreationViewModel : ViewModelBase
 {
-    private DtoTeacher teacher = new();
-    private IService service;
+    private TeacherDto teacher = new();
+    private ITeacherServices service;
 
-    public DtoTeacher Teacher
+    public TeacherDto Teacher
     {
         get => teacher;
         set => SetProperty(ref teacher, value);
     } 
 
-    public TeacherCreationViewModel(IService service)
+    public TeacherCreationViewModel(ITeacherServices service)
     {
         this.service = service;
         SaveChangesCommand = new RelayCommandAsync(SaveChanges);

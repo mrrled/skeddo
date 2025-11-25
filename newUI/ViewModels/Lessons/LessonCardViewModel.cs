@@ -2,24 +2,25 @@ using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
+using Application.IServices;
 using Application.Services;
 
 namespace newUI.ViewModels.Lessons;
 
 public class LessonCardViewModel : ViewModelBase
 {
-    private DtoLesson lesson;
-    public IService Service;
+    private LessonDto lesson;
+    public ILessonServices Service;
     
     public double Width { get; set; }
     public double Height { get; set; }
 
-    public LessonCardViewModel(IService service)
+    public LessonCardViewModel(ILessonServices service)
     {
         Service = service;
     }
 
-    public DtoLesson Lesson
+    public LessonDto Lesson
     {
         get => lesson;
         set => SetProperty(ref lesson, value);

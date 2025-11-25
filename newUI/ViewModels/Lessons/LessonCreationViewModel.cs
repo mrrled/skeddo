@@ -5,28 +5,28 @@ namespace newUI.ViewModels.Lessons;
 
 public class LessonCreationViewModel : ViewModelBase
 {
-    private readonly DtoLesson lesson;
+    private readonly LessonDto lesson;
     
     public LessonCreationViewModel()
     {
-        lesson = new DtoLesson();
+        lesson = new LessonDto();
     }
 
-    public void SetTeacher(DtoTeacher teacher) => lesson.Teacher = teacher;
+    public void SetTeacher(TeacherDto teacher) => lesson.Teacher = teacher;
 
-    public void SetClassroom(DtoClassroom classroom) => lesson.Classroom = classroom;
+    public void SetClassroom(ClassroomDto classroom) => lesson.Classroom = classroom;
 
     public void SetTimeSlot(int number) =>
-        lesson.LessonNumber = new DtoLessonNumber()
+        lesson.LessonNumber = new LessonNumberDto()
         {
             Number = number
         };
 
-    public void SetStudyGroup(DtoStudyGroup studyGroup) => lesson.StudyGroup = studyGroup;
+    public void SetStudyGroup(StudyGroupDto studyGroup) => lesson.StudyGroup = studyGroup;
 
-    public void SetSubject(DtoSchoolSubject subject) => lesson.Subject = subject;
+    public void SetSubject(SchoolSubjectDto subject) => lesson.Subject = subject;
 
-    public async Task<DtoLesson> CreateLesson()
+    public async Task<LessonDto> CreateLesson()
     {
         return lesson;
     }

@@ -10,16 +10,16 @@ namespace newUI.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    private AvaloniaList<DtoSchedule> scheduleList = new();
-    private DtoSchedule currentSchedule; //заменить на ScheduleViewModel
+    private AvaloniaList<ScheduleDto> scheduleList = new();
+    private ScheduleDto currentSchedule; //заменить на ScheduleViewModel
     
-    public AvaloniaList<DtoSchedule> SceduleList
+    public AvaloniaList<ScheduleDto> SceduleList
     {
         get => scheduleList;
         set => SetProperty(ref scheduleList, value);
     }
 
-    public DtoSchedule CurrentSchedule
+    public ScheduleDto CurrentSchedule
     {
         get => currentSchedule;
         set => SetProperty(ref currentSchedule, value);

@@ -1,22 +1,21 @@
 using System;
 using System.IO;
 using Application;
-using Application.Mapping;
+using Application.IServices;
 using Application.Services;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Domain;
+using Domain.IRepositories;
 using Infrastructure;
-using Infrastructure.Mapping;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using newUI.Services;
 using newUI.ViewModels;
+using newUI.Views;
 using newUI.Views.MainWindow;
-using newUI.Views.TeacherCreationWindow;
 
 namespace newUI;
 
@@ -36,10 +35,38 @@ public partial class App : Avalonia.Application
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
+        var services = new ServiceCollection();
+        services.AddLogging(configure =>
+        {
+            configure.AddConsole();
+            configure.SetMinimumLevel(LogLevel.Information);
+        });
 
-        Services = ConfigureServices();
-        RegsterViewMappings();
+        services.AddScoped<IClassroomServices, ClassroomServices>();
+        services.AddScoped<ILessonNumberServices, LessonNumberServices>();
+        services.AddScoped<ILessonServices, LessonServices>();
+        services.AddScoped<IScheduleServices, ScheduleServices>();
+        services.AddScoped<ISchoolSubjectServices, SchoolSubjectServices>();
+        services.AddScoped<IStudyGroupServices, StudyGroupServices>();
+        services.AddScoped<ITeacherServices, TeacherServices>();
         
+        services.AddScoped<IClassroomRepository, ClassroomRepository>();
+        services.AddScoped<ILessonNumberRepository, LessonNumberRepository>();
+        services.AddScoped<ILessonRepository, LessonRepository>();
+        services.AddScoped<IScheduleRepository, ScheduleRepository>();
+        services.AddScoped<ISchoolSubjectRepository, SchoolSubjectRepository>();
+        services.AddScoped<IStudyGroupRepository, StudyGroupRepository>();
+        services.AddScoped<ITeacherRepository, TeacherRepository>();
+        
+        services.AddDbContext<ScheduleDbContext>(options =>
+        {
+            options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+        });
+        services.AddTransient<MainViewModel>();
+        services.AddTransient<MainWindow>();
+        services.AddSingleton<IUnitOfWork, UnitOfWork>();
+
+        Services = services.BuildServiceProvider();
         using (var scope = Services.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<ScheduleDbContext>();
@@ -50,38 +77,7 @@ public partial class App : Avalonia.Application
         {
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }
+
         base.OnFrameworkInitializationCompleted();
-    }
-
-    private static IServiceProvider ConfigureServices()
-    {
-        var services = new ServiceCollection();
-        services.AddLogging(configure =>
-        {
-            configure.AddConsole();
-            configure.SetMinimumLevel(LogLevel.Information);
-        });
-        
-        services.AddAutoMapper(_ => { }, typeof(DtoMappingProfile));
-        services.AddAutoMapper(_ => { }, typeof(DboMappingProfile));
-
-        services.AddScoped<IService, Service>();                      
-        services.AddScoped<IScheduleRepository, ScheduleRepository>();
-        services.AddDbContext<ScheduleDbContext>(options =>
-        {
-            options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
-        });
-        services.AddSingleton<IWindowManager, WindowManager>();
-        services.AddTransient<TeacherCreationViewModel>();
-        services.AddTransient<MainViewModel>();
-        services.AddTransient<MainWindow>();
-        services.AddSingleton<IUnitOfWork, UnitOfWork>();
-        return services.BuildServiceProvider();
-    }
-
-    private void RegsterViewMappings()
-    {
-        ViewMappingService.Register<MainViewModel, MainWindow>();
-        ViewMappingService.Register<TeacherCreationViewModel, TeacherCreationWindow>();
     }
 }

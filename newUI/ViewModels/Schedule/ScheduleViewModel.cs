@@ -6,11 +6,11 @@ namespace newUI.ViewModels.Schedule;
 
 public class ScheduleViewModel : ViewModelBase
 {
-    private DtoSchedule schedule;
+    private ScheduleDto schedule;
     private LessonBufferViewModel buffer;
     private LessonTableViewModel table;
 
-    public DtoSchedule Schedule
+    public ScheduleDto Schedule
     {
         get => schedule;
         set => SetProperty(ref schedule, value);
@@ -18,5 +18,5 @@ public class ScheduleViewModel : ViewModelBase
     
     public ICommand AddLessonCommand { get; set; }
     
-    public 
+    //public 
 }

@@ -5,5 +5,5 @@ namespace newUI.ViewModels.Helpers;
 
 public interface IObjectListItem<TSelf> where TSelf : IObjectListItem<TSelf>
 {
-    public static abstract AvaloniaList<TSelf> FetchFromBackend(IService service);
+    //public static abstract AvaloniaList<TSelf> FetchFromBackend(IService service);
 }

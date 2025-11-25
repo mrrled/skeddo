@@ -11,11 +11,11 @@ public class ObjectListViewModel<TObject> : ViewModelBase
 {
     private AvaloniaList<TObject> objects = new();
     private TObject? selectedItem;
-    private IService service;
+    //private IService service;
 
-    public ObjectListViewModel(IService service, Func<Task>? command = null)
+    public ObjectListViewModel(Func<Task>? command = null) //IService service
     {
-        this.service = service;
+        //this.service = service;
         var selectItemCommand1 = command != null 
             ? new RelayCommandAsync(command) 
             : null;
@@ -59,7 +59,7 @@ public class ObjectListViewModel<TObject> : ViewModelBase
 
     private Task LoadObjects()
     {
-        objects = TObject.FetchFromBackend(service);
+        //objects = TObject.FetchFromBackend(service);
         return Task.CompletedTask;
     }
     
