@@ -1,8 +1,9 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Collections;
+using newUI.ViewModels.Lessons;
 
-namespace newUI.ViewModels.Lessons;
+namespace newUI.ViewModels.Schedule;
 
 public class LessonBufferViewModel : ViewModelBase
 {
@@ -15,11 +16,6 @@ public class LessonBufferViewModel : ViewModelBase
     }
     
     public ICommand AddLessonCommand { get; }
-
-    public LessonBufferViewModel()
-    {
-        
-    }
 
     private Task AddLessonAsync(LessonCardViewModel lessonCard)
     {

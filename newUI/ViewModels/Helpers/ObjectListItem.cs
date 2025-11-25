@@ -1,8 +1,7 @@
-using System.Windows.Input;
 using Application.Services;
 using Avalonia.Collections;
 
-namespace newUI.ViewModels.ObjectList;
+namespace newUI.ViewModels.Helpers;
 
 public interface IObjectListItem<TSelf> where TSelf : IObjectListItem<TSelf>
 {

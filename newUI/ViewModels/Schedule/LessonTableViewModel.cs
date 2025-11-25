@@ -1,4 +1,4 @@
-namespace newUI.ViewModels.Lessons;
+namespace newUI.ViewModels.Schedule;
 
 public class LessonTableViewModel : ViewModelBase
 {

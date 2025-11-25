@@ -2,6 +2,7 @@ using System.Linq;
 using Application.DtoModels;
 using Application.Services;
 using Avalonia.Collections;
+using newUI.ViewModels.Helpers;
 
 namespace newUI.ViewModels.ObjectList;
 

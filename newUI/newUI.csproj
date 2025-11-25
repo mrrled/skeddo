@@ -54,5 +54,6 @@
   <ItemGroup>
     <Folder Include="Views\BufferWindow\" />
     <Folder Include="Views\ObjectList\" />
+    <Folder Include="Views\ScheduleTable\" />
   </ItemGroup>
 </Project>
