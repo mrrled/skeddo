@@ -31,7 +31,7 @@ public static class ViewMappingService
         }
 
         throw new InvalidOperationException(
-            $"Не найдено сопоставление View для ViewModel типа: {viewModelType.FullName}. " +
-            "Убедитесь, что оно зарегистрировано в ViewMappingService.");
+            $"View wasn't found for ViewModel of type: {viewModelType.FullName}. " +
+            "Make sure it's registered at ViewMappingService."); //регистрировать нужно в app.axaml.cs
     }
 }
