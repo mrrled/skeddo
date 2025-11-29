@@ -10,7 +10,7 @@ public static class ExportGenerator
     {
         QuestPDF.Settings.License = LicenseType.Community;
         var generator = GetExportDocument(scheduleRepository, scheduleId).Result;
-        generator.GeneratePdf(@"G:\skeddo\newUI\test.pdf");
+        generator.GeneratePdf(@"G:\skeddo\newUI\schedule.pdf");
     }
 
     public static void GenerateExcel(IScheduleRepository scheduleRepository, int scheduleId)
@@ -26,34 +26,5 @@ public static class ExportGenerator
         var lessonNumbers = await scheduleRepository.GetLessonNumbersByScheduleIdAsync(scheduleId);
         var studyGroups = await scheduleRepository.GetStudyGroupListAsync();
         return new ExportDocument(table, studyGroups, lessonNumbers);
-    }
-
-    private static Dictionary<LessonNumber, Dictionary<StudyGroup, List<Lesson>>> ToTable(this List<Lesson> lessons)
-    {
-        var table = new Dictionary<LessonNumber, Dictionary<StudyGroup, List<Lesson>>>();
-        foreach (var lesson in lessons)
-        {
-            if (lesson.LessonNumber is null || lesson.StudyGroup is null)
-                continue;
-            if (table.TryGetValue(lesson.LessonNumber, out Dictionary<StudyGroup, List<Lesson>>? value))
-            {
-                if (value.TryGetValue(lesson.StudyGroup, out List<Lesson>? lessonsList))
-                {
-                    lessonsList.Add(lesson);
-                }
-                else
-                {
-                    value[lesson.StudyGroup] = [lesson];
-                }
-            }
-            else
-            {
-                table[lesson.LessonNumber] = new Dictionary<StudyGroup, List<Lesson>>
-                {
-                    [lesson.StudyGroup] = [lesson]
-                };
-            }
-        }
-        return table;
     }
 }
