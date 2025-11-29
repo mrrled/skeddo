@@ -15,6 +15,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.Classroom)
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
+            .Include(x => x.LessonNumber)
             .ToListAsync();
         return lessons.ToLessons();
     }

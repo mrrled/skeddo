@@ -1,30 +1,50 @@
-﻿using Domain;
-using Domain.Models;
+﻿using Domain.IRepositories;
 using Infrastructure;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 public static class ExportGenerator
 {
-    public static void GeneratePdf(IScheduleRepository scheduleRepository, int scheduleId)
+    public static void GeneratePdf(
+        ILessonRepository lessonRepository,
+        ILessonNumberRepository lessonNumberRepository,
+        IStudyGroupRepository studyGroupRepository,
+        int scheduleId)
     {
         QuestPDF.Settings.License = LicenseType.Community;
-        var generator = GetExportDocument(scheduleRepository, scheduleId).Result;
-        generator.GeneratePdf(@"G:\skeddo\newUI\schedule.pdf");
+        var generator = GetExportDocument(lessonRepository, lessonNumberRepository, studyGroupRepository, scheduleId)
+            .Result;
+        var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        var pathFile = Path.Combine(currentDirectory, "schedule.pdf");
+        generator.GeneratePdf(pathFile);
     }
 
-    public static void GenerateExcel(IScheduleRepository scheduleRepository, int scheduleId)
+    public static void GenerateExcel(
+        ILessonRepository lessonRepository,
+        ILessonNumberRepository lessonNumberRepository,
+        IStudyGroupRepository studyGroupRepository,
+        int scheduleId)
     {
-        var generator = GetExportDocument(scheduleRepository, scheduleId).Result;
-        generator.CreateExcelReport(@"G:\skeddo\newUI\schedule.xlsx");
+        var generator = GetExportDocument(lessonRepository,
+                lessonNumberRepository,
+                studyGroupRepository,
+                scheduleId)
+            .Result;
+        var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        var pathFile = Path.Combine(currentDirectory, "schedule.xlsx");
+        generator.CreateExcelReport(pathFile);
     }
 
-    private static async Task<ExportDocument> GetExportDocument(IScheduleRepository scheduleRepository, int scheduleId)
+    private static async Task<ExportDocument> GetExportDocument(
+        ILessonRepository lessonRepository,
+        ILessonNumberRepository lessonNumberRepository,
+        IStudyGroupRepository studyGroupRepository,
+        int scheduleId)
     {
-        var lessons = await scheduleRepository.GetLessonsByScheduleIdAsync(scheduleId);
+        var lessons = await lessonRepository.GetLessonsByScheduleIdAsync(scheduleId);
         var table = lessons.ToTable();
-        var lessonNumbers = await scheduleRepository.GetLessonNumbersByScheduleIdAsync(scheduleId);
-        var studyGroups = await scheduleRepository.GetStudyGroupListAsync();
+        var lessonNumbers = await lessonNumberRepository.GetLessonNumbersByScheduleIdAsync(scheduleId);
+        var studyGroups = await studyGroupRepository.GetStudyGroupListAsync();
         return new ExportDocument(table, studyGroups, lessonNumbers);
     }
 }
