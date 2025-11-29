@@ -77,6 +77,8 @@ public partial class App : Avalonia.Application
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }
 
+        ExportGenerator.GeneratePdf(Services.GetService<IScheduleRepository>(), 1);
+        ExportGenerator.GenerateExcel(Services.GetService<IScheduleRepository>(), 1);
         base.OnFrameworkInitializationCompleted();
     }
 }
