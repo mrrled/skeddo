@@ -6,7 +6,7 @@ using Avalonia.Collections;
 using newUI.ViewModels.Helpers;
 using newUI.ViewModels.SchedulePage.Lessons;
 
-namespace newUI.ViewModels.Schedule;
+namespace newUI.ViewModels.SchedulePage.Schedule;
 
 public class LessonTableViewModel : 
     DynamicGridViewModel<LessonCardViewModel, StudyGroupDto, LessonNumberDto>

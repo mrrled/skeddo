@@ -5,7 +5,7 @@
              xmlns:viewModels="clr-namespace:newUI.ViewModels"
              xmlns:lessons1="clr-namespace:newUI.ViewModels.SchedulePage.Lessons"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="newUI.Views.LessonCard.LessonCard"
+             x:Class="newUI.Views.SchedulePage.LessonCard.LessonCard"
              x:DataType="lessons1:LessonCardViewModel">
     
     <Design.DataContext>

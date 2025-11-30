@@ -4,8 +4,9 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.Services;
 using Avalonia.Collections;
+using newUI.ViewModels.SchedulePage.Schedule;
 
-namespace newUI.ViewModels.Schedule;
+namespace newUI.ViewModels.SchedulePage.Schedule;
 
 public class ScheduleViewModel : ViewModelBase
 {

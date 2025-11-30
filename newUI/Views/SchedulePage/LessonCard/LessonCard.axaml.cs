@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using newUI.ViewModels;
 
-namespace newUI.Views.LessonCard;
+namespace newUI.Views.SchedulePage.LessonCard;
 
 public partial class LessonCard : UserControl
 {

@@ -3,7 +3,7 @@ using System.Windows.Input;
 using Avalonia.Collections;
 using newUI.ViewModels.SchedulePage.Lessons;
 
-namespace newUI.ViewModels.Schedule;
+namespace newUI.ViewModels.SchedulePage.Schedule;
 
 public class LessonBufferViewModel : ViewModelBase
 {
