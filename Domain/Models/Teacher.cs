@@ -24,9 +24,20 @@ public class Teacher(
         Name = name;
         Surname = surname;
         Patronymic = patronymic;
-        SchoolSubjects = schoolSubjects.Select(Schedule.CreateSchoolSubject).ToList();
-        StudyGroups = studyGroups.Select(Schedule.CreateStudyGroup).ToList();
+        SchoolSubjects = schoolSubjects.Select(SchoolSubject.CreateSchoolSubject).ToList();
+        StudyGroups = studyGroups.Select(StudyGroup.CreateStudyGroup).ToList();
         Description = description;
         return this;
+    }
+    
+    public static Teacher CreateTeacher(int teacherId,
+        string? name, string? surname, string? patronymic,
+        List<string> schoolSubjects, List<string> studyGroups)
+    {
+        if (name is null || surname is null || patronymic is null)
+            throw new ArgumentNullException();
+        var subjects = schoolSubjects.Select(SchoolSubject.CreateSchoolSubject).ToList();
+        var groups = studyGroups.Select(StudyGroup.CreateStudyGroup).ToList();
+        return new Teacher(teacherId, name, surname, patronymic, subjects, groups);
     }
 }

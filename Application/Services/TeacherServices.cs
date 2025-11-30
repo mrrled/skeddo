@@ -22,7 +22,7 @@ public class TeacherServices(ITeacherRepository teacherRepository, IUnitOfWork u
 
     public async Task AddTeacher(TeacherDto teacherDto)
     {
-        var teacher = Schedule.CreateTeacher(teacherDto.Id, teacherDto.Name, teacherDto.Surname,
+        var teacher = Teacher.CreateTeacher(teacherDto.Id, teacherDto.Name, teacherDto.Surname,
             teacherDto.Patronymic, teacherDto.SchoolSubjects, teacherDto.StudyGroups);
         await teacherRepository.AddAsync(teacher);
         await unitOfWork.SaveChangesAsync();

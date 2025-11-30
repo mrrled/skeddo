@@ -16,7 +16,7 @@ public class LessonNumberServices(ILessonNumberRepository lessonNumberRepository
 
     public async Task AddLessonNumber(LessonNumberDto lessonNumberDto, int scheduleId)
     {
-        var lessonNumber = Schedule.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
+        var lessonNumber = LessonNumber.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
         await lessonNumberRepository.AddAsync(lessonNumber, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
@@ -24,15 +24,15 @@ public class LessonNumberServices(ILessonNumberRepository lessonNumberRepository
     public async Task EditLessonNumber(LessonNumberDto oldLessonNumberDto, LessonNumberDto newLessonNumberDto,
         int scheduleId)
     {
-        var oldLessonNumber = Schedule.CreateLessonNumber(oldLessonNumberDto.Number, oldLessonNumberDto.Time);
-        var newLessonNumber = Schedule.CreateLessonNumber(newLessonNumberDto.Number, newLessonNumberDto.Time);
+        var oldLessonNumber = LessonNumber.CreateLessonNumber(oldLessonNumberDto.Number, oldLessonNumberDto.Time);
+        var newLessonNumber = LessonNumber.CreateLessonNumber(newLessonNumberDto.Number, newLessonNumberDto.Time);
         await lessonNumberRepository.UpdateAsync(oldLessonNumber, newLessonNumber, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteLessonNumber(LessonNumberDto lessonNumberDto, int scheduleId)
     {
-        var lessonNumber = Schedule.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
+        var lessonNumber = LessonNumber.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
         await lessonNumberRepository.Delete(lessonNumber, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }

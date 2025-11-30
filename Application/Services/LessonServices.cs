@@ -23,7 +23,7 @@ public class LessonServices(
         var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId);
         var teacherDto = lessonDto.Teacher;
         if (teacherDto is not null)
-            teacher = Schedule.CreateTeacher(
+            teacher = Teacher.CreateTeacher(
                 teacherDto.Id,
                 teacherDto.Name,
                 teacherDto.Surname,

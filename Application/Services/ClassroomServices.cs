@@ -16,22 +16,22 @@ public class ClassroomServices(IClassroomRepository classroomRepository, IUnitOf
 
     public async Task AddClassroom(ClassroomDto classroomDto)
     {
-        var classroom = Schedule.CreateClassroom(classroomDto.Name, classroomDto.Description);
+        var classroom = Classroom.CreateClassroom(classroomDto.Name, classroomDto.Description);
         await classroomRepository.AddAsync(classroom);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task EditClassroom(ClassroomDto oldClassroomDto, ClassroomDto newClassroomDto)
     {
-        var oldClassroom = Schedule.CreateClassroom(oldClassroomDto.Name, oldClassroomDto.Description);
-        var newClassroom = Schedule.CreateClassroom(newClassroomDto.Name, newClassroomDto.Description);
+        var oldClassroom = Classroom.CreateClassroom(oldClassroomDto.Name, oldClassroomDto.Description);
+        var newClassroom = Classroom.CreateClassroom(newClassroomDto.Name, newClassroomDto.Description);
         await classroomRepository.UpdateAsync(oldClassroom, newClassroom);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteClassroom(ClassroomDto classroomDto)
     {
-        var classroom = Schedule.CreateClassroom(classroomDto.Name, classroomDto.Description);
+        var classroom = Classroom.CreateClassroom(classroomDto.Name, classroomDto.Description);
         await classroomRepository.Delete(classroom);
         await unitOfWork.SaveChangesAsync();
     }

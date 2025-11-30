@@ -16,7 +16,7 @@ public class SchoolSubjectServices(ISchoolSubjectRepository schoolSubjectReposit
 
     public async Task AddSchoolSubject(SchoolSubjectDto schoolSubjectDto)
     {
-        var schoolSubject = Schedule.CreateSchoolSubject(schoolSubjectDto.Name);
+        var schoolSubject = SchoolSubject.CreateSchoolSubject(schoolSubjectDto.Name);
         await schoolSubjectRepository.AddAsync(schoolSubject);
         await unitOfWork.SaveChangesAsync();
     }
@@ -24,15 +24,15 @@ public class SchoolSubjectServices(ISchoolSubjectRepository schoolSubjectReposit
     public async Task EditSchoolSubject(SchoolSubjectDto oldSubjectSchoolSubjectDto,
         SchoolSubjectDto newSubjectSchoolSubjectDto)
     {
-        var oldSchoolSubject = Schedule.CreateSchoolSubject(oldSubjectSchoolSubjectDto.Name);
-        var newSchoolSubject = Schedule.CreateSchoolSubject(newSubjectSchoolSubjectDto.Name);
+        var oldSchoolSubject = SchoolSubject.CreateSchoolSubject(oldSubjectSchoolSubjectDto.Name);
+        var newSchoolSubject = SchoolSubject.CreateSchoolSubject(newSubjectSchoolSubjectDto.Name);
         await schoolSubjectRepository.UpdateAsync(oldSchoolSubject, newSchoolSubject);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteSchoolSubject(SchoolSubjectDto schoolSubjectDto)
     {
-        var schoolSubject = Schedule.CreateSchoolSubject(schoolSubjectDto.Name);
+        var schoolSubject = SchoolSubject.CreateSchoolSubject(schoolSubjectDto.Name);
         await schoolSubjectRepository.Delete(schoolSubject);
         await unitOfWork.SaveChangesAsync();
     }

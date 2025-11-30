@@ -16,22 +16,22 @@ public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUni
 
     public async Task AddStudyGroup(StudyGroupDto studyGroupDto)
     {
-        var studyGroup = Schedule.CreateStudyGroup(studyGroupDto.Name);
+        var studyGroup = StudyGroup.CreateStudyGroup(studyGroupDto.Name);
         await studyGroupRepository.AddAsync(studyGroup);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task EditStudyGroup(StudyGroupDto oldStudyGroupDto, StudyGroupDto newStudyGroupDto)
     {
-        var oldStudyGroup = Schedule.CreateStudyGroup(oldStudyGroupDto.Name);
-        var newStudyGroup = Schedule.CreateStudyGroup(newStudyGroupDto.Name);
+        var oldStudyGroup = StudyGroup.CreateStudyGroup(oldStudyGroupDto.Name);
+        var newStudyGroup = StudyGroup.CreateStudyGroup(newStudyGroupDto.Name);
         await studyGroupRepository.UpdateAsync(oldStudyGroup, newStudyGroup);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteStudyGroup(StudyGroupDto studyGroupDto)
     {
-        var studyGroup = Schedule.CreateStudyGroup(studyGroupDto.Name);
+        var studyGroup = StudyGroup.CreateStudyGroup(studyGroupDto.Name);
         await studyGroupRepository.Delete(studyGroup);
         await unitOfWork.SaveChangesAsync();
     }
