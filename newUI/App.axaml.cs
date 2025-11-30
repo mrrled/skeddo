@@ -20,8 +20,8 @@ using newUI.ViewModels.Schedule;
 using newUI.ViewModels.Teachers;
 using newUI.Views;
 using newUI.Views.MainWindow;
-using newUI.Views.TeacherCreationWindow;
-using newUI.Views.TeacherListWindow;
+using newUI.Views.TeachersPage.TeacherCreationWindow;
+using newUI.Views.TeachersPage.TeacherListWindow;
 
 namespace newUI;
 

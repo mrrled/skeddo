@@ -50,10 +50,15 @@
 
   <ItemGroup>
     <AdditionalFiles Include="Views\MainWindow\MainWindow.axaml" />
+    <AdditionalFiles Include="Views\SchedulePage\LessonCard\LessonCard.axaml" />
+    <AdditionalFiles Include="Views\TeachersPage\TeacherCreationWindow\TeacherCreationWindow.axaml" />
+    <AdditionalFiles Include="Views\TeachersPage\TeacherListWindow\TeacherListWindow.axaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\BufferWindow\" />
-    <Folder Include="Views\ObjectList\" />
+    <Folder Include="ViewModels\SchedulePage\" />
+    <Folder Include="ViewModels\TeachersPage\" />
+    <Folder Include="Views\SchedulePage\BufferWindow\" />
+    <Folder Include="Views\TeachersPage\" />
   </ItemGroup>
 </Project>

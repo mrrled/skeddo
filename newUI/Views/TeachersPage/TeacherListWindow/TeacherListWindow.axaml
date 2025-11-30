@@ -4,7 +4,7 @@
         xmlns:viewModels="clr-namespace:newUI.ViewModels"
         xmlns:views="clr-namespace:newUI.Views.LessonCard"
         xmlns:teachers="clr-namespace:newUI.ViewModels.Teachers"
-        x:Class="newUI.Views.TeacherListWindow.TeacherListWindow"
+        x:Class="newUI.Views.TeachersPage.TeacherListWindow.TeacherListWindow"
         Title="Avalonia List App"
         x:DataType="teachers:TeacherListViewModel">
 

@@ -1,10 +1,7 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using newUI.ViewModels;
 using newUI.ViewModels.Teachers;
 
-namespace newUI.Views.TeacherListWindow;
+namespace newUI.Views.TeachersPage.TeacherListWindow;
 
 public partial class TeacherListWindow : Window
 {

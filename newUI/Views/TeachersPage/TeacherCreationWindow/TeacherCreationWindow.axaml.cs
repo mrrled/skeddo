@@ -1,8 +1,7 @@
 using Avalonia.Controls;
-using newUI.ViewModels;
 using newUI.ViewModels.Teachers;
 
-namespace newUI.Views.TeacherCreationWindow;
+namespace newUI.Views.TeachersPage.TeacherCreationWindow;
 
 public partial class TeacherCreationWindow : Window
 {

@@ -6,7 +6,7 @@
         xmlns:viewModels="clr-namespace:newUI.ViewModels"
         xmlns:teachers="clr-namespace:newUI.ViewModels.Teachers"
         mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
-        x:Class="newUI.Views.TeacherCreationWindow.TeacherCreationWindow"
+        x:Class="newUI.Views.TeachersPage.TeacherCreationWindow.TeacherCreationWindow"
         Title="Создание преподавателя"
         Width="350" Height="300"
         x:DataType="teachers:TeacherCreationViewModel">
