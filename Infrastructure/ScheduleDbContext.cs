@@ -16,6 +16,11 @@ public class ScheduleDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<LessonDbo>().Navigation(s => s.Classroom).AutoInclude();
+        modelBuilder.Entity<LessonDbo>().Navigation(s => s.SchoolSubject).AutoInclude();
+        modelBuilder.Entity<LessonDbo>().Navigation(s => s.StudyGroup).AutoInclude();
+        modelBuilder.Entity<LessonDbo>().Navigation(s => s.Teacher).AutoInclude();
+        modelBuilder.Entity<LessonDbo>().Navigation(s => s.LessonNumber).AutoInclude();
         base.OnModelCreating(modelBuilder);
     }
 }

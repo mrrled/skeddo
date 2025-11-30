@@ -22,6 +22,7 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
     {
         var scheduleGroup = await context.ScheduleGroups
             .Include(x => x.Schedules)
+            .ThenInclude(schedule => schedule.Lessons)
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
