@@ -78,7 +78,7 @@ public partial class App : Avalonia.Application
         services.AddTransient<LessonCardViewModel>();
         services.AddTransient<ScheduleViewModel>();
         services.AddTransient<LessonTableViewModel>();
-        services.AddSingleton<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         RegsterViewMappings();
         Services = services.BuildServiceProvider();
         using (var scope = Services.CreateScope())

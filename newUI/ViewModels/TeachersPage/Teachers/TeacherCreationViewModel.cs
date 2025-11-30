@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace newUI.ViewModels.TeachersPage.Teachers;
 
 public class TeacherCreationViewModel : ViewModelBase
 {
     private TeacherDto teacher = new();
-    private ITeacherServices service;
+    private readonly IServiceScopeFactory _scopeFactory;
 
     public TeacherDto Teacher
     {
@@ -17,9 +18,9 @@ public class TeacherCreationViewModel : ViewModelBase
         set => SetProperty(ref teacher, value);
     } 
 
-    public TeacherCreationViewModel(ITeacherServices service)
+    public TeacherCreationViewModel(IServiceScopeFactory scopeFactory)
     {
-        this.service = service;
+        _scopeFactory = scopeFactory;
         var random = new Random();
         var id = random.Next(1, 1000);
         teacher.Id = id; 
@@ -28,10 +29,13 @@ public class TeacherCreationViewModel : ViewModelBase
     
     public ICommand SaveChangesCommand { get; set; }
 
-    public Task SaveChanges()
-    {
-        service.AddTeacher(teacher);
-        return Task.CompletedTask;
+    public async Task SaveChanges()
+    { 
+        using (var scope = _scopeFactory.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetRequiredService<ITeacherServices>();
+            await service.AddTeacher(teacher);
+        } 
     }
     public Task SetName(string name)
     {
