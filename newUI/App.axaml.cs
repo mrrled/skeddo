@@ -90,16 +90,20 @@ public partial class App : Avalonia.Application
     {
         services.AddTransient<MainViewModel>();
         services.AddTransient<MainWindow>();
+        
         services.AddSingleton<IWindowManager, WindowManager>();
         services.AddTransient<TeacherCreationViewModel>();
         services.AddTransient<TeacherListWindow>();
         services.AddTransient<TeacherListViewModel>();
+        
         services.AddTransient<LessonCardViewModel>();
+        
         services.AddTransient<ScheduleViewModel>();
         services.AddTransient<ScheduleWindow>();
+        
         services.AddTransient<LessonTableView>();
         services.AddTransient<LessonTableViewModel>();
-        services.AddTransient<LessonTableViewModel>();
+        
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         RegsterViewMappings();
     }

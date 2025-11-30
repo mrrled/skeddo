@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Application.DtoModels;
 using Application.IServices;
 using Avalonia.Collections;
+using Microsoft.Extensions.DependencyInjection;
 using newUI.ViewModels.Helpers;
 using newUI.ViewModels.SchedulePage.Lessons;
 
@@ -12,25 +12,23 @@ namespace newUI.ViewModels.SchedulePage.Schedule;
 public class LessonTableViewModel : 
     DynamicGridViewModel<LessonCardViewModel, StudyGroupDto, LessonNumberDto>
 {
-    private readonly IStudyGroupServices studyGroupServices;
-    private readonly ILessonNumberServices lessonNumberServices;
-    private readonly ILessonServices lessonServices;
+    private readonly IServiceScopeFactory scopeFactory;
     
     private ScheduleDto schedule;
     private AvaloniaList<LessonNumberDto> lessonNumbers;
     private AvaloniaList<StudyGroupDto> studyGroups;
 
-    public LessonTableViewModel(ScheduleDto schedule, 
-        ILessonNumberServices lessonNumberServices,
-        IStudyGroupServices studyGroupServices, 
-        ILessonServices lessonServices)
+    public LessonTableViewModel(ScheduleDto schedule, IServiceScopeFactory scopeFactory)
     {
         this.schedule = schedule;
-        this.lessonNumberServices = lessonNumberServices;
-        this.studyGroupServices = studyGroupServices;
-        this.lessonServices = lessonServices;
-        LoadStudyGroups();
-        LoadLessonNumbers();
+        this.scopeFactory = scopeFactory;
+        _ = InitializeAsync();
+    }
+    
+    private async Task InitializeAsync()
+    {
+        await LoadStudyGroupsAsync();
+        await LoadLessonNumbersAsync();
         LoadDataToGrid();
     }
 
@@ -52,20 +50,22 @@ public class LessonTableViewModel :
         set => SetProperty(ref studyGroups, value);
     }
 
-    private void LoadStudyGroups()
+    private Task LoadStudyGroupsAsync()
     {
-        var groups = studyGroupServices
-            .FetchStudyGroupsFromBackendAsync()
-            .Result;
-        StudyGroups = new AvaloniaList<StudyGroupDto>(groups);
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IStudyGroupServices>();
+        var groups = service.FetchStudyGroupsFromBackendAsync();
+        StudyGroups = new AvaloniaList<StudyGroupDto>(groups.Result);
+        return Task.CompletedTask;
     }
 
-    private void LoadLessonNumbers()
+    private Task LoadLessonNumbersAsync()
     {
-        var numbers = lessonNumberServices
-            .GetLessonNumbersByScheduleId(Schedule.Id)
-            .Result;
-        LessonNumbers = new AvaloniaList<LessonNumberDto>(numbers);
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<ILessonNumberServices>();
+        var numbers = service.GetLessonNumbersByScheduleId(Schedule.Id);
+        LessonNumbers = new AvaloniaList<LessonNumberDto>(numbers.Result);
+        return Task.CompletedTask;
     }
     
     protected void LoadDataToGrid()
@@ -75,27 +75,13 @@ public class LessonTableViewModel :
 
     private Task<List<(LessonNumberDto RowHeader, Dictionary<StudyGroupDto, LessonCardViewModel> CellData)>> LoadData()
     {
-        // var rows = new Dictionary<LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel>>();
-        // foreach (var number in LessonNumbers)
-        // {
-        //     rows[number] = new Dictionary<StudyGroupDto, LessonCardViewModel>();
-        // }
-        //
-        // foreach (var lesson in Schedule.Lessons)
-        // {
-        //     var viewModel = new LessonCardViewModel(lessonServices){ Lesson = lesson };
-        //     rows[lesson.LessonNumber][lesson.StudyGroup] = viewModel;
-        // }
-        //
-        // var result = rows.Select(kvp => (RowHeader: kvp.Key, CellData: kvp.Value)).ToList();
-        
         var result = new List<(LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel>)>();
-        var lessonDictionary = new Dictionary<(LessonNumberDto, StudyGroupDto), LessonDto>();
+        var lessonDictionary = new Dictionary<(int, string), LessonDto>();
         foreach (var lesson in Schedule.Lessons)
         {
             if (lesson.LessonNumber != null && lesson.StudyGroup != null)
             {
-                lessonDictionary[(lesson.LessonNumber, lesson.StudyGroup)] = lesson;
+                lessonDictionary[(lesson.LessonNumber.Number, lesson.StudyGroup.Name)] = lesson;
             }
         }
 
@@ -105,14 +91,14 @@ public class LessonTableViewModel :
             
             foreach (var studyGroup in StudyGroups)
             {
-                if (lessonDictionary.TryGetValue((lessonNumber, studyGroup), out var lesson))
+                if (lessonDictionary.TryGetValue((lessonNumber.Number, studyGroup.Name), out var lesson))
                 {
-                    var viewModel = new LessonCardViewModel(lessonServices) { Lesson = lesson };
+                    var viewModel = new LessonCardViewModel(scopeFactory) { Lesson = lesson };
                     rowData[studyGroup] = viewModel;
                 }
                 else
                 {
-                    var viewModel = new LessonCardViewModel(lessonServices) { Lesson = new LessonDto() };
+                    var viewModel = new LessonCardViewModel(scopeFactory);
                     rowData[studyGroup] = viewModel;
                 }
             }

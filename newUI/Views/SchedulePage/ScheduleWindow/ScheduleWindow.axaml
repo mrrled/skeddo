@@ -7,10 +7,6 @@
         Title="Расписание"
         Width="1200" Height="800"
         x:DataType="vm:ScheduleViewModel">
-    
-    <Design.DataContext>
-        <vm:ScheduleViewModel />
-    </Design.DataContext>
 
     <DockPanel>
         <!-- Верхняя панель с выбором расписания -->

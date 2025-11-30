@@ -51,6 +51,11 @@ public class DynamicGridViewModel<TCell, TColumn, TRow> : ViewModelBase
             .OrderBy(c => c)
             .ToList();
 
+        if (allColumns.First() is IComparable)
+        {
+            allColumns = allColumns.OrderBy(c => c).ToList();
+        }
+
         foreach (var column in allColumns)
         {
             Columns.Add(column);

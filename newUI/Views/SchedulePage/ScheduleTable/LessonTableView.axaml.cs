@@ -10,10 +10,10 @@ public partial class LessonTableView : UserControl
         InitializeComponent();
     }
 
-    
-    public LessonTableView(LessonTableViewModel lessonTableViewModel)
-    {
-        DataContext = lessonTableViewModel;
-        InitializeComponent();
-    }
+    //
+    // public LessonTableView(LessonTableViewModel lessonTableViewModel)
+    // {
+    //     DataContext = lessonTableViewModel;
+    //     InitializeComponent();
+    // }
 }

@@ -9,7 +9,8 @@ public static class LessonNumberDtoExtensions
 {
     public static LessonNumberDto ToLessonNumberDto(this LessonNumber dtoLessonNumber)
     {
-        return DtoMapper.ToLessonNumberDto(dtoLessonNumber);
+        var ln = DtoMapper.ToLessonNumberDto(dtoLessonNumber);
+        return ln;
     }
     public static List<LessonNumberDto> ToLessonNumbersDto(this ICollection<LessonNumber> dtoLessonNumber)
     {
@@ -18,7 +19,8 @@ public static class LessonNumberDtoExtensions
     
     public static LessonNumber ToLessonNumber(this LessonNumberDto lessonNumberDto)
     {
-        return DtoMapper.ToLessonNumber(lessonNumberDto);
+        var ln = DtoMapper.ToLessonNumber(lessonNumberDto);
+        return ln;
     }
 
     public static List<LessonNumber> ToLessonNumbers(this ICollection<LessonNumberDto> dtoLessonNumber)

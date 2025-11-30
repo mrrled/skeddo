@@ -5,45 +5,43 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using Avalonia.Collections;
-using newUI.ViewModels.SchedulePage.Schedule;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
 public class ScheduleViewModel : ViewModelBase
 {
-    private readonly IScheduleServices scheduleServices;
-    private readonly IStudyGroupServices studyGroupServices;
-    private readonly ILessonNumberServices lessonNumberServices;
-    private readonly ILessonServices lessonServices;
+    private readonly IServiceScopeFactory scopeFactory;
     
     private AvaloniaList<ScheduleDto> scheduleList;
     private AvaloniaDictionary<ScheduleDto, LessonTableViewModel> lessonTables;
     private ScheduleDto currentSchedule;
     private LessonBufferViewModel buffer;
     private LessonTableViewModel currentTable;
+    private bool isLoading;
 
-    public ScheduleViewModel(IScheduleServices scheduleServices,
-        IStudyGroupServices studyGroupServices,
-        ILessonNumberServices lessonNumberServices,
-        ILessonServices lessonServices)
+    public ScheduleViewModel( IServiceScopeFactory scopeFactory)
     {
-        this.scheduleServices = scheduleServices;
-        this.studyGroupServices = studyGroupServices;
-        this.lessonNumberServices = lessonNumberServices;
-        this.lessonServices = lessonServices;
-        
-        LoadSchedules();
-        currentSchedule = scheduleList.FirstOrDefault();
-        currentTable = lessonTables.TryGetValue(currentSchedule, out var table) ? table : null;
+        this.scopeFactory = scopeFactory;
+
+        Buffer = new LessonBufferViewModel();
 
         ChooseScheduleCommand = new RelayCommandAsync(ChooseSchedule);
         LoadSchedulesCommand = new RelayCommandAsync(LoadSchedulesAsync);
         SaveScheduleCommand = new RelayCommandAsync(SaveScheduleAsync);
+        
+        _ = InitializeAsync();
     }
     
     public ICommand ChooseScheduleCommand { get; }
     public ICommand SaveScheduleCommand { get; }
     public ICommand LoadSchedulesCommand { get; }
+    
+    public bool IsLoading
+    {
+        get => isLoading;
+        set => SetProperty(ref isLoading, value);
+    }
 
     public AvaloniaList<ScheduleDto> ScheduleList
     {
@@ -60,7 +58,16 @@ public class ScheduleViewModel : ViewModelBase
     public ScheduleDto CurrentSchedule
     {
         get => currentSchedule;
-        set => SetProperty(ref currentSchedule, value);
+        set 
+        { 
+            if (SetProperty(ref currentSchedule, value))
+            {
+                if (value != null && LessonTables.ContainsKey(value))
+                {
+                    Table = LessonTables[value];
+                }
+            }
+        }
     }
 
     public LessonBufferViewModel Buffer
@@ -74,54 +81,45 @@ public class ScheduleViewModel : ViewModelBase
         get => currentTable;
         set => SetProperty(ref currentTable, value);
     }
-
-    private void LoadSchedules()
+    
+    private async Task InitializeAsync()
     {
-        var schedules = scheduleServices.FetchSchedulesFromBackendAsync().Result;
-        var tables = new Dictionary<ScheduleDto, LessonTableViewModel>();
-        foreach (var schedule in schedules)
+        IsLoading = true;
+        try
         {
-            tables[schedule] = new LessonTableViewModel(
-                schedule,
-                lessonNumberServices,
-                studyGroupServices,
-                lessonServices);
+            await LoadSchedulesAsync();
         }
-        ScheduleList = new AvaloniaList<ScheduleDto>(schedules);
-        LessonTables = new AvaloniaDictionary<ScheduleDto, LessonTableViewModel>(tables);
+        finally
+        {
+            IsLoading = false;
+        }
     }
     
     private Task ChooseSchedule()
     {
-        if (CurrentSchedule != null && LessonTables.ContainsKey(CurrentSchedule))
-        {
+        if (CurrentSchedule != null && LessonTables.ContainsKey(CurrentSchedule)) 
             Table = LessonTables[CurrentSchedule];
-        }
-
+        
         return Task.CompletedTask;
     }
 
     private async Task SaveScheduleAsync()
     {
         // // Реализация сохранения расписания
-        // if (CurrentSchedule != null)
-        // {
-        //     await scheduleServices.SaveScheduleAsync(CurrentSchedule);
-        // }
     }
 
     private async Task LoadSchedulesAsync()
     {
-        var schedules = await scheduleServices.FetchSchedulesFromBackendAsync();
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
+        var schedules = await service.FetchSchedulesFromBackendAsync();
         var tables = new Dictionary<ScheduleDto, LessonTableViewModel>();
         
         foreach (var schedule in schedules)
         {
             tables[schedule] = new LessonTableViewModel(
                 schedule,
-                lessonNumberServices,
-                studyGroupServices,
-                lessonServices);
+                scopeFactory);
         }
         
         ScheduleList = new AvaloniaList<ScheduleDto>(schedules);
@@ -130,7 +128,10 @@ public class ScheduleViewModel : ViewModelBase
         if (ScheduleList.Any())
         {
             CurrentSchedule = ScheduleList.First();
-            ChooseSchedule();
+            if (LessonTables.ContainsKey(CurrentSchedule))
+            {
+                Table = LessonTables[CurrentSchedule];
+            }
         }
     }
 }

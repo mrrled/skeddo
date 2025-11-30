@@ -10,7 +10,6 @@ public class StudyGroupDto : IComparable<StudyGroupDto>
     public int CompareTo(StudyGroupDto? other)
     {
         if (ReferenceEquals(this, other)) return 0;
-        if (other is null) return 1;
-        return Id.CompareTo(other.Id);
+        return other is null ? 1 : Id.CompareTo(other.Id);
     }
 }

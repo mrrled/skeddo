@@ -3,20 +3,21 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace newUI.ViewModels.SchedulePage.Lessons;
 
 public class LessonCardViewModel : ViewModelBase
 {
     private LessonDto lesson;
-    public ILessonServices Service;
+    private readonly IServiceScopeFactory scopeFactory;
     
     public double Width { get; set; }
     public double Height { get; set; }
 
-    public LessonCardViewModel(ILessonServices service)
+    public LessonCardViewModel(IServiceScopeFactory scopeFactory)
     {
-        Service = service;
+        this.scopeFactory = scopeFactory;
     }
 
     public LessonDto Lesson
