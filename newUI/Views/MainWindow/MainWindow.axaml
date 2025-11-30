@@ -1,0 +1,103 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:newUI.ViewModels"
+        xmlns:viewModels="clr-namespace:newUI.ViewModels" 
+        x:Class="newUI.Views.MainWindow.MainWindow"
+        Title="Avalonia List App"
+        x:DataType="viewModels:MainViewModel">
+
+    <Design.DataContext>
+        <vm:MainViewModel/>
+    </Design.DataContext>
+    
+    <!-- <ScrollViewer> -->
+    <!--     <StackPanel Margin="20"> -->
+    <!--         <TextBlock Text="Список уроков" FontWeight="Bold" Margin="0 0 0 5"/> -->
+    <!--         <StackPanel Orientation="Horizontal"> -->
+    <!--         <Button Content="Загрузить список уроков" -->
+    <!--                 Command="{Binding LoadLessonsCommand}" -->
+    <!--                 HorizontalAlignment="Left" -->
+    <!--                 Margin="0 0 0 15"/> -->
+    <!--          -->
+    <!--         <Button Content="Скрыть список уроков" -->
+    <!--                 Command="{Binding HideLessonsCommand}" -->
+    <!--                 HorizontalAlignment="Right" -->
+    <!--                 Margin="0 0 0 15"/> -->
+    <!--         </StackPanel> -->
+    <!--          -->
+    <!--         <Grid ColumnDefinitions=100, * -->
+    <!--               RowDefinitions="Auto, *" -->
+    <!--               Margin="0 15 0 0" -->
+    <!--               MinHeight="400"> -->
+    <!--          -->
+    <!--             <ItemsControl ItemsSource="{Binding ColumnHeaders}" Grid.Row="0" Grid.Column="1"> -->
+    <!--                 <ItemsControl.ItemsPanel> -->
+    <!--                     <ItemsPanelTemplate> -->
+    <!--                         <StackPanel Orientation="Horizontal"/> -->
+    <!--                     </ItemsPanelTemplate> -->
+    <!--                 </ItemsControl.ItemsPanel> -->
+    <!--                 <ItemsControl.ItemTemplate> -->
+    <!--                     <DataTemplate> -->
+    <!--                         <Border MinWidth="180" -->
+    <!--                                 Background="#F0F0F0" -->
+    <!--                                 BorderBrush="#CCCCCC" -->
+    <!--                                 BorderThickness="1 1 1 0" -->
+    <!--                                 Padding="5"> -->
+    <!--                             <TextBlock Text="{Binding .}" -->
+    <!--                                        HorizontalAlignment="Center" -->
+    <!--                                        FontWeight="Bold"/> -->
+    <!--                         </Border> -->
+    <!--                     </DataTemplate> -->
+    <!--                 </ItemsControl.ItemTemplate> -->
+    <!--             </ItemsControl> -->
+    <!--          -->
+    <!--             <Border Grid.Row="0" Grid.Column="0" -->
+    <!--                     Background="#E0E0E0" -->
+    <!--                     BorderBrush="#CCCCCC" -->
+    <!--                     BorderThickness="1 1 0 0" -->
+    <!--                     Padding="5"> -->
+    <!--                 <TextBlock Text="Урок" HorizontalAlignment="Center" FontWeight="Bold"/> -->
+    <!--             </Border> -->
+    <!--          -->
+    <!--             <ItemsControl ItemsSource="{Binding ScheduleRows}" Grid.Row="1" Grid.ColumnSpan="2"> -->
+    <!--                 <ItemsControl.ItemTemplate> -->
+    <!--                     <DataTemplate x:DataType="viewModels:ScheduleRowViewModel"> -->
+    <!--                         <Grid ColumnDefinitions="100, *"> -->
+    <!--          -->
+    <!--                             <Border Grid.Column="0" -->
+    <!--                                     BorderBrush="#CCCCCC" -->
+    <!--                                     BorderThickness="1 0 1 1" -->
+    <!--                                     Padding="5" -->
+    <!--                                     Background="#F8F8F8" -->
+    <!--                                     VerticalAlignment="Stretch"> -->
+    <!--                                 <TextBlock Text="{Binding TimeSlotOrder}" -->
+    <!--                                            VerticalAlignment="Center" -->
+    <!--                                            HorizontalAlignment="Center"/> -->
+    <!--                             </Border> -->
+    <!--          -->
+    <!--                             <ItemsControl ItemsSource="{Binding Cells}" Grid.Column="1"> -->
+    <!--                                 <ItemsControl.ItemsPanel> -->
+    <!--                                     <ItemsPanelTemplate> -->
+    <!--                                         <StackPanel Orientation="Horizontal"/> -->
+    <!--                                     </ItemsPanelTemplate> -->
+    <!--                                 </ItemsControl.ItemsPanel> -->
+    <!--                                 <ItemsControl.ItemTemplate> -->
+    <!--                                     <DataTemplate> -->
+    <!--                                         <Border MinWidth="180" MinHeight="150" -->
+    <!--                                                 BorderBrush="#CCCCCC" -->
+    <!--                                                 BorderThickness="0 0 1 1" -->
+    <!--                                                 Background="White"> -->
+    <!--                                             <views:LessonCard DataContext="{Binding .}" -->
+    <!--                                                               IsVisible="{Binding ., Converter={x:Static viewModels:NullToBoolConverter.Instance}}" /> -->
+    <!--                                         </Border> -->
+    <!--                                     </DataTemplate> -->
+    <!--                                 </ItemsControl.ItemTemplate> -->
+    <!--                             </ItemsControl> -->
+    <!--                         </Grid> -->
+    <!--                     </DataTemplate> -->
+    <!--                 </ItemsControl.ItemTemplate> -->
+    <!--             </ItemsControl> -->
+    <!--         </Grid> -->
+    <!--     </StackPanel> -->
+    <!-- </ScrollViewer> -->
+</Window>

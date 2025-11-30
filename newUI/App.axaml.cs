@@ -13,8 +13,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using newUI.Services;
 using newUI.ViewModels;
+using newUI.ViewModels.Lessons;
+using newUI.ViewModels.Schedule;
+using newUI.ViewModels.Teachers;
 using newUI.Views;
+using newUI.Views.MainWindow;
+using newUI.Views.TeacherCreationWindow;
+using newUI.Views.TeacherListWindow;
 
 namespace newUI;
 
@@ -63,8 +70,15 @@ public partial class App : Avalonia.Application
         });
         services.AddTransient<MainViewModel>();
         services.AddTransient<MainWindow>();
+        services.AddSingleton<IWindowManager, WindowManager>();
+        services.AddTransient<TeacherCreationViewModel>();
+        services.AddTransient<TeacherListWindow>();
+        services.AddTransient<TeacherListViewModel>();
+        services.AddTransient<LessonCardViewModel>();
+        services.AddTransient<ScheduleViewModel>();
+        services.AddTransient<LessonTableViewModel>();
         services.AddSingleton<IUnitOfWork, UnitOfWork>();
-
+        RegsterViewMappings();
         Services = services.BuildServiceProvider();
         using (var scope = Services.CreateScope())
         {
@@ -74,7 +88,7 @@ public partial class App : Avalonia.Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = Services.GetRequiredService<MainWindow>();
+            desktop.MainWindow = Services.GetRequiredService<TeacherListWindow>();
         }
 
         ExportGenerator.GeneratePdf(
@@ -90,5 +104,12 @@ public partial class App : Avalonia.Application
             1
         );
         base.OnFrameworkInitializationCompleted();
+    }
+    
+    private void RegsterViewMappings()
+    {
+        ViewMappingService.Register<MainViewModel, MainWindow>();
+        ViewMappingService.Register<TeacherCreationViewModel, TeacherCreationWindow>();
+        ViewMappingService.Register<TeacherListViewModel, TeacherListWindow>();
     }
 }

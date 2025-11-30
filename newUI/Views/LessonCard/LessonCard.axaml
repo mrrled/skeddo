@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:newUI.ViewModels"
+             xmlns:lessons="clr-namespace:newUI.ViewModels.Lessons"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="newUI.Views.LessonCard.LessonCard"
+             x:DataType="lessons:LessonCardViewModel">
+    
+    <Design.DataContext>
+        <lessons:LessonCardViewModel/>
+    </Design.DataContext>
+    
+    <Border Name="Cell" CornerRadius="6"
+            Background="White"
+            BorderBrush="#E0E0E0"
+            BorderThickness="1"
+            Padding="12"
+            MinWidth="140">
+        
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="5">
+            <TextBlock 
+                Text="{Binding Lesson.Subject}"
+                FontWeight="Bold" FontSize="14" TextAlignment="Center"/>
+            <TextBlock FontSize="12" Foreground="Gray" TextAlignment="Center">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0} {1} {2}">
+                        <Binding Path="Lesson.Teacher.Name"/>
+                        <Binding Path="Lesson.Teacher.Surname"/>
+                        <Binding Path="Lesson.Teacher.Patronymic"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+            <TextBlock 
+                Text="{Binding Lesson.Classroom.Name}"
+                FontSize="12" Foreground="Gray" TextAlignment="Center"/>
+            <TextBlock 
+                Text="{Binding Lesson.StudyGroup.Name}"
+                FontSize="12" Foreground="Gray" TextAlignment="Center"/>
+            <TextBlock 
+                Text="{Binding Lesson.LessonNumber.Number }" 
+                FontSize="12" Foreground="Gray" TextAlignment="Center"/>
+        </StackPanel>
+    </Border>
+</UserControl>

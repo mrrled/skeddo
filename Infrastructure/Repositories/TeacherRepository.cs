@@ -38,7 +38,7 @@ public class TeacherRepository(ScheduleDbContext context) : ITeacherRepository
         var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
-        scheduleGroup.Teachers.Add(teacherDbo);
+        context.Teachers.Add(teacherDbo);
     }
 
     public async Task UpdateAsync(Teacher teacher)
