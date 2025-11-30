@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Application.DtoModels;
-using Application.Services;
+using Application.IServices;
 using Avalonia.Collections;
 using newUI.ViewModels.Helpers;
 using newUI.ViewModels.SchedulePage.Lessons;
@@ -11,15 +12,18 @@ namespace newUI.ViewModels.SchedulePage.Schedule;
 public class LessonTableViewModel : 
     DynamicGridViewModel<LessonCardViewModel, StudyGroupDto, LessonNumberDto>
 {
-    private StudyGroupServices studyGroupServices;
-    private LessonNumberServices lessonNumberServices;
-    private LessonServices lessonServices;
+    private readonly IStudyGroupServices studyGroupServices;
+    private readonly ILessonNumberServices lessonNumberServices;
+    private readonly ILessonServices lessonServices;
     
     private ScheduleDto schedule;
     private AvaloniaList<LessonNumberDto> lessonNumbers;
     private AvaloniaList<StudyGroupDto> studyGroups;
 
-    public LessonTableViewModel(ScheduleDto schedule, LessonNumberServices lessonNumberServices, StudyGroupServices studyGroupServices, LessonServices lessonServices)
+    public LessonTableViewModel(ScheduleDto schedule, 
+        ILessonNumberServices lessonNumberServices,
+        IStudyGroupServices studyGroupServices, 
+        ILessonServices lessonServices)
     {
         this.schedule = schedule;
         this.lessonNumberServices = lessonNumberServices;
@@ -27,6 +31,7 @@ public class LessonTableViewModel :
         this.lessonServices = lessonServices;
         LoadStudyGroups();
         LoadLessonNumbers();
+        LoadDataToGrid();
     }
 
     public ScheduleDto Schedule
@@ -62,20 +67,57 @@ public class LessonTableViewModel :
             .Result;
         LessonNumbers = new AvaloniaList<LessonNumberDto>(numbers);
     }
-
-    private Task<List<(LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel>)>> LoadData()
+    
+    protected void LoadDataToGrid()
     {
-        var result = new List<(LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel>)>();
-        var rows = new Dictionary<LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel>>();
-        foreach (var number in LessonNumbers)
-        {
-            rows[number] = new Dictionary<StudyGroupDto, LessonCardViewModel>();
-        }
+        LoadDataFromBackend(() => LoadData().Result);
+    }
 
+    private Task<List<(LessonNumberDto RowHeader, Dictionary<StudyGroupDto, LessonCardViewModel> CellData)>> LoadData()
+    {
+        // var rows = new Dictionary<LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel>>();
+        // foreach (var number in LessonNumbers)
+        // {
+        //     rows[number] = new Dictionary<StudyGroupDto, LessonCardViewModel>();
+        // }
+        //
+        // foreach (var lesson in Schedule.Lessons)
+        // {
+        //     var viewModel = new LessonCardViewModel(lessonServices){ Lesson = lesson };
+        //     rows[lesson.LessonNumber][lesson.StudyGroup] = viewModel;
+        // }
+        //
+        // var result = rows.Select(kvp => (RowHeader: kvp.Key, CellData: kvp.Value)).ToList();
+        
+        var result = new List<(LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel>)>();
+        var lessonDictionary = new Dictionary<(LessonNumberDto, StudyGroupDto), LessonDto>();
         foreach (var lesson in Schedule.Lessons)
         {
-            var viewModel = new LessonCardViewModel(lessonServices){ Lesson = lesson };
-            rows[lesson.LessonNumber!][lesson.StudyGroup!] = viewModel;
+            if (lesson.LessonNumber != null && lesson.StudyGroup != null)
+            {
+                lessonDictionary[(lesson.LessonNumber, lesson.StudyGroup)] = lesson;
+            }
+        }
+
+        foreach (var lessonNumber in LessonNumbers)
+        {
+            var rowData = new Dictionary<StudyGroupDto, LessonCardViewModel>();
+            
+            foreach (var studyGroup in StudyGroups)
+            {
+                if (lessonDictionary.TryGetValue((lessonNumber, studyGroup), out var lesson))
+                {
+                    var viewModel = new LessonCardViewModel(lessonServices) { Lesson = lesson };
+                    rowData[studyGroup] = viewModel;
+                }
+                else
+                {
+                    var viewModel = new LessonCardViewModel(lessonServices) { Lesson = new LessonDto() };
+                    rowData[studyGroup] = viewModel;
+                }
+            }
+            
+            result.Add((lessonNumber, rowData));
         }
         
         return Task.FromResult(result);

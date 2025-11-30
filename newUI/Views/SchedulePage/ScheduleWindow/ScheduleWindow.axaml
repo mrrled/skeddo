@@ -1,0 +1,90 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
+        xmlns:scheduleTable="clr-namespace:newUI.Views.SchedulePage.ScheduleTable"
+        xmlns:lessonCard="clr-namespace:newUI.Views.SchedulePage.LessonCard"
+        x:Class="newUI.Views.SchedulePage.ScheduleWindow.ScheduleWindow"
+        Title="Расписание"
+        Width="1200" Height="800"
+        x:DataType="vm:ScheduleViewModel">
+    
+    <Design.DataContext>
+        <vm:ScheduleViewModel />
+    </Design.DataContext>
+
+    <DockPanel>
+        <!-- Верхняя панель с выбором расписания -->
+        <StackPanel DockPanel.Dock="Top" 
+                   Orientation="Horizontal" 
+                   Margin="10" 
+                   Spacing="10">
+            <TextBlock Text="Расписание:" 
+                      VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding ScheduleList}"
+                     SelectedItem="{Binding CurrentSchedule}"
+                     Width="200">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            
+            <Button Content="Обновить" 
+                   Command="{Binding LoadSchedulesCommand}"
+                   Margin="10,0,0,0"/>
+            <Button Content="Сохранить" 
+                   Command="{Binding SaveScheduleCommand}"
+                   Margin="5,0,0,0"/>
+        </StackPanel>
+
+        <!-- Основной контент -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Таблица расписания -->
+            <Border Grid.Column="0" 
+                   Margin="10" 
+                   BorderBrush="LightGray" 
+                   BorderThickness="1">
+                <scheduleTable:LessonTableView DataContext="{Binding Table}"/>
+            </Border>
+
+            <!-- Боковая панель с буфером -->
+            <Border Grid.Column="1" 
+                   Margin="0,10,10,10" 
+                   BorderBrush="LightGray" 
+                   BorderThickness="1"
+                   Background="WhiteSmoke">
+                <StackPanel>
+                    <TextBlock Text="Буфер уроков" 
+                              FontWeight="Bold" 
+                              FontSize="16" 
+                              HorizontalAlignment="Center" 
+                              Margin="10"/>
+                    
+                    <ItemsControl ItemsSource="{Binding Buffer.LessonCards}"
+                                 Margin="10">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Gray" 
+                                       BorderThickness="1" 
+                                       Margin="0,2" 
+                                       Background="White">
+                                    <lessonCard:LessonCard Height="60"/>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    
+                    <Button Content="Очистить буфер" 
+                           Margin="10" 
+                           HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </DockPanel>
+</Window>
