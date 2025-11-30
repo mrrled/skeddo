@@ -4,7 +4,7 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 
-namespace newUI.ViewModels.Teachers;
+namespace newUI.ViewModels.TeachersPage.Teachers;
 
 public class TeacherCreationViewModel : ViewModelBase
 {

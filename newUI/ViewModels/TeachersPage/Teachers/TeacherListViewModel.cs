@@ -5,7 +5,7 @@ using Application.IServices;
 using Avalonia.Collections;
 using newUI.Services;
 
-namespace newUI.ViewModels.Teachers;
+namespace newUI.ViewModels.TeachersPage.Teachers;
 
 public class TeacherListViewModel : ViewModelBase
 {

@@ -3,13 +3,13 @@
         xmlns:vm="using:newUI.ViewModels"
         xmlns:viewModels="clr-namespace:newUI.ViewModels"
         xmlns:views="clr-namespace:newUI.Views.LessonCard"
-        xmlns:teachers="clr-namespace:newUI.ViewModels.Teachers"
+        xmlns:teachers1="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
         x:Class="newUI.Views.TeachersPage.TeacherListWindow.TeacherListWindow"
         Title="Avalonia List App"
-        x:DataType="teachers:TeacherListViewModel">
+        x:DataType="teachers1:TeacherListViewModel">
 
     <Design.DataContext>
-        <teachers:TeacherCreationViewModel/>
+        <teachers1:TeacherCreationViewModel/>
     </Design.DataContext>
     
     <ScrollViewer>

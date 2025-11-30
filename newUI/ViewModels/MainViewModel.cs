@@ -4,7 +4,6 @@ using Application.Services;
 using Application.DtoModels;
 using Avalonia.Collections;
 using newUI.Services;
-using newUI.ViewModels.Lessons;
 
 namespace newUI.ViewModels;
 

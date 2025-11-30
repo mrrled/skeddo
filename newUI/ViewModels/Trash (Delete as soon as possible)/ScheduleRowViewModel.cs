@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using newUI.ViewModels.Lessons;
+using newUI.ViewModels.SchedulePage.Lessons;
 
 namespace newUI.ViewModels;
 

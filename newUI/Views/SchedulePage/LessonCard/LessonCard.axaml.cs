@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using newUI.ViewModels;
-using newUI.ViewModels.Lessons;
 
 namespace newUI.Views.LessonCard;
 

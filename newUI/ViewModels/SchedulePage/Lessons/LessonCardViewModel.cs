@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
-using Application.Services;
 
-namespace newUI.ViewModels.Lessons;
+namespace newUI.ViewModels.SchedulePage.Lessons;
 
 public class LessonCardViewModel : ViewModelBase
 {

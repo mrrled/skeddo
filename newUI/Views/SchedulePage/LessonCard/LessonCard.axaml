@@ -3,13 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:newUI.ViewModels"
-             xmlns:lessons="clr-namespace:newUI.ViewModels.Lessons"
+             xmlns:lessons1="clr-namespace:newUI.ViewModels.SchedulePage.Lessons"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="newUI.Views.LessonCard.LessonCard"
-             x:DataType="lessons:LessonCardViewModel">
+             x:DataType="lessons1:LessonCardViewModel">
     
     <Design.DataContext>
-        <lessons:LessonCardViewModel/>
+        <lessons1:LessonCardViewModel/>
     </Design.DataContext>
     
     <Border Name="Cell" CornerRadius="6"

@@ -1,5 +1,5 @@
 using Avalonia.Controls;
-using newUI.ViewModels.Teachers;
+using newUI.ViewModels.TeachersPage.Teachers;
 
 namespace newUI.Views.TeachersPage.TeacherListWindow;
 

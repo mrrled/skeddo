@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Collections;
-using newUI.ViewModels.Lessons;
+using newUI.ViewModels.SchedulePage.Lessons;
 
 namespace newUI.ViewModels.Schedule;
 

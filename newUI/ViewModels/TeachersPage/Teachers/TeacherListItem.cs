@@ -1,9 +1,7 @@
 using Application.DtoModels;
 using Application.IServices;
-using Avalonia.Collections;
-using newUI.ViewModels.Helpers;
 
-namespace newUI.ViewModels.Teachers;
+namespace newUI.ViewModels.TeachersPage.Teachers;
 
 public class TeacherListItem : ViewModelBase
 {

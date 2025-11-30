@@ -4,15 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:newUI.ViewModels"
-        xmlns:teachers="clr-namespace:newUI.ViewModels.Teachers"
+        xmlns:teachers1="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
         mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
         x:Class="newUI.Views.TeachersPage.TeacherCreationWindow.TeacherCreationWindow"
         Title="Создание преподавателя"
         Width="350" Height="300"
-        x:DataType="teachers:TeacherCreationViewModel">
+        x:DataType="teachers1:TeacherCreationViewModel">
     
     <Design.DataContext>
-        <teachers:TeacherCreationViewModel />
+        <teachers1:TeacherCreationViewModel />
     </Design.DataContext>
     
     <StackPanel Margin="20" Spacing="15">

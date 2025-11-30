@@ -4,7 +4,7 @@ using Application.DtoModels;
 using Application.Services;
 using Avalonia.Collections;
 using newUI.ViewModels.Helpers;
-using newUI.ViewModels.Lessons;
+using newUI.ViewModels.SchedulePage.Lessons;
 
 namespace newUI.ViewModels.Schedule;
 
