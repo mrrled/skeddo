@@ -32,8 +32,4 @@ public class LessonCardViewModel : ViewModelBase
     }
     
     public ICommand? OnClickCommand { get; private set; } 
-    //у нас скорее всего будет несколько различных сущностей, использующих LessonCard
-    //Команду OnClick будем задавать из них самостоятельно
-    
-    //Либо нахуй и просто наследника этого класса бахнем
 }

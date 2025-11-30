@@ -1,26 +1,18 @@
-using System.Linq;
 using Application.DtoModels;
-using Application.Services;
+using Application.IServices;
 using Avalonia.Collections;
 using newUI.ViewModels.Helpers;
 
-namespace newUI.ViewModels.ObjectList;
+namespace newUI.ViewModels.Teachers;
 
-public class TeacherListItem : ViewModelBase, IObjectListItem<TeacherListItem>
+public class TeacherListItem : ViewModelBase
 {
     private TeacherDto teacher;
+    private ITeacherServices service;
 
     public TeacherDto Teacher
     {
         get => teacher;
         set => SetProperty(ref teacher, value);
     }
-        
-    // public static AvaloniaList<TeacherListItem> FetchFromBackend(IService service)
-    // {
-    //     var teachers = service.FetchTeachersFromBackendAsync().Result;
-    //     return new AvaloniaList<TeacherListItem>(
-    //         teachers.Select(teacher => new TeacherListItem{ Teacher = teacher })
-    //     );
-    // }
 }

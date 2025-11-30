@@ -15,6 +15,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using newUI.Services;
 using newUI.ViewModels;
+using newUI.ViewModels.Lessons;
+using newUI.ViewModels.Schedule;
 using newUI.ViewModels.Teachers;
 using newUI.Views;
 using newUI.Views.MainWindow;
@@ -72,6 +74,9 @@ public partial class App : Avalonia.Application
         services.AddTransient<TeacherCreationViewModel>();
         services.AddTransient<TeacherListWindow>();
         services.AddTransient<TeacherListViewModel>();
+        services.AddTransient<LessonCardViewModel>();
+        services.AddTransient<ScheduleViewModel>();
+        services.AddTransient<LessonTableViewModel>();
         services.AddSingleton<IUnitOfWork, UnitOfWork>();
         RegsterViewMappings();
         Services = services.BuildServiceProvider();
@@ -89,17 +94,10 @@ public partial class App : Avalonia.Application
         base.OnFrameworkInitializationCompleted();
     }
     
-    //     services.AddTransient<MainViewModel>();
-    //     services.AddTransient<MainWindow>();
-    //     services.AddSingleton<IUnitOfWork, UnitOfWork>();
-    //     return services.BuildServiceProvider();
-    // }
-
     private void RegsterViewMappings()
     {
         ViewMappingService.Register<MainViewModel, MainWindow>();
         ViewMappingService.Register<TeacherCreationViewModel, TeacherCreationWindow>();
         ViewMappingService.Register<TeacherListViewModel, TeacherListWindow>();
     }
-
 }

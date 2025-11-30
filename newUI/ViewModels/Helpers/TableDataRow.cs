@@ -7,20 +7,26 @@ public class TableDataRow<TCell, TColumn, TRow> : ViewModelBase where TCell : Vi
     private Dictionary<TColumn, TCell> cells = new();
     private TRow rowHeader;
 
+    public TableDataRow(TRow rowHeader)
+    {
+        this.rowHeader = rowHeader;
+    }
+
     public TRow RowHeader
     {
         get => rowHeader;
         set => SetProperty(ref rowHeader, value, nameof(rowHeader));
     }
     
-    public void AddCell(TColumn column, TCell cell)
+    public void SetCell(TColumn column, TCell cell)
     {
-        cells.Add(column, cell);
-        OnPropertyChanged(nameof(cells));
+        cells[column] = cell; //не будет ли тут ошибки?
+        OnPropertyChanged(nameof(cells)); 
     }
     
-    public TCell? this[TColumn column] => 
-        cells.TryGetValue(column, out var cell) 
-            ? cell 
-            : default;
+    public TCell? this[TColumn column]
+    {
+        get => cells.TryGetValue(column, out var cell) ? cell : default;
+        set => SetCell(column, value!);
+    }
 }

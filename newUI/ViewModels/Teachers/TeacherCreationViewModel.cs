@@ -1,10 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
-using Application.Services;
 
-namespace newUI.ViewModels;
+namespace newUI.ViewModels.Teachers;
 
 public class TeacherCreationViewModel : ViewModelBase
 {
@@ -20,6 +20,9 @@ public class TeacherCreationViewModel : ViewModelBase
     public TeacherCreationViewModel(ITeacherServices service)
     {
         this.service = service;
+        var random = new Random();
+        var id = random.Next(1, 1000);
+        teacher.Id = id; 
         SaveChangesCommand = new RelayCommandAsync(SaveChanges);
     }
     

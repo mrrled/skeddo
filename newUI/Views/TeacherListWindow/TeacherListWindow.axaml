@@ -9,7 +9,7 @@
         x:DataType="teachers:TeacherListViewModel">
 
     <Design.DataContext>
-        <vm:TeacherCreationViewModel/>
+        <teachers:TeacherCreationViewModel/>
     </Design.DataContext>
     
     <ScrollViewer>

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Application.DtoModels;
+using AutoMapper;
 using Domain.Models;
 using Infrastructure.DboModels;
 
@@ -20,6 +21,18 @@ public class DboMappingProfile : Profile
                 ctx.Mapper.Map<List<StudyGroup>>(src.StudyGroups)
             ))
             .ForAllMembers(opt => opt.Ignore());
+        CreateMap<Teacher, TeacherDbo>()
+            .ConstructUsing((src, ctx) =>
+                new TeacherDbo()
+                {
+                    Id = src.Id,
+                    Name = src.Name,
+                    Surname = src.Surname,
+                    Patronymic = src.Patronymic,
+                    ScheduleGroupId = 1,
+                    SchoolSubjects = ctx.Mapper.Map<List<SchoolSubjectDbo>>(src.SchoolSubjects),
+                    StudyGroups = ctx.Mapper.Map<List<StudyGroupDbo>>(src.StudyGroups)
+                });
         CreateMap<ClassroomDbo, Classroom>().ReverseMap();
         CreateMap<LessonDbo, Lesson>()
             .ConstructUsing((src, ctx) => new Lesson(

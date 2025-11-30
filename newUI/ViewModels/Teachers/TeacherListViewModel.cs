@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
-using Application.Services;
 using Avalonia.Collections;
 using newUI.Services;
 

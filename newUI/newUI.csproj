@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.1.0" />
     <PackageReference Include="Avalonia" Version="11.3.6" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.0" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.6" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.6" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.6" />
@@ -54,6 +55,5 @@
   <ItemGroup>
     <Folder Include="Views\BufferWindow\" />
     <Folder Include="Views\ObjectList\" />
-    <Folder Include="Views\ScheduleTable\" />
   </ItemGroup>
 </Project>
