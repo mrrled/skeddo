@@ -7,6 +7,7 @@ public class Schedule(
 ) : Entity<int>(id)
 {
     private HashSet<Lesson> _lessons = lessons;
+    public List<Lesson> UpdatedLessons { get; private set; } = new();
     public IReadOnlyCollection<Lesson> Lessons => _lessons;
     public string Name { get; } = Name;
     
@@ -27,13 +28,23 @@ public class Schedule(
         UpdateByLesson(lesson);
         return lesson;
     }
+    public Lesson EditLesson(int id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher, StudyGroup? studyGroup,
+        Classroom? classroom, string? comment = null)
+    {
+        var lesson = Lessons.FirstOrDefault(x => x.Id == id);
+        if (lesson is null)
+            throw new ArgumentException($"There is no lesson with id {id}");
+        lesson.Update(subject, lessonNumber, teacher, studyGroup, classroom, comment);
+        UpdateByLesson(lesson);
+        return lesson;
+    }
 
     private void UpdateByLesson(Lesson lesson) //возможно стоит возвращать список измененных уроков
     {
-        var updatable = _lessons
+        UpdatedLessons = _lessons
             .Where(l => l.StudyGroup == lesson.StudyGroup || l.LessonNumber == lesson.LessonNumber)
             .ToList();
-        foreach (var element in updatable.Where(l =>
+        foreach (var element in UpdatedLessons.Where(l =>
                      l.Teacher?.Id == lesson.Teacher?.Id && l.Classroom == lesson.Classroom))
         {
             element.SetWarningType(WarningType.Warning);

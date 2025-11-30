@@ -69,4 +69,21 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             throw new NullReferenceException();
         schedule.Lessons.Remove(lessonDbo);
     }
+
+    public async Task UpdateRangeAsync(List<Lesson> lessons, int scheduleId)
+    {
+        var schedule = await context.Schedules
+            .Include(scheduleDbo => scheduleDbo.Lessons)
+            .FirstOrDefaultAsync(x => x.Id == scheduleId);
+        if (schedule is null)
+            throw new NullReferenceException();
+        foreach (var lesson in lessons)
+        {
+            var dbo = schedule.Lessons.FirstOrDefault(x => x.Id == lesson.Id);
+            if (dbo is not null)
+            {
+                DboMapper.Mapper.Map(lesson, dbo);
+            }
+        }
+    }
 }

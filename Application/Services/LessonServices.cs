@@ -40,13 +40,15 @@ public class LessonServices(
             lessonDto.Classroom?.Description
         );
         await lessonRepository.AddAsync(lesson, scheduleId);
+        await lessonRepository.UpdateRangeAsync(schedule.UpdatedLessons, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task EditLesson(LessonDto lessonDto, int scheduleId)
     {
-        var lesson = await lessonRepository.GetLessonByIdAsync(lessonDto.Id, scheduleId);
-        lesson.Update(
+        var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId);
+        var lesson = schedule.EditLesson(
+            lessonDto.Id,
             lessonDto.Subject?.ToSchoolSubject(),
             lessonDto.LessonNumber?.ToLessonNumber(),
             lessonDto.Teacher?.ToTeacher(),
@@ -55,6 +57,7 @@ public class LessonServices(
             lessonDto.Comment
         );
         await lessonRepository.UpdateAsync(lesson, scheduleId);
+        await lessonRepository.UpdateRangeAsync(schedule.UpdatedLessons, scheduleId);
         await unitOfWork.SaveChangesAsync();
     }
 

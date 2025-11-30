@@ -9,4 +9,5 @@ public interface ILessonRepository
     Task AddAsync(Lesson lesson, int scheduleId);
     Task UpdateAsync(Lesson lesson, int scheduleId);
     Task Delete(Lesson lesson, int scheduleId);
+    Task UpdateRangeAsync(List<Lesson> lessons, int scheduleId);
 }

@@ -30,10 +30,20 @@ public class TeacherCreationViewModel : ViewModelBase
     public ICommand SaveChangesCommand { get; set; }
 
     public async Task SaveChanges()
-    { 
+    {
         using (var scope = _scopeFactory.CreateScope())
         {
             var service = scope.ServiceProvider.GetRequiredService<ITeacherServices>();
+            var lessonService = scope.ServiceProvider.GetRequiredService<ILessonServices>();
+            await lessonService.AddLesson(new LessonDto()
+            {
+                Classroom = new ClassroomDto { Name = "514" },
+                Id = 101,
+                LessonNumber = new LessonNumberDto { Number = 1 },
+                StudyGroup = new StudyGroupDto { Name = "ФТ-202" },
+                Subject = new SchoolSubjectDto { Name = "дм" },
+                Teacher = teacher,
+            }, 1);
             await service.AddTeacher(teacher);
         } 
     }
