@@ -1,50 +1,33 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:newUI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:newUI.ViewModels"
-        xmlns:teachers1="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
-        xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
+        xmlns:teachers1="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
         mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
-        x:Class="newUI.Views.TeachersPage.TeacherCreationWindow.TeacherCreationWindow"
+        x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectCreationWindow.SchoolSubjectCreationWindow"
         Title="Создание преподавателя"
         Width="350" Height="300"
-        x:DataType="schoolSubjects:TeacherCreationViewModel">
+        x:DataType="teachers1:SchoolSubjectCreationViewModel">
     
     <Design.DataContext>
-        <schoolSubjects:TeacherCreationViewModel />
+        <teachers1:SchoolSubjectCreationViewModel />
     </Design.DataContext>
     
     <StackPanel Margin="20" Spacing="15">
         
-        <TextBlock Text="Добавление нового преподавателя" 
+        <TextBlock Text="Добавление нового предмета" 
                    FontSize="18" 
                    FontWeight="Bold" 
                    HorizontalAlignment="Center" />
-
-        <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Text="Фамилия:" Width="100" VerticalAlignment="Center" />
-            <TextBox Watermark="Введите фамилию" 
-                     Width="200" 
-                     Text="{Binding Teacher.Surname, Mode=TwoWay}" 
-                     TextChanging="SurnameTextBox_TextChanging" />
-        </StackPanel>
         
         <StackPanel Orientation="Horizontal" Spacing="10">
             <TextBlock Text="Имя:" Width="100" VerticalAlignment="Center" />
             <TextBox Watermark="Введите имя" 
                      Width="200" 
-                     Text="{Binding Teacher.Name, Mode=TwoWay}" 
+                     Text="{Binding SchoolSubject.Name, Mode=TwoWay}" 
                      TextChanging="NameTextBox_TextChanging" />
-        </StackPanel>
-        
-        <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Text="Отчество:" Width="100" VerticalAlignment="Center" />
-            <TextBox Watermark="Введите отчество" 
-                     Width="200" 
-                     Text="{Binding Teacher.Patronymic, Mode=TwoWay}" 
-                     TextChanging="PatronymicTextBox_TextChanging" />
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" 
