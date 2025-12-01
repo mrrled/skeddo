@@ -1,0 +1,22 @@
+﻿<UserControl
+    x:Class="newUI.Views.Navigation.NavigationBar"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:newUI.ViewModels.Navigation"
+    x:DataType="vm:NavigationBarViewModel">
+
+    <DockPanel Background="#EEE" Height="40">
+
+        <StackPanel Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    Margin="10,0">
+            <Button Content="Teachers"
+                    Margin="0,0,10,0"
+                    Command="{Binding NavigateTeachersCommand}" />
+
+            <Button Content="School Subjects"
+                    Command="{Binding NavigateSchoolSubjectsCommand}" />
+        </StackPanel>
+
+    </DockPanel>
+</UserControl>

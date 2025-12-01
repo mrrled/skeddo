@@ -22,6 +22,19 @@ public static class ViewMappingService
             throw new InvalidOperationException($"ViewModel {viewModelType.Name} уже зарегистрирована.");
         }
     }
+    
+    public static void RegisterX<TViewModel, TView>() 
+        where TViewModel : ViewModelBase
+        where TView : UserControl
+    {
+        var viewModelType = typeof(TViewModel);
+        var viewType = typeof(TView);
+        
+        if (!Mappings.TryAdd(viewModelType, viewType))
+        {
+            throw new InvalidOperationException($"ViewModel {viewModelType.Name} уже зарегистрирована.");
+        }
+    }
 
     public static Type GetViewType(Type viewModelType)
     {

@@ -20,6 +20,7 @@
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
       <PrivateAssets>all</PrivateAssets>
@@ -46,19 +47,21 @@
       <SubType>Code</SubType>
       <DependentUpon>MainWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\Navigation\NavigationBar.cs">
+      <DependentUpon>NavigationBar.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="Views\MainWindow\MainWindow.axaml" />
+    <AdditionalFiles Include="Views\Navigation\NavigationBar.axaml" />
     <AdditionalFiles Include="Views\SchedulePage\LessonCard\LessonCard.axaml" />
     <AdditionalFiles Include="Views\TeachersPage\TeacherCreationWindow\TeacherCreationWindow.axaml" />
-    <AdditionalFiles Include="Views\TeachersPage\TeacherListWindow\TeacherListWindow.axaml" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ViewModels\SchedulePage\" />
     <Folder Include="ViewModels\TeachersPage\" />
     <Folder Include="Views\SchedulePage\BufferWindow\" />
-    <Folder Include="Views\TeachersPage\" />
   </ItemGroup>
 </Project>
