@@ -7,7 +7,7 @@
         xmlns:teachers1="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
         mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
         x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectCreationWindow.SchoolSubjectCreationWindow"
-        Title="Создание преподавателя"
+        Title="Создание предмета"
         Width="350" Height="300"
         x:DataType="teachers1:SchoolSubjectCreationViewModel">
     
@@ -24,7 +24,7 @@
         
         <StackPanel Orientation="Horizontal" Spacing="10">
             <TextBlock Text="Имя:" Width="100" VerticalAlignment="Center" />
-            <TextBox Watermark="Введите имя" 
+            <TextBox Watermark="Введите название" 
                      Width="200" 
                      Text="{Binding SchoolSubject.Name, Mode=TwoWay}" 
                      TextChanging="NameTextBox_TextChanging" />

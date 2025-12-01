@@ -16,19 +16,19 @@
     <ScrollViewer>
         <StackPanel Margin="20">
             
-            <TextBlock Text="Список учителей (Пример)" FontWeight="Bold" Margin="0 0 0 5"/>
+            <TextBlock Text="Список предметов (Пример)" FontWeight="Bold" Margin="0 0 0 5"/>
             <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Content="Загрузить учителей"
+                <Button Content="Загрузить предметы"
                         Command="{Binding LoadTeachersCommand}"
                         HorizontalAlignment="Left"
                         Margin="0 0 0 15"/>
             
-                <Button Content="Скрыть учителей"
+                <Button Content="Скрыть предметы"
                         Command="{Binding HideTeachersCommand}"
                         HorizontalAlignment="Left"
                         Margin="0 0 0 15"/>
             
-                <Button Content="Добавить учителя"
+                <Button Content="Добавить предмет"
                         Command="{Binding CreateTeacherCommand}"
                         HorizontalAlignment="Left"
                         Margin="0 0 0 15"/>
