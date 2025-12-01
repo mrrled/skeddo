@@ -1,0 +1,48 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
+             x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectListView"
+             x:DataType="vm:SchoolSubjectListViewModel">
+
+    <Design.DataContext>
+        <vm:SchoolSubjectListViewModel/>
+    </Design.DataContext>
+
+    <ScrollViewer>
+        <StackPanel Margin="20">
+
+            <TextBlock Text="Список предметов" 
+                       FontWeight="Bold" 
+                       Margin="0 0 0 5"/>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Content="Загрузить предметы"
+                        Command="{Binding LoadSchoolSubjectsCommand}"
+                        Margin="0 0 0 15"/>
+
+                <Button Content="Скрыть предметы"
+                        Command="{Binding HideSchoolSubjectsCommand}"
+                        Margin="0 0 0 15"/>
+
+                <Button Content="Добавить предмет"
+                        Command="{Binding CreateSchoolSubjectCommand}"
+                        Margin="0 0 0 15"/>
+            </StackPanel>
+
+            <ListBox ItemsSource="{Binding SchoolSubjects}"
+                     Height="200"
+                     BorderBrush="#CCCCCC"
+                     BorderThickness="1"
+                     Margin="0 0 0 20">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Text="{Binding Name}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -10,9 +10,22 @@ public static class ViewMappingService
 {
     private static readonly Dictionary<Type, Type> Mappings = new();
     
-    public static void Register<TViewModel, TView>() 
+    public static void RegisterWindow<TViewModel, TView>() 
         where TViewModel : ViewModelBase
         where TView : Window
+    {
+        var viewModelType = typeof(TViewModel);
+        var viewType = typeof(TView);
+        
+        if (!Mappings.TryAdd(viewModelType, viewType))
+        {
+            throw new InvalidOperationException($"ViewModel {viewModelType.Name} уже зарегистрирована.");
+        }
+    }
+    
+    public static void RegisterUserControl<TViewModel, TView>() 
+        where TViewModel : ViewModelBase
+        where TView : UserControl
     {
         var viewModelType = typeof(TViewModel);
         var viewType = typeof(TView);

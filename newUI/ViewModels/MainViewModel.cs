@@ -4,14 +4,35 @@ using Application.Services;
 using Application.DtoModels;
 using Avalonia.Collections;
 using newUI.Services;
+using newUI.ViewModels.Navigation;
+using newUI.ViewModels.TeachersPage.Teachers;
 
 namespace newUI.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
+    public NavigationBarViewModel NavigationBar { get; }
+
+    private ViewModelBase? currentPage;
+
+    public ViewModelBase? CurrentPage
+    {
+        get => currentPage;
+        set => SetProperty(ref currentPage, value);
+    }
+
+    public MainViewModel(NavigationService nav, NavigationBarViewModel navigationBar)
+    {
+        NavigationBar = navigationBar;
+
+        nav.CurrentViewModelChanged += vm => CurrentPage = (ViewModelBase)vm;
+
+        nav.Navigate<TeacherListViewModel>();
+    }
+
     private AvaloniaList<ScheduleDto> scheduleList = new();
-    private ScheduleDto currentSchedule; //заменить на ScheduleViewModel
-    
+    private ScheduleDto currentSchedule; //заменить на ScheduleViewModel, когда будет готова
+
     public AvaloniaList<ScheduleDto> SceduleList
     {
         get => scheduleList;
@@ -23,8 +44,7 @@ public class MainViewModel : ViewModelBase
         get => currentSchedule;
         set => SetProperty(ref currentSchedule, value);
     }
-    
+
     public ICommand SelectCurrentScheduleCommand { get; }
     public ICommand AddScheduleCommand { get; }
-    
 }

@@ -22,32 +22,32 @@ public class SchoolSubjectListViewModel : ViewModelBase
         set => SetProperty(ref schoolSubjects, value);
     }
 
-    public ICommand CreateTeacherCommand { get; }
-    public ICommand LoadTeachersCommand { get; }
-    public ICommand HideTeachersCommand { get; }
+    public ICommand CreateSchoolSubjectCommand { get; }
+    public ICommand LoadSchoolSubjectsCommand { get; }
+    public ICommand HideSchoolSubjectsCommand { get; }
 
     public SchoolSubjectListViewModel(ISchoolSubjectServices service, IWindowManager windowManager)
     {
         this.service = service;
         this.windowManager = windowManager;
-        CreateTeacherCommand = new RelayCommandAsync(CreateTeacher);
-        LoadTeachersCommand = new RelayCommandAsync(LoadTeachers);
-        HideTeachersCommand = new RelayCommandAsync(HideTeachers);
+        CreateSchoolSubjectCommand = new RelayCommandAsync(CreateSchoolSubject);
+        LoadSchoolSubjectsCommand = new RelayCommandAsync(LoadSchoolSubjects);
+        HideSchoolSubjectsCommand = new RelayCommandAsync(HideSchoolSubjects);
     }
 
-    private Task CreateTeacher()
+    private Task CreateSchoolSubject()
     {
-        // windowManager.Show<TeacherCreationViewModel>();
+        // windowManager.Show<SchoolSubjectCreationViewModel>();
         return Task.CompletedTask;
     }
 
-    private Task HideTeachers()
+    private Task HideSchoolSubjects()
     {
         SchoolSubjects.Clear();
         return Task.CompletedTask;
     }
 
-    private Task LoadTeachers()
+    private Task LoadSchoolSubjects()
     {
         var fetchedItems = service.FetchSchoolSubjectsFromBackendAsync().Result;
         var newSchoolSubjectsList = new AvaloniaList<SchoolSubjectDto>(fetchedItems);

@@ -1,15 +1,18 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:newUI.ViewModels"
-        xmlns:viewModels="clr-namespace:newUI.ViewModels" 
+        xmlns:viewModels="clr-namespace:newUI.ViewModels"
+        xmlns:navigation="clr-namespace:newUI.Views.Navigation"
         x:Class="newUI.Views.MainWindow.MainWindow"
         Title="Avalonia List App"
         x:DataType="viewModels:MainViewModel">
 
-    <Design.DataContext>
-        <vm:MainViewModel/>
-    </Design.DataContext>
-    
+    <DockPanel>
+        <navigation:NavigationBar DockPanel.Dock="Top"
+                                  DataContext="{Binding NavigationBar}" />
+        <ContentControl Content="{Binding CurrentPage}" />
+    </DockPanel>
+
     <!-- <ScrollViewer> -->
     <!--     <StackPanel Margin="20"> -->
     <!--         <TextBlock Text="Список уроков" FontWeight="Bold" Margin="0 0 0 5"/> -->
