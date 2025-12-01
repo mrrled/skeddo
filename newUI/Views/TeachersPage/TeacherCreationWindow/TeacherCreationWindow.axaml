@@ -5,14 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:newUI.ViewModels"
         xmlns:teachers1="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
+        xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
         mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
         x:Class="newUI.Views.TeachersPage.TeacherCreationWindow.TeacherCreationWindow"
         Title="Создание преподавателя"
         Width="350" Height="300"
-        x:DataType="teachers1:TeacherCreationViewModel">
+        x:DataType="schoolSubjects:TeacherCreationViewModel">
     
     <Design.DataContext>
-        <teachers1:TeacherCreationViewModel />
+        <schoolSubjects:TeacherCreationViewModel />
     </Design.DataContext>
     
     <StackPanel Margin="20" Spacing="15">

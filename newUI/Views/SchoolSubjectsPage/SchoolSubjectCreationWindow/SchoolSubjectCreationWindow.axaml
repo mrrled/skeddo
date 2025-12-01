@@ -1,0 +1,46 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:newUI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:newUI.ViewModels"
+        xmlns:teachers1="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
+        x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectCreationWindow.SchoolSubjectCreationWindow"
+        Title="Создание предмета"
+        Width="350" Height="300"
+        x:DataType="teachers1:SchoolSubjectCreationViewModel">
+    
+    <Design.DataContext>
+        <teachers1:SchoolSubjectCreationViewModel />
+    </Design.DataContext>
+    
+    <StackPanel Margin="20" Spacing="15">
+        
+        <TextBlock Text="Добавление нового предмета" 
+                   FontSize="18" 
+                   FontWeight="Bold" 
+                   HorizontalAlignment="Center" />
+        
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="Имя:" Width="100" VerticalAlignment="Center" />
+            <TextBox Watermark="Введите название" 
+                     Width="200" 
+                     Text="{Binding SchoolSubject.Name, Mode=TwoWay}" 
+                     TextChanging="NameTextBox_TextChanging" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Spacing="10" 
+                    Margin="0,20,0,0">
+            
+            <!-- <Button Content="Отмена" Command="{Binding Teacher.CancelCommand}" /> -->
+            
+            <Button Content="Сохранить" 
+                    Command="{Binding SaveChangesCommand}" 
+                    Classes="accent" />
+        </StackPanel>
+        
+    </StackPanel>
+</Window>

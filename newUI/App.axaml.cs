@@ -18,9 +18,12 @@ using newUI.ViewModels;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchedulePage.Lessons;
 using newUI.ViewModels.SchedulePage.Schedule;
+using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
 using newUI.ViewModels.TeachersPage.Teachers;
 using newUI.Views;
 using newUI.Views.MainWindow;
+using newUI.Views.SchoolSubjectsPage.SchoolSubjectCreationWindow;
+using newUI.Views.SchoolSubjectsPage.SchoolSubjectListWindow;
 using newUI.Views.TeachersPage.TeacherCreationWindow;
 using newUI.Views.TeachersPage.TeacherListWindow;
 
@@ -72,9 +75,14 @@ public partial class App : Avalonia.Application
         services.AddTransient<MainViewModel>();
         services.AddTransient<MainWindow>();
         services.AddSingleton<IWindowManager, WindowManager>();
+        services.AddTransient<TeacherCreationWindow>();
         services.AddTransient<TeacherCreationViewModel>();
         services.AddTransient<TeacherListWindow>();
         services.AddTransient<TeacherListViewModel>();
+        services.AddTransient<SchoolSubjectCreationWindow>();
+        services.AddTransient<SchoolSubjectCreationViewModel>();
+        services.AddTransient<SchoolSubjectListWindow>();
+        services.AddTransient<SchoolSubjectListViewModel>();
         services.AddTransient<LessonCardViewModel>();
         services.AddTransient<ScheduleViewModel>();
         services.AddTransient<LessonTableViewModel>();
@@ -89,7 +97,7 @@ public partial class App : Avalonia.Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = Services.GetRequiredService<TeacherListWindow>();
+            desktop.MainWindow = Services.GetRequiredService<SchoolSubjectListWindow>();
         }
 
         ExportGenerator.GeneratePdf(
@@ -112,5 +120,7 @@ public partial class App : Avalonia.Application
         ViewMappingService.Register<MainViewModel, MainWindow>();
         ViewMappingService.Register<TeacherCreationViewModel, TeacherCreationWindow>();
         ViewMappingService.Register<TeacherListViewModel, TeacherListWindow>();
+        ViewMappingService.Register<SchoolSubjectCreationViewModel, SchoolSubjectCreationWindow>();
+        ViewMappingService.Register<SchoolSubjectListViewModel, SchoolSubjectListWindow>();
     }
 }
