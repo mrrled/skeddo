@@ -3,6 +3,7 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using Avalonia.Collections;
+using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
 
 namespace newUI.ViewModels.TeachersPage.Teachers;
@@ -10,8 +11,8 @@ namespace newUI.ViewModels.TeachersPage.Teachers;
 public class TeacherListViewModel : ViewModelBase
 {
     private AvaloniaList<TeacherDto> teachers = new(); 
-        
-    private ITeacherServices service;
+    
+    private IServiceScopeFactory scopeFactory;
     private IWindowManager windowManager;
         
     public double Width { get; set; }
@@ -27,10 +28,10 @@ public class TeacherListViewModel : ViewModelBase
     public ICommand LoadTeachersCommand { get; }
     public ICommand HideTeachersCommand { get; }
 
-    public TeacherListViewModel(ITeacherServices service, IWindowManager windowManager)
+    public TeacherListViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory)
     {
-        this.service = service;
         this.windowManager = windowManager;
+        this.scopeFactory = scopeFactory;
         CreateTeacherCommand = new RelayCommandAsync(CreateTeacher);
         LoadTeachersCommand = new RelayCommandAsync(LoadTeachers);
         HideTeachersCommand = new RelayCommandAsync(HideTeachers);
@@ -50,6 +51,8 @@ public class TeacherListViewModel : ViewModelBase
         
     private Task LoadTeachers()
     {
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<ITeacherServices>();
         var fetchedItems =  service.FetchTeachersFromBackendAsync().Result;
         var newTeachersList = new AvaloniaList<TeacherDto>(fetchedItems);
         Teachers = newTeachersList;

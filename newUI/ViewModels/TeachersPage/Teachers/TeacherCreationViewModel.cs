@@ -10,7 +10,7 @@ namespace newUI.ViewModels.TeachersPage.Teachers;
 public class TeacherCreationViewModel : ViewModelBase
 {
     private TeacherDto teacher = new();
-    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IServiceScopeFactory scopeFactory;
 
     public TeacherDto Teacher
     {
@@ -20,7 +20,7 @@ public class TeacherCreationViewModel : ViewModelBase
 
     public TeacherCreationViewModel(IServiceScopeFactory scopeFactory)
     {
-        _scopeFactory = scopeFactory;
+        this.scopeFactory = scopeFactory;
         var random = new Random();
         var id = random.Next(1, 1000);
         teacher.Id = id; 
@@ -31,7 +31,7 @@ public class TeacherCreationViewModel : ViewModelBase
 
     public async Task SaveChanges()
     {
-        using (var scope = _scopeFactory.CreateScope())
+        using (var scope = scopeFactory.CreateScope())
         {
             var service = scope.ServiceProvider.GetRequiredService<ITeacherServices>();
             var lessonService = scope.ServiceProvider.GetRequiredService<ILessonServices>();

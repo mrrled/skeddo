@@ -3,6 +3,7 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using Avalonia.Collections;
+using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
 
 namespace newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
@@ -11,7 +12,7 @@ public class SchoolSubjectListViewModel : ViewModelBase
 {
     private AvaloniaList<SchoolSubjectDto> schoolSubjects = new();
 
-    private ISchoolSubjectServices service;
+    private IServiceScopeFactory scopeFactory;
     private IWindowManager windowManager;
 
     public double Width { get; set; }
@@ -26,10 +27,10 @@ public class SchoolSubjectListViewModel : ViewModelBase
     public ICommand LoadSchoolSubjectsCommand { get; }
     public ICommand HideSchoolSubjectsCommand { get; }
 
-    public SchoolSubjectListViewModel(ISchoolSubjectServices service, IWindowManager windowManager)
+    public SchoolSubjectListViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory)
     {
-        this.service = service;
         this.windowManager = windowManager;
+        this.scopeFactory = scopeFactory;
         CreateSchoolSubjectCommand = new RelayCommandAsync(CreateSchoolSubject);
         LoadSchoolSubjectsCommand = new RelayCommandAsync(LoadSchoolSubjects);
         HideSchoolSubjectsCommand = new RelayCommandAsync(HideSchoolSubjects);
@@ -37,7 +38,7 @@ public class SchoolSubjectListViewModel : ViewModelBase
 
     private Task CreateSchoolSubject()
     {
-        // windowManager.Show<SchoolSubjectCreationViewModel>();
+        windowManager.Show<SchoolSubjectCreationViewModel>();
         return Task.CompletedTask;
     }
 
@@ -49,6 +50,8 @@ public class SchoolSubjectListViewModel : ViewModelBase
 
     private Task LoadSchoolSubjects()
     {
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<ISchoolSubjectServices>();
         var fetchedItems = service.FetchSchoolSubjectsFromBackendAsync().Result;
         var newSchoolSubjectsList = new AvaloniaList<SchoolSubjectDto>(fetchedItems);
         SchoolSubjects = newSchoolSubjectsList;
