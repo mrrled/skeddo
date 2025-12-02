@@ -97,15 +97,16 @@ public class ScheduleViewModel : ViewModelBase
     
     private Task ChooseSchedule()
     {
-        if (CurrentSchedule != null && LessonTables.ContainsKey(CurrentSchedule)) 
-            Table = LessonTables[CurrentSchedule];
-        
+        // if (CurrentSchedule != null && LessonTables.ContainsKey(CurrentSchedule)) 
+        //     Table = LessonTables[CurrentSchedule];
+        //
         return Task.CompletedTask;
     }
 
-    private async Task SaveScheduleAsync()
+    private Task SaveScheduleAsync()
     {
         // // Реализация сохранения расписания
+        return Task.CompletedTask;
     }
 
     private async Task LoadSchedulesAsync()
@@ -125,12 +126,12 @@ public class ScheduleViewModel : ViewModelBase
         ScheduleList = new AvaloniaList<ScheduleDto>(schedules);
         LessonTables = new AvaloniaDictionary<ScheduleDto, LessonTableViewModel>(tables);
         
-        if (ScheduleList.Any())
+        if (ScheduleList.Count != 0)
         {
             CurrentSchedule = ScheduleList.First();
-            if (LessonTables.ContainsKey(CurrentSchedule))
+            if (LessonTables.TryGetValue(CurrentSchedule, out var table))
             {
-                Table = LessonTables[CurrentSchedule];
+                Table = table;
             }
         }
     }

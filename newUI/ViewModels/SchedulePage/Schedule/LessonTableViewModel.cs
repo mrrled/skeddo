@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Application.DtoModels;
 using Application.IServices;
@@ -22,13 +23,13 @@ public class LessonTableViewModel :
     {
         this.schedule = schedule;
         this.scopeFactory = scopeFactory;
-        _ = InitializeAsync();
+        InitializeAsync();
     }
     
-    private async Task InitializeAsync()
+    private void InitializeAsync()
     {
-        await LoadStudyGroupsAsync();
-        await LoadLessonNumbersAsync();
+        LoadStudyGroupsAsync();
+        LoadLessonNumbersAsync();
         LoadDataToGrid();
     }
 
@@ -50,22 +51,20 @@ public class LessonTableViewModel :
         set => SetProperty(ref studyGroups, value);
     }
 
-    private Task LoadStudyGroupsAsync()
+    private async void LoadStudyGroupsAsync()
     {
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IStudyGroupServices>();
-        var groups = service.FetchStudyGroupsFromBackendAsync();
-        StudyGroups = new AvaloniaList<StudyGroupDto>(groups.Result);
-        return Task.CompletedTask;
+        var groups = await service.FetchStudyGroupsFromBackendAsync();
+        StudyGroups = new AvaloniaList<StudyGroupDto>(groups);
     }
 
-    private Task LoadLessonNumbersAsync()
+    private async void LoadLessonNumbersAsync()
     {
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<ILessonNumberServices>();
-        var numbers = service.GetLessonNumbersByScheduleId(Schedule.Id);
-        LessonNumbers = new AvaloniaList<LessonNumberDto>(numbers.Result);
-        return Task.CompletedTask;
+        var numbers = await service.GetLessonNumbersByScheduleId(Schedule.Id);
+        LessonNumbers = new AvaloniaList<LessonNumberDto>(numbers);
     }
     
     protected void LoadDataToGrid()
@@ -73,9 +72,21 @@ public class LessonTableViewModel :
         LoadDataFromBackend(() => LoadData().Result);
     }
 
-    private Task<List<(LessonNumberDto RowHeader, Dictionary<StudyGroupDto, LessonCardViewModel> CellData)>> LoadData()
+    private async Task<List<(LessonNumberDto RowHeader, Dictionary<StudyGroupDto, LessonCardViewModel> CellData)>> LoadData()
     {
         var result = new List<(LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel>)>();
+    
+        // Загружаем актуальное расписание с уроками
+        using var scope = scopeFactory.CreateScope();
+        var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
+        var schedules = await scheduleService.FetchSchedulesFromBackendAsync();
+        var currentSchedule = schedules.FirstOrDefault(s => s.Id == Schedule.Id);
+    
+        if (currentSchedule != null)
+        {
+            Schedule = currentSchedule; // Обновляем расписание
+        }
+        
         var lessonDictionary = new Dictionary<(int, string), LessonDto>();
         foreach (var lesson in Schedule.Lessons)
         {
@@ -106,6 +117,6 @@ public class LessonTableViewModel :
             result.Add((lessonNumber, rowData));
         }
         
-        return Task.FromResult(result);
+        return result;
     }
 }
