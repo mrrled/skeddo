@@ -10,7 +10,7 @@ public static class ViewMappingService
 {
     private static readonly Dictionary<Type, Type> Mappings = new();
     
-    public static void Register<TViewModel, TView>() 
+    public static void RegisterWindow<TViewModel, TView>() 
         where TViewModel : ViewModelBase
         where TView : Window
     {
@@ -23,7 +23,7 @@ public static class ViewMappingService
         }
     }
     
-    public static void RegisterX<TViewModel, TView>() 
+    public static void RegisterUserControl<TViewModel, TView>() 
         where TViewModel : ViewModelBase
         where TView : UserControl
     {

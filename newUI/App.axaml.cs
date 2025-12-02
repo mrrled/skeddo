@@ -124,10 +124,10 @@ public partial class App : Avalonia.Application
     
     private void RegsterViewMappings()
     {
-        ViewMappingService.Register<MainViewModel, MainWindow>();
-        ViewMappingService.Register<TeacherCreationViewModel, TeacherCreationWindow>();
-        ViewMappingService.RegisterX<TeacherListViewModel, TeacherListView>();
-        ViewMappingService.Register<SchoolSubjectCreationViewModel, SchoolSubjectCreationWindow>();
-        ViewMappingService.RegisterX<SchoolSubjectListViewModel, SchoolSubjectListView>();
+        ViewMappingService.RegisterWindow<MainViewModel, MainWindow>();
+        ViewMappingService.RegisterWindow<TeacherCreationViewModel, TeacherCreationWindow>();
+        ViewMappingService.RegisterUserControl<TeacherListViewModel, TeacherListView>();
+        ViewMappingService.RegisterWindow<SchoolSubjectCreationViewModel, SchoolSubjectCreationWindow>();
+        ViewMappingService.RegisterUserControl<SchoolSubjectListViewModel, SchoolSubjectListView>();
     }
 }

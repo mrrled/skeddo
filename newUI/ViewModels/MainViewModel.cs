@@ -13,9 +13,9 @@ public class MainViewModel : ViewModelBase
 {
     public NavigationBarViewModel NavigationBar { get; }
 
-    private object? currentPage;
+    private ViewModelBase? currentPage;
 
-    public object? CurrentPage
+    public ViewModelBase? CurrentPage
     {
         get => currentPage;
         set => SetProperty(ref currentPage, value);
@@ -25,13 +25,13 @@ public class MainViewModel : ViewModelBase
     {
         NavigationBar = navigationBar;
 
-        nav.CurrentViewModelChanged += vm => CurrentPage = vm;
+        nav.CurrentViewModelChanged += vm => CurrentPage = (ViewModelBase)vm;
 
         nav.Navigate<TeacherListViewModel>();
     }
 
     private AvaloniaList<ScheduleDto> scheduleList = new();
-    private ScheduleDto currentSchedule; //заменить на ScheduleViewModel
+    private ScheduleDto currentSchedule; //заменить на ScheduleViewModel, когда будет готова
 
     public AvaloniaList<ScheduleDto> SceduleList
     {
