@@ -5,8 +5,7 @@
         xmlns:lessonCard="clr-namespace:newUI.Views.SchedulePage.LessonCard"
         x:Class="newUI.Views.SchedulePage.ScheduleWindow.ScheduleWindow"
         Title="Расписание"
-        Width="1200" Height="800"
-        x:DataType="vm:ScheduleViewModel">
+        x:DataType="vm:ScheduleViewModel"><!-- Width="1200" Height="800" -->
 
     <DockPanel>
         <!-- Верхняя панель с выбором расписания -->
@@ -17,7 +16,7 @@
             <TextBlock Text="Расписание:" 
                       VerticalAlignment="Center"/>
             <ComboBox ItemsSource="{Binding ScheduleList}"
-                     SelectedItem="{Binding CurrentSchedule}"
+                     SelectedItem="{Binding CurrentSchedule, Mode=TwoWay}"
                      Width="200">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -26,9 +25,12 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             
-            <Button Content="Обновить" 
+            <Button Content="Загрузить все расписания" 
                    Command="{Binding LoadSchedulesCommand}"
                    Margin="10,0,0,0"/>
+            <Button Content="Обновить" 
+                    Command="{Binding LoadCurrentScheduleCommand}"
+                    Margin="5,0,0,0"/>
             <Button Content="Сохранить" 
                    Command="{Binding SaveScheduleCommand}"
                    Margin="5,0,0,0"/>
@@ -37,12 +39,12 @@
         <!-- Основной контент -->
         <Grid>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="250"/>
             </Grid.ColumnDefinitions>
 
             <!-- Таблица расписания -->
-            <Border Grid.Column="0" 
+            <Border Grid.Column="1" 
                    Margin="10" 
                    BorderBrush="LightGray" 
                    BorderThickness="1">
@@ -50,8 +52,8 @@
             </Border>
 
             <!-- Боковая панель с буфером -->
-            <Border Grid.Column="1" 
-                   Margin="0,10,10,10" 
+            <Border Grid.Column="0" 
+                   Margin="10,10,10,10" 
                    BorderBrush="LightGray" 
                    BorderThickness="1"
                    Background="WhiteSmoke">
@@ -70,7 +72,7 @@
                                        BorderThickness="1" 
                                        Margin="0,2" 
                                        Background="White">
-                                    <lessonCard:LessonCard Height="60"/>
+                                    <lessonCard:LessonCard />
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

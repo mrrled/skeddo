@@ -1,10 +1,16 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="newUI.App"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+             
+    <Application.Resources>
+        <sys:Double x:Key="LessonCardWidth">150</sys:Double>
+        <sys:Double x:Key="LessonCardHeight">100</sys:Double>
+    </Application.Resources>
 </Application>

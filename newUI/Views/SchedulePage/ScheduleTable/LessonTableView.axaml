@@ -37,7 +37,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border BorderBrush="Gray" BorderThickness="1" 
-                               Width="150" Height="30"
+                               Width="{DynamicResource LessonCardWidth}" Height="30"
                                Background="LightBlue">
                             <TextBlock Text="{Binding Name}" 
                                       HorizontalAlignment="Center" 
@@ -54,7 +54,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border BorderBrush="Gray" BorderThickness="1" 
-                               Width="50" Height="80"
+                               Width="50" Height="{DynamicResource LessonCardHeight}"
                                Background="LightGray">
                             <TextBlock Text="{Binding RowHeader.Number}" 
                                       HorizontalAlignment="Center" 
@@ -85,7 +85,8 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border BorderBrush="Gray" BorderThickness="1" 
-                                           Width="150" Height="80">
+                                            Width="{DynamicResource LessonCardWidth}"
+                                            Height="{DynamicResource LessonCardHeight}">
                                         <lessonCard:LessonCard/>
                                     </Border>
                                 </DataTemplate>

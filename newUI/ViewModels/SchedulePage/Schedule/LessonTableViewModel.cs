@@ -23,13 +23,13 @@ public class LessonTableViewModel :
     {
         this.schedule = schedule;
         this.scopeFactory = scopeFactory;
-        InitializeAsync();
+        _ = InitializeAsync();
     }
     
-    private void InitializeAsync()
+    private async Task InitializeAsync()
     {
-        LoadStudyGroupsAsync();
-        LoadLessonNumbersAsync();
+        await LoadStudyGroupsAsync();
+        await LoadLessonNumbersAsync();
         LoadDataToGrid();
     }
 
@@ -51,7 +51,7 @@ public class LessonTableViewModel :
         set => SetProperty(ref studyGroups, value);
     }
 
-    private async void LoadStudyGroupsAsync()
+    private async Task LoadStudyGroupsAsync()
     {
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IStudyGroupServices>();
@@ -59,15 +59,15 @@ public class LessonTableViewModel :
         StudyGroups = new AvaloniaList<StudyGroupDto>(groups);
     }
 
-    private async void LoadLessonNumbersAsync()
+    private async Task LoadLessonNumbersAsync()
     {
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<ILessonNumberServices>();
         var numbers = await service.GetLessonNumbersByScheduleId(Schedule.Id);
         LessonNumbers = new AvaloniaList<LessonNumberDto>(numbers);
     }
-    
-    protected void LoadDataToGrid()
+
+    private void LoadDataToGrid()
     {
         LoadDataFromBackend(() => LoadData().Result);
     }

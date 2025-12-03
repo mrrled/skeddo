@@ -25,17 +25,19 @@ public class ScheduleViewModel : ViewModelBase
         this.scopeFactory = scopeFactory;
 
         Buffer = new LessonBufferViewModel();
-
-        ChooseScheduleCommand = new RelayCommandAsync(ChooseSchedule);
+        
+        LoadCurrentScheduleCommand = new RelayCommandAsync(LoadCurrentSchedule);
         LoadSchedulesCommand = new RelayCommandAsync(LoadSchedulesAsync);
         SaveScheduleCommand = new RelayCommandAsync(SaveScheduleAsync);
+        AddScheduleCommand = new RelayCommandAsync(AddScheduleAsync);
         
         _ = InitializeAsync();
     }
     
-    public ICommand ChooseScheduleCommand { get; }
     public ICommand SaveScheduleCommand { get; }
     public ICommand LoadSchedulesCommand { get; }
+    public ICommand LoadCurrentScheduleCommand { get; }
+    public ICommand AddScheduleCommand { get; }
     
     public bool IsLoading
     {
@@ -62,9 +64,9 @@ public class ScheduleViewModel : ViewModelBase
         { 
             if (SetProperty(ref currentSchedule, value))
             {
-                if (value != null && LessonTables.ContainsKey(value))
+                if (value != null && LessonTables != null && LessonTables.TryGetValue(value, out var table))
                 {
-                    Table = LessonTables[value];
+                    Table = table;
                 }
             }
         }
@@ -94,45 +96,78 @@ public class ScheduleViewModel : ViewModelBase
             IsLoading = false;
         }
     }
-    
-    private Task ChooseSchedule()
+
+    private async Task AddScheduleAsync()
     {
-        // if (CurrentSchedule != null && LessonTables.ContainsKey(CurrentSchedule)) 
-        //     Table = LessonTables[CurrentSchedule];
-        //
-        return Task.CompletedTask;
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetService<IScheduleServices>();
+        var newSchedule = new ScheduleDto();
+        await service.AddSchedule(newSchedule);
+        await LoadSchedulesAsync();
     }
 
     private Task SaveScheduleAsync()
     {
-        // // Реализация сохранения расписания
+        using (var scope = scopeFactory.CreateScope())
+        {
+            var service = scope.ServiceProvider.GetService<IScheduleServices>();
+            service.EditSchedule(currentSchedule, currentSchedule); //TODO: сделать копию расписания, чтобы был oldSchedule
+        }
         return Task.CompletedTask;
+    }
+
+    private async Task LoadCurrentSchedule()
+    {
+        IsLoading = true;
+        try
+        {
+            using var scope = scopeFactory.CreateScope();
+            var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
+            var schedule = await service.GetScheduleByIdAsync(currentSchedule.Id);
+            lessonTables.Remove(CurrentSchedule);
+            scheduleList.Remove(CurrentSchedule);
+            scheduleList.Add(schedule);
+            lessonTables.Add(schedule, new LessonTableViewModel(schedule, scopeFactory));
+            CurrentSchedule = schedule;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     private async Task LoadSchedulesAsync()
     {
-        using var scope = scopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
-        var schedules = await service.FetchSchedulesFromBackendAsync();
-        var tables = new Dictionary<ScheduleDto, LessonTableViewModel>();
-        
-        foreach (var schedule in schedules)
+        IsLoading = true;
+        try
         {
-            tables[schedule] = new LessonTableViewModel(
-                schedule,
-                scopeFactory);
-        }
-        
-        ScheduleList = new AvaloniaList<ScheduleDto>(schedules);
-        LessonTables = new AvaloniaDictionary<ScheduleDto, LessonTableViewModel>(tables);
-        
-        if (ScheduleList.Count != 0)
-        {
-            CurrentSchedule = ScheduleList.First();
-            if (LessonTables.TryGetValue(CurrentSchedule, out var table))
+            using var scope = scopeFactory.CreateScope();
+            var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
+            var schedules = await service.FetchSchedulesFromBackendAsync();
+            var tables = new Dictionary<ScheduleDto, LessonTableViewModel>();
+            
+            foreach (var schedule in schedules)
             {
-                Table = table;
+                tables[schedule] = new LessonTableViewModel(schedule, scopeFactory);
             }
+            
+            ScheduleList = new AvaloniaList<ScheduleDto>(schedules);
+            LessonTables = new AvaloniaDictionary<ScheduleDto, LessonTableViewModel>(tables);
+            
+            if (ScheduleList.Count > 0 && CurrentSchedule == null)
+            {
+                CurrentSchedule = ScheduleList.First();
+            }
+            else if (CurrentSchedule != null)
+            {
+                // Обновляем выбранное расписание, если оно все еще в списке
+                var updatedSchedule = ScheduleList.FirstOrDefault(s => s.Id == CurrentSchedule.Id);
+                CurrentSchedule = updatedSchedule ?? ScheduleList.FirstOrDefault();
+            }
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 }

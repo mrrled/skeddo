@@ -52,10 +52,21 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
-        var schedule = scheduleGroup.Schedules.FirstOrDefault(x => x.Id == scheduleId);
-        if (schedule is null)
-            throw new NullReferenceException();
-        return schedule.ToSchedule();
+        var hui = await context.Schedules
+            .Where(s => s.ScheduleGroupId == scheduleGroup.Id)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.LessonNumber)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.StudyGroup)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.Teacher)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.SchoolSubject)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.Classroom)
+            .Include(s => s.LessonNumbers)
+            .FirstOrDefaultAsync(s => s.Id == scheduleId);
+        return hui.ToSchedule();
     }
     
     public async Task AddAsync(Schedule schedule)
