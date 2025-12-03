@@ -1,11 +1,22 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
-             xmlns:teachers="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
-             xmlns:schedule = "clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
+
+             xmlns:schedulePage="clr-namespace:newUI.Views.SchedulePage.ScheduleWindow"
              xmlns:teachersPage="clr-namespace:newUI.Views.TeachersPage"
              xmlns:schoolSubjectsPage="clr-namespace:newUI.Views.SchoolSubjectsPage"
-             xmlns:schedulePage="clr-namespace:newUI.Views.SchedulePage.ScheduleWindow"
+             xmlns:classroomsPage="clr-namespace:newUI.Views.ClassroomsPage"
+
+             xmlns:schedule = "clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
+
+             xmlns:teachers="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
+             xmlns:teacherList="clr-namespace:newUI.Views.TeachersPage.TeacherList"
+
+             xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
+             xmlns:schoolSubjectList="clr-namespace:newUI.Views.SchoolSubjectsPage.SchoolSubjectList"
+
+             xmlns:classrooms="clr-namespace:newUI.ViewModels.ClassroomsPage.Classrooms"
+             xmlns:classroomList="clr-namespace:newUI.Views.ClassroomsPage.ClassroomList"
+             
              x:Class="newUI.App"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              RequestedThemeVariant="Default">
@@ -18,11 +29,15 @@
 
     <Application.DataTemplates>
         <DataTemplate DataType="teachers:TeacherListViewModel">
-            <teachersPage:TeacherListView />
+            <teacherList:TeacherListView />
         </DataTemplate>
 
         <DataTemplate DataType="schoolSubjects:SchoolSubjectListViewModel">
-            <schoolSubjectsPage:SchoolSubjectListView />
+            <schoolSubjectList:SchoolSubjectListView />
+        </DataTemplate>
+
+        <DataTemplate DataType="classrooms:ClassroomListViewModel">
+            <classroomList:ClassroomListView />
         </DataTemplate>
         
         <DataTemplate DataType="schedule:ScheduleViewModel">

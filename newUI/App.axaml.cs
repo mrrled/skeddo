@@ -15,13 +15,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using newUI.Services;
 using newUI.ViewModels;
+using newUI.ViewModels.ClassroomsPage.Classrooms;
 using newUI.ViewModels.Navigation;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchedulePage.Lessons;
-using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
 using newUI.ViewModels.TeachersPage.Teachers;
-using newUI.Views;
 using newUI.Views.MainWindow;
 using newUI.Views.SchoolSubjectsPage;
 using newUI.Views.SchoolSubjectsPage.SchoolSubjectCreationWindow;
@@ -30,7 +29,11 @@ using newUI.Views.TeachersPage;
 using newUI.Views.SchedulePage.ScheduleTable;
 using newUI.Views.SchedulePage.ScheduleWindow;
 using newUI.Views.TeachersPage.TeacherCreationWindow;
-using newUI.Views.TeachersPage;
+using newUI.Views.TeachersPage.TeacherList;
+using newUI.Views.SchoolSubjectsPage.SchoolSubjectCreation;
+using newUI.Views.SchoolSubjectsPage.SchoolSubjectList;
+using newUI.Views.ClassroomsPage.ClassroomCreation;
+using newUI.Views.ClassroomsPage.ClassroomList;
 
 namespace newUI;
 
@@ -66,6 +69,35 @@ public partial class App : Avalonia.Application
         });
         
         RegisterFront(services);
+        services.AddTransient<MainViewModel>();
+        services.AddTransient<MainWindow>();
+        
+        services.AddSingleton<IWindowManager, WindowManager>();
+        
+        services.AddTransient<TeacherCreationWindow>();
+        services.AddTransient<TeacherCreationViewModel>();
+        services.AddTransient<TeacherListView>();
+        services.AddTransient<TeacherListViewModel>();
+        
+        services.AddTransient<SchoolSubjectCreationWindow>();
+        services.AddTransient<SchoolSubjectCreationViewModel>();
+        services.AddTransient<SchoolSubjectListView>();
+        services.AddTransient<SchoolSubjectListViewModel>();
+        
+        services.AddTransient<ClassroomCreationWindow>();
+        services.AddTransient<ClassroomCreationViewModel>();
+        services.AddTransient<ClassroomListView>();
+        services.AddTransient<ClassroomListViewModel>();
+        
+        services.AddTransient<LessonCardViewModel>();
+        services.AddTransient<ScheduleViewModel>();
+        services.AddTransient<LessonTableViewModel>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        
+        services.AddSingleton<NavigationService>();
+        services.AddTransient<NavigationBarViewModel>();
+        
+        RegisterViewMappings();
         Services = services.BuildServiceProvider();
         using (var scope = Services.CreateScope())
         {
@@ -143,7 +175,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<ITeacherRepository, TeacherRepository>();
     }
     
-    private void RegsterViewMappings()
+    private static void RegisterViewMappings()
     {
         ViewMappingService.RegisterWindow<MainViewModel, MainWindow>();
         ViewMappingService.RegisterWindow<TeacherCreationViewModel, TeacherCreationWindow>();
@@ -151,5 +183,7 @@ public partial class App : Avalonia.Application
         ViewMappingService.RegisterWindow<SchoolSubjectCreationViewModel, SchoolSubjectCreationWindow>();
         ViewMappingService.RegisterUserControl<SchoolSubjectListViewModel, SchoolSubjectListView>();
         ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
+        ViewMappingService.RegisterWindow<ClassroomCreationViewModel, ClassroomCreationWindow>();
+        ViewMappingService.RegisterUserControl<ClassroomListViewModel, ClassroomListView>();
     }
 }

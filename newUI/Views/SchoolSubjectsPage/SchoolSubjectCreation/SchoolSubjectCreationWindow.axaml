@@ -5,14 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:newUI.ViewModels"
         xmlns:teachers1="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
+        xmlns:classrooms="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
         mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
-        x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectCreationWindow.SchoolSubjectCreationWindow"
+        x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectCreation.SchoolSubjectCreationWindow"
         Title="Создание предмета"
-        Width="350" Height="300"
-        x:DataType="teachers1:SchoolSubjectCreationViewModel">
+        Width="370" Height="300"
+        x:DataType="classrooms:SchoolSubjectCreationViewModel">
     
     <Design.DataContext>
-        <teachers1:SchoolSubjectCreationViewModel />
+        <classrooms:SchoolSubjectCreationViewModel />
     </Design.DataContext>
     
     <StackPanel Margin="20" Spacing="15">
@@ -23,7 +24,7 @@
                    HorizontalAlignment="Center" />
         
         <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Text="Имя:" Width="100" VerticalAlignment="Center" />
+            <TextBlock Text="Название:" Width="120" VerticalAlignment="Center" />
             <TextBox Watermark="Введите название" 
                      Width="200" 
                      Text="{Binding SchoolSubject.Name, Mode=TwoWay}" 

@@ -50,18 +50,24 @@
     <Compile Update="Views\Navigation\NavigationBar.cs">
       <DependentUpon>NavigationBar.axaml</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="Views\MainWindow\MainWindow.axaml" />
-    <AdditionalFiles Include="Views\Navigation\NavigationBar.axaml" />
-    <AdditionalFiles Include="Views\SchedulePage\LessonCard\LessonCard.axaml" />
-    <AdditionalFiles Include="Views\TeachersPage\TeacherCreationWindow\TeacherCreationWindow.axaml" />
+    <Compile Update="Views\SchoolSubjectsPage\SchoolSubjectList\SchoolSubjectListView.axaml.cs">
+      <DependentUpon>SchoolSubjectListView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\TeachersPage\TeacherList\TeacherListView.axaml.cs">
+      <DependentUpon>TeacherListView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ViewModels\SchedulePage\" />
     <Folder Include="ViewModels\TeachersPage\" />
     <Folder Include="Views\SchedulePage\BufferWindow\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Views\SchoolSubjectsPage\SchoolSubjectList\SchoolSubjectListView.axaml" />
+    <AdditionalFiles Include="Views\TeachersPage\TeacherList\TeacherListView.axaml" />
   </ItemGroup>
 </Project>

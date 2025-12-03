@@ -5,15 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:newUI.ViewModels"
         xmlns:teachers1="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
-        xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
+        xmlns:teachers="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
         mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
         x:Class="newUI.Views.TeachersPage.TeacherCreationWindow.TeacherCreationWindow"
         Title="Создание преподавателя"
-        Width="350" Height="300"
-        x:DataType="schoolSubjects:TeacherCreationViewModel">
+        Width="370" Height="300"
+        x:DataType="teachers:TeacherCreationViewModel">
     
     <Design.DataContext>
-        <schoolSubjects:TeacherCreationViewModel />
+        <teachers:TeacherCreationViewModel />
     </Design.DataContext>
     
     <StackPanel Margin="20" Spacing="15">
@@ -24,7 +24,7 @@
                    HorizontalAlignment="Center" />
 
         <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Text="Фамилия:" Width="100" VerticalAlignment="Center" />
+            <TextBlock Text="Фамилия:" Width="120" VerticalAlignment="Center" />
             <TextBox Watermark="Введите фамилию" 
                      Width="200" 
                      Text="{Binding Teacher.Surname, Mode=TwoWay}" 
@@ -32,7 +32,7 @@
         </StackPanel>
         
         <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Text="Имя:" Width="100" VerticalAlignment="Center" />
+            <TextBlock Text="Имя:" Width="120" VerticalAlignment="Center" />
             <TextBox Watermark="Введите имя" 
                      Width="200" 
                      Text="{Binding Teacher.Name, Mode=TwoWay}" 
@@ -40,7 +40,7 @@
         </StackPanel>
         
         <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Text="Отчество:" Width="100" VerticalAlignment="Center" />
+            <TextBlock Text="Отчество:" Width="120" VerticalAlignment="Center" />
             <TextBox Watermark="Введите отчество" 
                      Width="200" 
                      Text="{Binding Teacher.Patronymic, Mode=TwoWay}" 

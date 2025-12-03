@@ -1,11 +1,12 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
-             x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectListView"
-             x:DataType="vm:SchoolSubjectListViewModel">
+             xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
+             x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectList.SchoolSubjectListView"
+             x:DataType="schoolSubjects:SchoolSubjectListViewModel">
 
     <Design.DataContext>
-        <vm:SchoolSubjectListViewModel/>
+        <schoolSubjects:SchoolSubjectListViewModel/>
     </Design.DataContext>
 
     <ScrollViewer>

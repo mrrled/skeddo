@@ -11,6 +11,11 @@
                     VerticalAlignment="Center"
                     Margin="10,0"
                     Spacing="10">
+                    
+            <Button Content="Schedule Table"
+                    Command="{Binding NavigateScheduleTableCommand}"
+                    BorderThickness="1"
+                    Padding="5,2"/>
 
             <Button Content="Teachers"
                     Command="{Binding NavigateTeachersCommand}"
@@ -21,9 +26,9 @@
                     Command="{Binding NavigateSchoolSubjectsCommand}"
                     BorderThickness="1"
                     Padding="5,2"/>
-            
-            <Button Content="Schedule Table"
-                    Command="{Binding NavigateScheduleTableCommand}"
+
+            <Button Content="Classrooms"
+                    Command="{Binding NavigateClassroomsCommand}"
                     BorderThickness="1"
                     Padding="5,2"/>
 

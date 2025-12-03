@@ -3,11 +3,16 @@ using CommunityToolkit.Mvvm.Input;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.TeachersPage.Teachers;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
+using newUI.ViewModels.ClassroomsPage.Classrooms;
 
 namespace newUI.ViewModels.Navigation;
 
 public partial class NavigationBarViewModel(NavigationService nav) : ObservableObject
 {
+    [RelayCommand]
+    private void NavigateScheduleTable()
+        => nav.Navigate<ScheduleViewModel>();
+    
     [RelayCommand]
     private void NavigateTeachers()
         => nav.Navigate<TeacherListViewModel>();
@@ -17,6 +22,6 @@ public partial class NavigationBarViewModel(NavigationService nav) : ObservableO
         => nav.Navigate<SchoolSubjectListViewModel>();
     
     [RelayCommand]
-    private void NavigateScheduleTable()
-        => nav.Navigate<ScheduleViewModel>();
+    private void NavigateClassrooms()
+        => nav.Navigate<ClassroomListViewModel>();
 }

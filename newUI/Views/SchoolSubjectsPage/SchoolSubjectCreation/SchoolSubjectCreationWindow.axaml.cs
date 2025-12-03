@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
 
-namespace newUI.Views.SchoolSubjectsPage.SchoolSubjectCreationWindow;
+namespace newUI.Views.SchoolSubjectsPage.SchoolSubjectCreation;
 
 public partial class SchoolSubjectCreationWindow : Window
 {
