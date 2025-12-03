@@ -1,12 +1,10 @@
-﻿using Domain.Models;
-
-namespace Application.DtoModels;
+﻿namespace Application.DtoModels;
 
 public class ScheduleDto : IEquatable<ScheduleDto>
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public List<LessonDto> Lessons { get; set; } = new List<LessonDto>();
+    public List<LessonDto> Lessons { get; set; } = new();
 
     public bool Equals(ScheduleDto? other)
     {

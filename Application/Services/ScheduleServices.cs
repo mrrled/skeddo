@@ -14,6 +14,12 @@ public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWor
         return scheduleList.ToSchedulesDto();
     }
 
+    public async Task<ScheduleDto> FetchScheduleByIdAsync(int id)
+    {
+        var schedule = await scheduleRepository.GetScheduleByIdAsync(id);
+        return  schedule.ToScheduleDto();
+    }
+
     public async Task AddSchedule(ScheduleDto scheduleDto)
     {
         var schedule = new Schedule(scheduleDto.Id, scheduleDto.Name, []);
