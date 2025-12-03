@@ -215,6 +215,26 @@ namespace Infrastructure.Migrations
                     b.ToTable("StudyGroups");
                 });
 
+            modelBuilder.Entity("Infrastructure.DboModels.StudySubgroupDbo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("StudyGroupId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudyGroupId");
+
+                    b.ToTable("StudySubgroups");
+                });
+
             modelBuilder.Entity("Infrastructure.DboModels.TeacherDbo", b =>
                 {
                     b.Property<int>("Id")
@@ -421,6 +441,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("ScheduleGroup");
                 });
 
+            modelBuilder.Entity("Infrastructure.DboModels.StudySubgroupDbo", b =>
+                {
+                    b.HasOne("Infrastructure.DboModels.StudyGroupDbo", "StudyGroup")
+                        .WithMany("StudySubgroups")
+                        .HasForeignKey("StudyGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StudyGroup");
+                });
+
             modelBuilder.Entity("Infrastructure.DboModels.TeacherDbo", b =>
                 {
                     b.HasOne("Infrastructure.DboModels.ScheduleGroupDbo", "ScheduleGroup")
@@ -482,6 +513,11 @@ namespace Infrastructure.Migrations
                     b.Navigation("StudyGroups");
 
                     b.Navigation("Teachers");
+                });
+
+            modelBuilder.Entity("Infrastructure.DboModels.StudyGroupDbo", b =>
+                {
+                    b.Navigation("StudySubgroups");
                 });
 
             modelBuilder.Entity("Infrastructure.DboModels.TeacherDbo", b =>
