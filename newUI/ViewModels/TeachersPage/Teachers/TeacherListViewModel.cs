@@ -12,7 +12,7 @@ public class TeacherListViewModel : ViewModelBase
 {
     private AvaloniaList<TeacherDto> teachers = new(); 
     
-    private IServiceScopeFactory scopeFactory;
+    private readonly IServiceScopeFactory scopeFactory;
     private IWindowManager windowManager;
         
     public double Width { get; set; }

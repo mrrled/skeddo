@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:viewModels="clr-namespace:newUI.ViewModels"
              xmlns:lessons1="clr-namespace:newUI.ViewModels.SchedulePage.Lessons"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="newUI.Views.SchedulePage.LessonCard.LessonCard"
@@ -12,18 +11,26 @@
         <lessons1:LessonCardViewModel/>
     </Design.DataContext>
     
+    
     <Border Name="Cell" CornerRadius="6"
             Background="White"
             BorderBrush="#E0E0E0"
             BorderThickness="1"
             Padding="12"
-            MinWidth="140">
-        
+            Width="{DynamicResource LessonCardWidth}"
+            Height="{DynamicResource LessonCardHeight}">
+        <Grid>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="5">
             <TextBlock 
                 Text="{Binding Lesson.Subject}"
-                FontWeight="Bold" FontSize="14" TextAlignment="Center"/>
-            <TextBlock FontSize="12" Foreground="Gray" TextAlignment="Center">
+                FontWeight="Bold"
+                FontSize="14"
+                TextAlignment="Center"/>
+            <TextBlock FontSize="12"
+                       Foreground="Gray"
+                       TextAlignment="Center"
+                       MaxWidth="{DynamicResource LessonCardWidth}"
+                       TextWrapping="Wrap">
                 <TextBlock.Text>
                     <MultiBinding StringFormat="{}{0} {1} {2}">
                         <Binding Path="Lesson.Teacher.Name"/>
@@ -38,9 +45,10 @@
             <TextBlock 
                 Text="{Binding Lesson.StudyGroup.Name}"
                 FontSize="12" Foreground="Gray" TextAlignment="Center"/>
-            <TextBlock 
-                Text="{Binding Lesson.LessonNumber.Number }" 
-                FontSize="12" Foreground="Gray" TextAlignment="Center"/>
+            <!-- <TextBlock  -->
+            <!--     Text="{Binding Lesson.LessonNumber.Number }"  -->
+            <!--     FontSize="12" Foreground="Gray" TextAlignment="Center"/> -->
         </StackPanel>
+        </Grid>
     </Border>
 </UserControl>

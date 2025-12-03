@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Application.DtoModels;
 using Avalonia.Collections;
 using newUI.ViewModels.SchedulePage.Lessons;
 
@@ -8,7 +9,12 @@ namespace newUI.ViewModels.SchedulePage.Schedule;
 public class LessonBufferViewModel : ViewModelBase
 {
     private AvaloniaList<LessonCardViewModel> lessonCards = new();
-    
+
+    public LessonBufferViewModel()
+    {
+        AddLessonCommand = new RelayCommandAsync(AddLessonAsync);
+    }
+
     public AvaloniaList<LessonCardViewModel> LessonCards
     {
         get => lessonCards;
@@ -17,10 +23,13 @@ public class LessonBufferViewModel : ViewModelBase
     
     public ICommand AddLessonCommand { get; }
 
-    private Task AddLessonAsync(LessonCardViewModel lessonCard)
+    private Task AddLessonAsync()
     {
-        lessonCards.Add(lessonCard);
-        OnPropertyChanged(nameof(LessonCards));
         return Task.CompletedTask;
+    }
+
+    public void AddLessonToBuffer(LessonCardViewModel lesson)
+    {
+        LessonCards.Add(lesson);
     }
 }

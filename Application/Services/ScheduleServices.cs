@@ -41,4 +41,10 @@ public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWor
         await scheduleRepository.Delete(schoolSubject);
         await unitOfWork.SaveChangesAsync();
     }
+
+    public async Task<ScheduleDto> GetScheduleByIdAsync(int id)
+    {
+        var schedule = await scheduleRepository.GetScheduleByIdAsync(id);
+        return schedule.ToScheduleDto();
+    }
 }

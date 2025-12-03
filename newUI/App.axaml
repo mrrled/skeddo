@@ -4,7 +4,10 @@
              xmlns:teachers="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
              xmlns:teachersPage="clr-namespace:newUI.Views.TeachersPage"
              xmlns:schoolSubjectsPage="clr-namespace:newUI.Views.SchoolSubjectsPage"
-             x:Class="newUI.App">
+             x:Class="newUI.App"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
         <FluentTheme />
@@ -21,4 +24,9 @@
         </DataTemplate>
     </Application.DataTemplates>
 
+             
+    <Application.Resources>
+        <sys:Double x:Key="LessonCardWidth">150</sys:Double>
+        <sys:Double x:Key="LessonCardHeight">120</sys:Double>
+    </Application.Resources>
 </Application>

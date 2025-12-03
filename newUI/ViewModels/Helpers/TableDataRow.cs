@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace newUI.ViewModels.Helpers;
 
@@ -11,6 +12,10 @@ public class TableDataRow<TCell, TColumn, TRow> : ViewModelBase where TCell : Vi
     {
         this.rowHeader = rowHeader;
     }
+    
+    public ObservableCollection<TCell> Cells => new ObservableCollection<TCell>(cells.Values);
+    
+    public Dictionary<TColumn, TCell> CellDictionary => cells;
 
     public TRow RowHeader
     {
