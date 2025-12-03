@@ -11,7 +11,7 @@
 
     <ScrollViewer>
         <StackPanel Margin="20">
-            <TextBlock Text="Список учителей (Пример)" FontWeight="Bold" Margin="0 0 0 5"/>
+            <TextBlock Text="Список учителей" FontWeight="Bold" Margin="0 0 0 5"/>
 
             <StackPanel Orientation="Horizontal" Spacing="10">
                 <Button Content="Загрузить учителей"

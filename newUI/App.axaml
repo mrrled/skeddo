@@ -19,7 +19,8 @@
              
              x:Class="newUI.App"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             RequestedThemeVariant="Default">
+             
+             RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
