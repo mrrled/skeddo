@@ -16,6 +16,8 @@ using Microsoft.Extensions.Logging;
 using newUI.Services;
 using newUI.ViewModels;
 using newUI.ViewModels.ClassroomsPage.Classrooms;
+using newUI.ViewModels.MainPage;
+using newUI.ViewModels.MainPage.ScheduleCreation;
 using newUI.ViewModels.Navigation;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchedulePage.Lessons;
@@ -30,6 +32,8 @@ using newUI.Views.SchoolSubjectsPage.SchoolSubjectCreation;
 using newUI.Views.SchoolSubjectsPage.SchoolSubjectList;
 using newUI.Views.ClassroomsPage.ClassroomCreation;
 using newUI.Views.ClassroomsPage.ClassroomList;
+using newUI.Views.MainPage;
+using newUI.Views.MainPage.ScheduleCreation;
 
 namespace newUI;
 
@@ -100,6 +104,10 @@ public partial class App : Avalonia.Application
         
         services.AddSingleton<IWindowManager, WindowManager>();
         
+        services.AddTransient<MainPageView>();
+        services.AddTransient<MainPageViewModel>();
+        services.AddTransient<ScheduleCreationViewModel>();
+        
         services.AddTransient<ScheduleViewModel>();
         services.AddTransient<ScheduleWindow>();
         
@@ -153,6 +161,9 @@ public partial class App : Avalonia.Application
     private static void RegisterViewMappings()
     {
         ViewMappingService.RegisterWindow<MainViewModel, MainWindow>();
+        
+        ViewMappingService.RegisterWindow<ScheduleCreationViewModel, ScheduleCreationWindow>();
+        ViewMappingService.RegisterUserControl<MainPageViewModel, MainPageView>();
         
         ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
         

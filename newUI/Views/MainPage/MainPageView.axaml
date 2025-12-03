@@ -1,0 +1,56 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="https://github.com/avaloniaui/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:newUI.ViewModels.MainPage"
+             xmlns:scheduleList="clr-namespace:newUI.ViewModels.MainPage.ScheduleList"
+             x:Class="newUI.Views.MainPage.MainPageView"
+             mc:Ignorable="d"
+             x:DataType="vm:MainPageViewModel">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Поиск -->
+        <TextBox Grid.Row="0" Watermark="Введите название расписания"
+                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                 Width="400" HorizontalAlignment="Left" Margin="0,0,0,12" />
+
+        <!-- Список расписаний -->
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Schedules}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="scheduleList:ScheduleItemViewModel">
+                    <Border Margin="0,0,0,8" Padding="8" Background="#FFF" CornerRadius="8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Название -->
+                            <TextBox Text="{Binding Name, Mode=TwoWay}"
+                                     IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBooleanConverter}}"
+                                     BorderThickness="0" Background="Transparent" FontSize="16" />
+
+                            <!-- Кнопка редактирования -->
+                            <Button Grid.Column="1" Content="✏" Command="{Binding EditCommand}" Width="32" Height="32"
+                                    Margin="8,0" />
+
+                            <!-- Кнопка удаления -->
+                            <Button Grid.Column="2" Content="🗑" Command="{Binding DeleteCommand}" Width="32"
+                                    Height="32" Margin="8,0" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Плюс для создания нового расписания -->
+        <Button Content="+" Width="48" Height="48" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Command="{Binding AddScheduleCommand}" />
+    </Grid>
+</UserControl>

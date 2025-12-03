@@ -11,6 +11,11 @@
                     VerticalAlignment="Center"
                     Margin="10,0"
                     Spacing="10">
+                
+            <Button Content="Main"
+                    Command="{Binding NavigateMainCommand}"
+                    BorderThickness="1"
+                    Padding="5,2"/>
                     
             <Button Content="Schedule Table"
                     Command="{Binding NavigateScheduleTableCommand}"

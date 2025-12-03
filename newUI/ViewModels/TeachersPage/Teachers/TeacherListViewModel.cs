@@ -39,7 +39,9 @@ public class TeacherListViewModel : ViewModelBase
 
     private Task CreateTeacher()
     {
-        windowManager.Show<TeacherCreationViewModel>();
+        var scope = scopeFactory.CreateScope();
+        var vm = scope.ServiceProvider.GetRequiredService<TeacherCreationViewModel>();
+        windowManager.ShowWindow(vm);
         return Task.CompletedTask;
     }
         

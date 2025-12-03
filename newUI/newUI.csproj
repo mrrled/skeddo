@@ -65,9 +65,4 @@
     <Folder Include="ViewModels\TeachersPage\" />
     <Folder Include="Views\SchedulePage\BufferWindow\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="Views\SchoolSubjectsPage\SchoolSubjectList\SchoolSubjectListView.axaml" />
-    <AdditionalFiles Include="Views\TeachersPage\TeacherList\TeacherListView.axaml" />
-  </ItemGroup>
 </Project>

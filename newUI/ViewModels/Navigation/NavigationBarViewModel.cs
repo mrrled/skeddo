@@ -1,14 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using newUI.Services;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.TeachersPage.Teachers;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
 using newUI.ViewModels.ClassroomsPage.Classrooms;
+using newUI.ViewModels.MainPage;
 
 namespace newUI.ViewModels.Navigation;
 
 public partial class NavigationBarViewModel(NavigationService nav) : ObservableObject
 {
+    [RelayCommand]
+    private void NavigateMain()
+        => nav.Navigate<MainPageViewModel>();
+    
     [RelayCommand]
     private void NavigateScheduleTable()
         => nav.Navigate<ScheduleViewModel>();

@@ -4,6 +4,7 @@ using Application.Services;
 using Application.DtoModels;
 using Avalonia.Collections;
 using newUI.Services;
+using newUI.ViewModels.MainPage;
 using newUI.ViewModels.Navigation;
 using newUI.ViewModels.TeachersPage.Teachers;
 
@@ -11,23 +12,27 @@ namespace newUI.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    public NavigationBarViewModel NavigationBar { get; }
-
     private ViewModelBase? currentPage;
-
     public ViewModelBase? CurrentPage
     {
         get => currentPage;
         set => SetProperty(ref currentPage, value);
     }
 
-    public MainViewModel(NavigationService nav, NavigationBarViewModel navigationBar)
+    public NavigationService Navigation { get; }
+    public NavigationBarViewModel NavigationBar { get; }
+
+    public MainViewModel(NavigationService navigation, NavigationBarViewModel navigationBar)
     {
+        Navigation = navigation;
         NavigationBar = navigationBar;
 
-        nav.CurrentViewModelChanged += vm => CurrentPage = (ViewModelBase)vm;
-
-        nav.Navigate<TeacherListViewModel>();
+        Navigation.CurrentViewModelChanged += () =>
+        {
+            CurrentPage = Navigation.CurrentViewModel;
+        };
+        
+        Navigation.Navigate<MainPageViewModel>();
     }
 
     private AvaloniaList<ScheduleDto> scheduleList = new();
