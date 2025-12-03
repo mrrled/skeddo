@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
+using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace newUI.ViewModels.MainPage.ScheduleCreation;
@@ -36,10 +37,13 @@ public class ScheduleCreationViewModel : ViewModelBase
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
         var schedule = new ScheduleDto { Name = ScheduleName };
-
         await service.AddSchedule(schedule);
 
-        // Событие для MainPageViewModel
+        // Уведомляем всех подписчиков (например MainPageVM)
         ScheduleCreated?.Invoke(schedule);
+        
+        Console.WriteLine(Window);
+        // Закрываем окно
+        Window?.Close();
     }
 }

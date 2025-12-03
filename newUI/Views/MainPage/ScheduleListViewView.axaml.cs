@@ -4,11 +4,11 @@ using newUI.ViewModels.MainPage;
 
 namespace newUI.Views.MainPage;
 
-public partial class MainPageView : UserControl
+public partial class ScheduleListViewView : UserControl
 {
-    public MainPageView()
+    public ScheduleListViewView()
     {
         InitializeComponent();
-        DataContext = App.Services.GetRequiredService<MainPageViewModel>();
+        DataContext = App.Services.GetRequiredService<ScheduleListViewModel>();
     }
 }

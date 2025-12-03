@@ -21,8 +21,8 @@
     </Application.Styles>
 
     <Application.DataTemplates>
-        <DataTemplate DataType="mainPage:MainPageViewModel">
-            <mainPage1:MainPageView />
+        <DataTemplate DataType="mainPage:ScheduleListViewModel">
+            <mainPage1:ScheduleListViewView />
         </DataTemplate>
         
         <DataTemplate DataType="schedule:ScheduleViewModel">

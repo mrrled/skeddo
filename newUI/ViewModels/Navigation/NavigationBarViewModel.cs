@@ -13,7 +13,7 @@ public partial class NavigationBarViewModel(NavigationService nav) : ObservableO
 {
     [RelayCommand]
     private void NavigateMain()
-        => nav.Navigate<MainPageViewModel>();
+        => nav.Navigate<ScheduleListViewModel>();
     
     [RelayCommand]
     private void NavigateScheduleTable()

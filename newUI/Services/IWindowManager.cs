@@ -8,7 +8,7 @@ namespace newUI.Services;
 
 public interface IWindowManager
 {
-    void ShowWindow<TViewModel>(TViewModel viewModel) where TViewModel : ViewModelBase;
+    Window ShowWindow<TViewModel>(TViewModel viewModel) where TViewModel : ViewModelBase;
 
     Task<TResult?> ShowDialog<TViewModel, TResult>(TViewModel viewModel)
         where TViewModel : ViewModelBase;

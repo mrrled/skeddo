@@ -32,7 +32,7 @@ public class MainViewModel : ViewModelBase
             CurrentPage = Navigation.CurrentViewModel;
         };
         
-        Navigation.Navigate<MainPageViewModel>();
+        Navigation.Navigate<ScheduleListViewModel>();
     }
 
     private AvaloniaList<ScheduleDto> scheduleList = new();

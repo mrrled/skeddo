@@ -2,8 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using newUI.Services;
 using newUI.ViewModels;
+
+namespace newUI.Services;
 
 public class WindowManager : IWindowManager
 {
@@ -22,11 +23,12 @@ public class WindowManager : IWindowManager
     }
 
     // Новый метод: открываем окно с готовой VM
-    public void ShowWindow<TViewModel>(TViewModel viewModel) where TViewModel : ViewModelBase
+    public Window ShowWindow<TViewModel>(TViewModel viewModel) where TViewModel : ViewModelBase
     {
         var window = CreateWindowInstance<TViewModel>();
-        window.DataContext = viewModel;
+        window.DataContext = viewModel; // используем уже готовую VM
         window.Show();
+        return window;
     }
 
     public async Task<TResult?> ShowDialog<TViewModel, TResult>(TViewModel viewModel)

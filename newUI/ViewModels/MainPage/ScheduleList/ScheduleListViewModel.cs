@@ -12,7 +12,7 @@ using newUI.ViewModels.MainPage.ScheduleList;
 
 namespace newUI.ViewModels.MainPage;
 
-public class MainPageViewModel : ViewModelBase
+public class ScheduleListViewModel : ViewModelBase
 {
     private AvaloniaList<ScheduleDto> schedules = new();
     private readonly IServiceScopeFactory scopeFactory;
@@ -30,7 +30,7 @@ public class MainPageViewModel : ViewModelBase
     public ICommand AddScheduleCommand { get; }
     public ICommand LoadSchedulesCommand { get; }
 
-    public MainPageViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory)
+    public ScheduleListViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory)
     {
         this.windowManager = windowManager;
         this.scopeFactory = scopeFactory;
@@ -47,13 +47,13 @@ public class MainPageViewModel : ViewModelBase
         var scope = scopeFactory.CreateScope();
         var vm = scope.ServiceProvider.GetRequiredService<ScheduleCreationViewModel>();
 
-        // Подписка на событие создания нового расписания
         vm.ScheduleCreated += schedule =>
         {
-            Avalonia.Threading.Dispatcher.UIThread.Post(() => Schedules.Add(schedule));
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => 
+                ScheduleItems.Add(new ScheduleItemViewModel(schedule, windowManager)));
         };
 
-        windowManager.ShowWindow(vm);
+        vm.Window = windowManager.ShowWindow(vm);
     }
 
     public async Task LoadSchedules()

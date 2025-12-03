@@ -104,8 +104,8 @@ public partial class App : Avalonia.Application
         
         services.AddSingleton<IWindowManager, WindowManager>();
         
-        services.AddTransient<MainPageView>();
-        services.AddTransient<MainPageViewModel>();
+        services.AddTransient<ScheduleListViewView>();
+        services.AddTransient<ScheduleListViewModel>();
         services.AddTransient<ScheduleCreationViewModel>();
         
         services.AddTransient<ScheduleViewModel>();
@@ -163,7 +163,7 @@ public partial class App : Avalonia.Application
         ViewMappingService.RegisterWindow<MainViewModel, MainWindow>();
         
         ViewMappingService.RegisterWindow<ScheduleCreationViewModel, ScheduleCreationWindow>();
-        ViewMappingService.RegisterUserControl<MainPageViewModel, MainPageView>();
+        ViewMappingService.RegisterUserControl<ScheduleListViewModel, ScheduleListViewView>();
         
         ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
         

@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:newUI.ViewModels.MainPage"
              xmlns:scheduleList="clr-namespace:newUI.ViewModels.MainPage.ScheduleList"
-             x:Class="newUI.Views.MainPage.MainPageView"
+             x:Class="newUI.Views.MainPage.ScheduleListViewView"
              mc:Ignorable="d"
-             x:DataType="vm:MainPageViewModel">
+             x:DataType="vm:ScheduleListViewModel">
 
     <Grid Margin="16">
         <Grid.RowDefinitions>

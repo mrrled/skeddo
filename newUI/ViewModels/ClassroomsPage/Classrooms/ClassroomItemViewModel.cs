@@ -3,7 +3,7 @@ using Application.IServices;
 
 namespace newUI.ViewModels.ClassroomsPage.Classrooms;
 
-public class ClassroomListItem : ViewModelBase
+public class ClassroomItemViewModel : ViewModelBase
 {
     private ClassroomDto classroom;
     private IClassroomServices service;
