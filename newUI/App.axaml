@@ -1,11 +1,13 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
-             xmlns:teachers="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
              xmlns:teachersPage="clr-namespace:newUI.Views.TeachersPage"
              xmlns:schoolSubjectsPage="clr-namespace:newUI.Views.SchoolSubjectsPage"
+             xmlns:teachers="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
              xmlns:teacherList="clr-namespace:newUI.Views.TeachersPage.TeacherList"
+             xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
              xmlns:schoolSubjectList="clr-namespace:newUI.Views.SchoolSubjectsPage.SchoolSubjectList"
+             xmlns:classrooms="clr-namespace:newUI.ViewModels.ClassroomsPage.Classrooms"
+             xmlns:classroomList="clr-namespace:newUI.Views.ClassroomsPage.ClassroomList"
              x:Class="newUI.App">
 
     <Application.Styles>
@@ -20,6 +22,10 @@
 
         <DataTemplate DataType="schoolSubjects:SchoolSubjectListViewModel">
             <schoolSubjectList:SchoolSubjectListView />
+        </DataTemplate>
+
+        <DataTemplate DataType="classrooms:ClassroomListViewModel">
+            <classroomList:ClassroomListView />
         </DataTemplate>
     </Application.DataTemplates>
 

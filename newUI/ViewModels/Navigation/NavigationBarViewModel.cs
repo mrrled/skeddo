@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using newUI.ViewModels.TeachersPage.Teachers;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
+using newUI.ViewModels.ClassroomsPage.Classrooms;
 
 namespace newUI.ViewModels.Navigation;
 
@@ -14,4 +15,8 @@ public partial class NavigationBarViewModel(NavigationService nav) : ObservableO
     [RelayCommand]
     private void NavigateSchoolSubjects()
         => nav.Navigate<SchoolSubjectListViewModel>();
+    
+    [RelayCommand]
+    private void NavigateClassrooms()
+        => nav.Navigate<ClassroomListViewModel>();
 }

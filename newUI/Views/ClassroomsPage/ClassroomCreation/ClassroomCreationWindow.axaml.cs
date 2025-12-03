@@ -1,11 +1,11 @@
 ﻿using Avalonia.Controls;
-using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
+using newUI.ViewModels.ClassroomsPage.Classrooms;
 
-namespace newUI.Views.SchoolSubjectsPage.SchoolSubjectCreation;
+namespace newUI.Views.ClassroomsPage.ClassroomCreation;
 
-public partial class SchoolSubjectCreationWindow : Window
+public partial class ClassroomCreationWindow : Window
 {
-    public SchoolSubjectCreationWindow()
+    public ClassroomCreationWindow()
     {
         InitializeComponent();
     }
@@ -13,7 +13,7 @@ public partial class SchoolSubjectCreationWindow : Window
     private void NameTextBox_TextChanging(object? sender, TextChangingEventArgs e)
     {
         // Получаем ViewModel
-        if (DataContext is SchoolSubjectCreationViewModel viewModel)
+        if (DataContext is ClassroomCreationViewModel viewModel)
         {
             // Вызываем асинхронный метод SetName
             if (sender is TextBox textBox)

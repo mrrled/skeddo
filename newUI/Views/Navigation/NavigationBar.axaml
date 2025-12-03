@@ -21,6 +21,11 @@
                     Command="{Binding NavigateSchoolSubjectsCommand}"
                     BorderThickness="1"
                     Padding="5,2"/>
+            
+            <Button Content="Classrooms"
+                    Command="{Binding NavigateClassroomsCommand}"
+                    BorderThickness="1"
+                    Padding="5,2"/>
 
         </StackPanel>
 
