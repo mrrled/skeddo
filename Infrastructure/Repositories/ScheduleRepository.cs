@@ -15,22 +15,73 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
-        return scheduleGroup.Schedules.ToSchedules();
+        var hui = await context.Schedules
+            .Where(s => s.ScheduleGroupId == scheduleGroup.Id)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.LessonNumber)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.StudyGroup)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.Teacher)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.SchoolSubject)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.Classroom)
+            .Include(s => s.LessonNumbers)
+            .ToListAsync();
+        return hui.ToSchedules();
     }
-
+    
     public async Task<Schedule> GetScheduleByIdAsync(int scheduleId)
     {
         var scheduleGroup = await context.ScheduleGroups
             .Include(x => x.Schedules)
-            .ThenInclude(schedule => schedule.Lessons)
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
             throw new NullReferenceException();
-        var schedule = scheduleGroup.Schedules.FirstOrDefault(x => x.Id == scheduleId);
-        if (schedule is null)
-            throw new NullReferenceException();
-        return schedule.ToSchedule();
+        var hui = await context.Schedules
+            .Where(s => s.ScheduleGroupId == scheduleGroup.Id)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.LessonNumber)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.StudyGroup)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.Teacher)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.SchoolSubject)
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.Classroom)
+            .Include(s => s.LessonNumbers)
+            .FirstOrDefaultAsync(s => s.Id == scheduleId);
+        return hui.ToSchedule();
     }
+    
+    //Для рабочести временно поменяла методы, пожалуйста не злитесь
+    //Оригинальные методы в целости и сохранности
+    
+    // public async Task<List<Schedule>> GetScheduleListAsync()
+    // {
+    //     var scheduleGroup = await context.ScheduleGroups
+    //         .Include(x => x.Schedules)
+    //         .FirstOrDefaultAsync();
+    //     if (scheduleGroup is null)
+    //         throw new NullReferenceException();
+    //     return scheduleGroup.Schedules.ToSchedules();
+    // }
+
+    // public async Task<Schedule> GetScheduleByIdAsync(int scheduleId)
+    // {
+    //     var scheduleGroup = await context.ScheduleGroups
+    //         .Include(x => x.Schedules)
+    //         .ThenInclude(schedule => schedule.Lessons)
+    //         .FirstOrDefaultAsync();
+    //     if (scheduleGroup is null)
+    //         throw new NullReferenceException();
+    //     var schedule = scheduleGroup.Schedules.FirstOrDefault(x => x.Id == scheduleId);
+    //     if (schedule is null)
+    //         throw new NullReferenceException();
+    //     return schedule.ToSchedule();
+    // }
     
     public async Task AddAsync(Schedule schedule)
     {

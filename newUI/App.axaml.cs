@@ -100,7 +100,7 @@ public partial class App : Avalonia.Application
         
         services.AddSingleton<IWindowManager, WindowManager>();
         services.AddTransient<TeacherCreationViewModel>();
-        services.AddTransient<TeacherListWindow>();
+        services.AddTransient<TeacherListView>();
         services.AddTransient<TeacherListViewModel>();
         
         services.AddTransient<LessonCardViewModel>();
@@ -150,6 +150,6 @@ public partial class App : Avalonia.Application
         ViewMappingService.RegisterUserControl<TeacherListViewModel, TeacherListView>();
         ViewMappingService.RegisterWindow<SchoolSubjectCreationViewModel, SchoolSubjectCreationWindow>();
         ViewMappingService.RegisterUserControl<SchoolSubjectListViewModel, SchoolSubjectListView>();
-        ViewMappingService.Register<ScheduleViewModel, ScheduleWindow>();
+        ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
     }
 }

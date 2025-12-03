@@ -2,8 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
              xmlns:teachers="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
+             xmlns:schedule = "clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
              xmlns:teachersPage="clr-namespace:newUI.Views.TeachersPage"
              xmlns:schoolSubjectsPage="clr-namespace:newUI.Views.SchoolSubjectsPage"
+             xmlns:schedulePage="clr-namespace:newUI.Views.SchedulePage.ScheduleWindow"
              x:Class="newUI.App"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              RequestedThemeVariant="Default">
@@ -21,6 +23,10 @@
 
         <DataTemplate DataType="schoolSubjects:SchoolSubjectListViewModel">
             <schoolSubjectsPage:SchoolSubjectListView />
+        </DataTemplate>
+        
+        <DataTemplate DataType="schedule:ScheduleViewModel">
+            <schedulePage:ScheduleWindow />
         </DataTemplate>
     </Application.DataTemplates>
 

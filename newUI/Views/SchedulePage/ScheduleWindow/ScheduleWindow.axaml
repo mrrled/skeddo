@@ -1,10 +1,9 @@
-<Window xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
         xmlns:scheduleTable="clr-namespace:newUI.Views.SchedulePage.ScheduleTable"
         xmlns:lessonCard="clr-namespace:newUI.Views.SchedulePage.LessonCard"
         x:Class="newUI.Views.SchedulePage.ScheduleWindow.ScheduleWindow"
-        Title="Расписание"
         x:DataType="vm:ScheduleViewModel"><!-- Width="1200" Height="800" -->
 
     <DockPanel>
@@ -87,4 +86,4 @@
             </Border>
         </Grid>
     </DockPanel>
-</Window>
+</UserControl>

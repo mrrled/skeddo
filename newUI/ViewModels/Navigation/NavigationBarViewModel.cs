@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.TeachersPage.Teachers;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
 
@@ -14,4 +15,8 @@ public partial class NavigationBarViewModel(NavigationService nav) : ObservableO
     [RelayCommand]
     private void NavigateSchoolSubjects()
         => nav.Navigate<SchoolSubjectListViewModel>();
+    
+    [RelayCommand]
+    private void NavigateScheduleTable()
+        => nav.Navigate<ScheduleViewModel>();
 }
