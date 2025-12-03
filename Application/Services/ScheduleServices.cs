@@ -10,8 +10,7 @@ public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWor
 {
     public async Task<List<ScheduleDto>> FetchSchedulesFromBackendAsync()
     {
-        //var scheduleList = await scheduleRepository.GetScheduleListAsync();
-        var scheduleList = await scheduleRepository.GetScheduleListWithLessonsAsync();
+        var scheduleList = await scheduleRepository.GetScheduleListAsync();
         return scheduleList.ToSchedulesDto();
     }
 

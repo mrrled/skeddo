@@ -11,13 +11,12 @@ public class LessonCardViewModel : ViewModelBase
 {
     private LessonDto lesson;
     private readonly IServiceScopeFactory scopeFactory;
-    
-    public double Width { get; set; }
-    public double Height { get; set; }
+    public bool IsVisible { get; set; }
 
-    public LessonCardViewModel(IServiceScopeFactory scopeFactory)
+    public LessonCardViewModel(IServiceScopeFactory scopeFactory, bool isVisible = true)
     {
         this.scopeFactory = scopeFactory;
+        IsVisible = isVisible;
     }
 
     public LessonDto Lesson

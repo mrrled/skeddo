@@ -14,15 +14,16 @@ public class LessonTableViewModel :
     DynamicGridViewModel<LessonCardViewModel, StudyGroupDto, LessonNumberDto>
 {
     private readonly IServiceScopeFactory scopeFactory;
-    
     private ScheduleDto schedule;
+    private LessonBufferViewModel buffer;
     private AvaloniaList<LessonNumberDto> lessonNumbers;
     private AvaloniaList<StudyGroupDto> studyGroups;
 
-    public LessonTableViewModel(ScheduleDto schedule, IServiceScopeFactory scopeFactory)
+    public LessonTableViewModel(ScheduleDto schedule, IServiceScopeFactory scopeFactory, LessonBufferViewModel buffer)
     {
         this.schedule = schedule;
         this.scopeFactory = scopeFactory;
+        this.buffer = buffer;
         _ = InitializeAsync();
     }
     
@@ -72,46 +73,37 @@ public class LessonTableViewModel :
         LoadDataFromBackend(() => LoadData().Result);
     }
 
-    private async Task<List<(LessonNumberDto RowHeader, Dictionary<StudyGroupDto, LessonCardViewModel> CellData)>> LoadData()
+    private async Task<List<(LessonNumberDto RowHeader, Dictionary<StudyGroupDto, LessonCardViewModel?> CellData)>> LoadData()
     {
-        var result = new List<(LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel>)>();
-    
-        // Загружаем актуальное расписание с уроками
+        var result = new List<(LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel?>)>();
+        
         using var scope = scopeFactory.CreateScope();
         var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
         var schedules = await scheduleService.FetchSchedulesFromBackendAsync();
         var currentSchedule = schedules.FirstOrDefault(s => s.Id == Schedule.Id);
     
-        if (currentSchedule != null)
-        {
-            Schedule = currentSchedule; // Обновляем расписание
-        }
+        if (currentSchedule != null) 
+            Schedule = currentSchedule;
         
         var lessonDictionary = new Dictionary<(int, string), LessonDto>();
         foreach (var lesson in Schedule.Lessons)
         {
-            if (lesson.LessonNumber != null && lesson.StudyGroup != null)
-            {
+            if (lesson.LessonNumber != null && lesson.StudyGroup != null) 
                 lessonDictionary[(lesson.LessonNumber.Number, lesson.StudyGroup.Name)] = lesson;
-            }
+            else
+                buffer.AddLessonToBuffer(new LessonCardViewModel(scopeFactory){ Lesson = lesson });
         }
 
         foreach (var lessonNumber in LessonNumbers)
         {
-            var rowData = new Dictionary<StudyGroupDto, LessonCardViewModel>();
+            var rowData = new Dictionary<StudyGroupDto, LessonCardViewModel?>();
             
             foreach (var studyGroup in StudyGroups)
             {
                 if (lessonDictionary.TryGetValue((lessonNumber.Number, studyGroup.Name), out var lesson))
-                {
-                    var viewModel = new LessonCardViewModel(scopeFactory) { Lesson = lesson };
-                    rowData[studyGroup] = viewModel;
-                }
+                    rowData[studyGroup] = new LessonCardViewModel(scopeFactory) { Lesson = lesson };
                 else
-                {
-                    var viewModel = new LessonCardViewModel(scopeFactory);
-                    rowData[studyGroup] = viewModel;
-                }
+                    rowData[studyGroup] = new LessonCardViewModel(scopeFactory, false);
             }
             
             result.Add((lessonNumber, rowData));

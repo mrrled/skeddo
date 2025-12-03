@@ -87,7 +87,7 @@
                                     <Border BorderBrush="Gray" BorderThickness="1" 
                                             Width="{DynamicResource LessonCardWidth}"
                                             Height="{DynamicResource LessonCardHeight}">
-                                        <lessonCard:LessonCard/>
+                                        <lessonCard:LessonCard IsVisible="{Binding IsVisible}"/>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

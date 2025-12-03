@@ -11,6 +11,6 @@
              
     <Application.Resources>
         <sys:Double x:Key="LessonCardWidth">150</sys:Double>
-        <sys:Double x:Key="LessonCardHeight">100</sys:Double>
+        <sys:Double x:Key="LessonCardHeight">120</sys:Double>
     </Application.Resources>
 </Application>

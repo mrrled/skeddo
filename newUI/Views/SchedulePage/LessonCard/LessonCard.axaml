@@ -11,6 +11,7 @@
         <lessons1:LessonCardViewModel/>
     </Design.DataContext>
     
+    
     <Border Name="Cell" CornerRadius="6"
             Background="White"
             BorderBrush="#E0E0E0"
@@ -18,12 +19,18 @@
             Padding="12"
             Width="{DynamicResource LessonCardWidth}"
             Height="{DynamicResource LessonCardHeight}">
-        
+        <Grid>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="5">
             <TextBlock 
                 Text="{Binding Lesson.Subject}"
-                FontWeight="Bold" FontSize="14" TextAlignment="Center" TextWrapping="Wrap"/>
-            <TextBlock FontSize="12" Foreground="Gray" TextAlignment="Center">
+                FontWeight="Bold"
+                FontSize="14"
+                TextAlignment="Center"/>
+            <TextBlock FontSize="12"
+                       Foreground="Gray"
+                       TextAlignment="Center"
+                       MaxWidth="{DynamicResource LessonCardWidth}"
+                       TextWrapping="Wrap">
                 <TextBlock.Text>
                     <MultiBinding StringFormat="{}{0} {1} {2}">
                         <Binding Path="Lesson.Teacher.Name"/>
@@ -38,9 +45,10 @@
             <TextBlock 
                 Text="{Binding Lesson.StudyGroup.Name}"
                 FontSize="12" Foreground="Gray" TextAlignment="Center"/>
-            <TextBlock 
-                Text="{Binding Lesson.LessonNumber.Number }" 
-                FontSize="12" Foreground="Gray" TextAlignment="Center"/>
+            <!-- <TextBlock  -->
+            <!--     Text="{Binding Lesson.LessonNumber.Number }"  -->
+            <!--     FontSize="12" Foreground="Gray" TextAlignment="Center"/> -->
         </StackPanel>
+        </Grid>
     </Border>
 </UserControl>

@@ -34,6 +34,19 @@ public class ScheduleViewModel : ViewModelBase
         _ = InitializeAsync();
     }
     
+    private async Task InitializeAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            await LoadSchedulesAsync();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+    
     public ICommand SaveScheduleCommand { get; }
     public ICommand LoadSchedulesCommand { get; }
     public ICommand LoadCurrentScheduleCommand { get; }
@@ -83,19 +96,6 @@ public class ScheduleViewModel : ViewModelBase
         get => currentTable;
         set => SetProperty(ref currentTable, value);
     }
-    
-    private async Task InitializeAsync()
-    {
-        IsLoading = true;
-        try
-        {
-            await LoadSchedulesAsync();
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
 
     private async Task AddScheduleAsync()
     {
@@ -111,7 +111,8 @@ public class ScheduleViewModel : ViewModelBase
         using (var scope = scopeFactory.CreateScope())
         {
             var service = scope.ServiceProvider.GetService<IScheduleServices>();
-            service.EditSchedule(currentSchedule, currentSchedule); //TODO: сделать копию расписания, чтобы был oldSchedule
+            service.EditSchedule(currentSchedule, currentSchedule); 
+            //TODO: сделать копию расписания, чтобы был oldSchedule
         }
         return Task.CompletedTask;
     }
@@ -127,7 +128,7 @@ public class ScheduleViewModel : ViewModelBase
             lessonTables.Remove(CurrentSchedule);
             scheduleList.Remove(CurrentSchedule);
             scheduleList.Add(schedule);
-            lessonTables.Add(schedule, new LessonTableViewModel(schedule, scopeFactory));
+            lessonTables.Add(schedule, new LessonTableViewModel(schedule, scopeFactory, buffer));
             CurrentSchedule = schedule;
         }
         finally
@@ -148,7 +149,7 @@ public class ScheduleViewModel : ViewModelBase
             
             foreach (var schedule in schedules)
             {
-                tables[schedule] = new LessonTableViewModel(schedule, scopeFactory);
+                tables[schedule] = new LessonTableViewModel(schedule, scopeFactory, buffer);
             }
             
             ScheduleList = new AvaloniaList<ScheduleDto>(schedules);
@@ -160,7 +161,6 @@ public class ScheduleViewModel : ViewModelBase
             }
             else if (CurrentSchedule != null)
             {
-                // Обновляем выбранное расписание, если оно все еще в списке
                 var updatedSchedule = ScheduleList.FirstOrDefault(s => s.Id == CurrentSchedule.Id);
                 CurrentSchedule = updatedSchedule ?? ScheduleList.FirstOrDefault();
             }
