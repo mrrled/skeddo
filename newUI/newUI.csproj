@@ -58,16 +58,18 @@
       <DependentUpon>TeacherListView.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\MainPage\ScheduleList\ScheduleListViewView.axaml.cs">
+      <DependentUpon>ScheduleListViewView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ViewModels\SchedulePage\" />
-    <Folder Include="ViewModels\TeachersPage\" />
     <Folder Include="Views\SchedulePage\BufferWindow\" />
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="Views\SchoolSubjectsPage\SchoolSubjectList\SchoolSubjectListView.axaml" />
-    <AdditionalFiles Include="Views\TeachersPage\TeacherList\TeacherListView.axaml" />
+    <AdditionalFiles Include="Views\MainPage\ScheduleList\ScheduleListViewView.axaml" />
   </ItemGroup>
 </Project>

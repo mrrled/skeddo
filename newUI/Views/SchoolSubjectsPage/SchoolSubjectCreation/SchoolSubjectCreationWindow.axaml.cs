@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectCreation;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
 
 namespace newUI.Views.SchoolSubjectsPage.SchoolSubjectCreation;

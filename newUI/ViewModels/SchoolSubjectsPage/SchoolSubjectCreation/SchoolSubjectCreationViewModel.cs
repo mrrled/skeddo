@@ -4,20 +4,20 @@ using Application.DtoModels;
 using Application.IServices;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace newUI.ViewModels.ClassroomsPage.Classrooms;
+namespace newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectCreation;
 
-public class ClassroomCreationViewModel : ViewModelBase
+public class SchoolSubjectCreationViewModel : ViewModelBase
 {
-    private ClassroomDto classroom = new();
+    private SchoolSubjectDto schoolSubject = new();
     private readonly IServiceScopeFactory scopeFactory;
 
-    public ClassroomDto Classroom
+    public SchoolSubjectDto SchoolSubject
     {
-        get => classroom;
-        set => SetProperty(ref classroom, value);
+        get => schoolSubject;
+        set => SetProperty(ref schoolSubject, value);
     } 
 
-    public ClassroomCreationViewModel(IServiceScopeFactory scopeFactory)
+    public SchoolSubjectCreationViewModel(IServiceScopeFactory scopeFactory)
     {
         this.scopeFactory = scopeFactory;
         SaveChangesCommand = new RelayCommandAsync(SaveChanges);
@@ -29,8 +29,8 @@ public class ClassroomCreationViewModel : ViewModelBase
     {
         using (var scope = scopeFactory.CreateScope())
         {
-            var service = scope.ServiceProvider.GetRequiredService<IClassroomServices>();
-            service.AddClassroom(classroom);
+            var service = scope.ServiceProvider.GetRequiredService<ISchoolSubjectServices>();
+            service.AddSchoolSubject(schoolSubject);
         }
 
         return Task.CompletedTask;
@@ -38,7 +38,7 @@ public class ClassroomCreationViewModel : ViewModelBase
     
     public Task SetName(string name)
     {
-        classroom.Name = name;
+        schoolSubject.Name = name;
         return Task.CompletedTask;
     }
 }

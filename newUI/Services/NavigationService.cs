@@ -1,18 +1,25 @@
 ﻿using System;
-using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using newUI.Services;
 using newUI.ViewModels;
 
-namespace newUI;
+namespace newUI.Services;
 
 public class NavigationService
 {
     private readonly IServiceProvider _provider;
 
-    public event Action<object>? CurrentViewModelChanged;
+    public event Action? CurrentViewModelChanged;
 
-    public object? CurrentViewModel { get; private set; }
+    private ViewModelBase? _currentViewModel;
+    public ViewModelBase? CurrentViewModel
+    {
+        get => _currentViewModel;
+        private set
+        {
+            _currentViewModel = value;
+            CurrentViewModelChanged?.Invoke();
+        }
+    }
 
     public NavigationService(IServiceProvider provider)
     {
@@ -21,18 +28,7 @@ public class NavigationService
 
     public void Navigate<TViewModel>() where TViewModel : ViewModelBase
     {
-        var vm = App.Services.GetRequiredService<TViewModel>();
-        var viewType = ViewMappingService.GetViewType(typeof(TViewModel));
-
-        if (typeof(UserControl).IsAssignableFrom(viewType))
-        {
-            var view = (UserControl)Activator.CreateInstance(viewType)!;
-            view.DataContext = vm;
-            CurrentViewModelChanged?.Invoke(vm);
-        }
-        else
-        {
-            throw new InvalidOperationException("Only UserControls can be shown in MainWindow ContentControl");
-        }
+        var vm = _provider.GetRequiredService<TViewModel>();
+        CurrentViewModel = vm;
     }
 }

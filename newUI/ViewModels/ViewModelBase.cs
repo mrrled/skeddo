@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Avalonia.Controls;
 
 namespace newUI.ViewModels;
 
 public class ViewModelBase : INotifyPropertyChanged
 {
+    public Window? Window { get; set; }
+    
     public event PropertyChangedEventHandler? PropertyChanged;
         
         

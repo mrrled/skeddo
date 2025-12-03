@@ -5,6 +5,7 @@ using Application.IServices;
 using Avalonia.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
+using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectCreation;
 
 namespace newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
 
@@ -38,7 +39,9 @@ public class SchoolSubjectListViewModel : ViewModelBase
 
     private Task CreateSchoolSubject()
     {
-        windowManager.Show<SchoolSubjectCreationViewModel>();
+        var scope = scopeFactory.CreateScope();
+        var vm = scope.ServiceProvider.GetRequiredService<SchoolSubjectCreationViewModel>();
+        windowManager.ShowWindow(vm);
         return Task.CompletedTask;
     }
 

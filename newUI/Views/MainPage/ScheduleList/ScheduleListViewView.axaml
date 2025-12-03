@@ -1,0 +1,80 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:newUI.ViewModels.MainPage"
+             xmlns:scheduleList="clr-namespace:newUI.ViewModels.MainPage.ScheduleList"
+             x:Class="newUI.Views.MainPage.ScheduleList.ScheduleListViewView"
+             mc:Ignorable="d"
+             x:DataType="vm:ScheduleListViewModel">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Поиск -->
+            <RowDefinition Height="*"/>    <!-- Список расписаний -->
+            <RowDefinition Height="Auto"/> <!-- Кнопка добавления -->
+        </Grid.RowDefinitions>
+
+        <!-- Поиск -->
+        <TextBox Grid.Row="0"
+                 Watermark="Введите название расписания"
+                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                 Width="400"
+                 HorizontalAlignment="Left"
+                 Margin="0,0,0,12"/>
+
+        <!-- Список расписаний с рамкой и скроллбаром -->
+        <Border Grid.Row="1" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding ScheduleItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="scheduleList:ScheduleItemViewModel">
+                            <Border Margin="8" Padding="8" Background="White" CornerRadius="8" BorderBrush="#CCC" BorderThickness="1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Название расписания -->
+                                    <TextBlock Text="{Binding Name}" FontSize="16" VerticalAlignment="Center"/>
+
+                                    <!-- Кнопка редактирования -->
+                                    <Button Grid.Column="1"
+                                            Content="✏"
+                                            Command="{Binding EditCommand}"
+                                            Width="32" Height="32"
+                                            Margin="8,0"/>
+
+                                    <!-- Кнопка удаления -->
+                                    <Button Grid.Column="2"
+                                            Content="🗑"
+                                            Command="{Binding DeleteCommand}"
+                                            Width="32" Height="32"
+                                            Margin="8,0"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Кнопка добавления после списка -->
+        <Button Grid.Row="2"
+                Command="{Binding AddScheduleCommand}"
+                Width="56"
+                Height="56"
+                HorizontalAlignment="Right"
+                Margin="0,12,0,0"
+                Background="#4CAF50"
+                BorderBrush="Transparent"
+                CornerRadius="28">     <!-- Сделать круглой -->
+            <Path Data="M12,5 L12,19 M5,12 L19,12"
+                  Stroke="White"
+                  StrokeThickness="2"
+                  Stretch="Uniform"/>
+        </Button>
+    </Grid>
+</UserControl>

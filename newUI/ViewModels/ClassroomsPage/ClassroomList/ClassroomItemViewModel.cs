@@ -1,9 +1,9 @@
 ﻿using Application.DtoModels;
 using Application.IServices;
 
-namespace newUI.ViewModels.ClassroomsPage.Classrooms;
+namespace newUI.ViewModels.ClassroomsPage.ClassroomList;
 
-public class ClassroomListItem : ViewModelBase
+public class ClassroomItemViewModel : ViewModelBase
 {
     private ClassroomDto classroom;
     private IClassroomServices service;

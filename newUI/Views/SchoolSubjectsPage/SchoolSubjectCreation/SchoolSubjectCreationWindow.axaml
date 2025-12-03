@@ -6,14 +6,15 @@
         xmlns:viewModels="clr-namespace:newUI.ViewModels"
         xmlns:teachers1="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
         xmlns:classrooms="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
+        xmlns:schoolSubjectCreation="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectCreation"
         mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
         x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectCreation.SchoolSubjectCreationWindow"
         Title="Создание предмета"
         Width="370" Height="300"
-        x:DataType="classrooms:SchoolSubjectCreationViewModel">
+        x:DataType="schoolSubjectCreation:SchoolSubjectCreationViewModel">
     
     <Design.DataContext>
-        <classrooms:SchoolSubjectCreationViewModel />
+        <schoolSubjectCreation:SchoolSubjectCreationViewModel />
     </Design.DataContext>
     
     <StackPanel Margin="20" Spacing="15">

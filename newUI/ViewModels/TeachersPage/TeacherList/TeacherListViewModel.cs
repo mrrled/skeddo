@@ -5,6 +5,7 @@ using Application.IServices;
 using Avalonia.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
+using newUI.ViewModels.TeachersPage.TeacherCreation;
 
 namespace newUI.ViewModels.TeachersPage.Teachers;
 
@@ -39,7 +40,9 @@ public class TeacherListViewModel : ViewModelBase
 
     private Task CreateTeacher()
     {
-        windowManager.Show<TeacherCreationViewModel>();
+        var scope = scopeFactory.CreateScope();
+        var vm = scope.ServiceProvider.GetRequiredService<TeacherCreationViewModel>();
+        windowManager.ShowWindow(vm);
         return Task.CompletedTask;
     }
         

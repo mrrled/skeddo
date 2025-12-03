@@ -1,27 +1,20 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-
-             xmlns:schedulePage="clr-namespace:newUI.Views.SchedulePage.ScheduleWindow"
-             xmlns:teachersPage="clr-namespace:newUI.Views.TeachersPage"
-             xmlns:schoolSubjectsPage="clr-namespace:newUI.Views.SchoolSubjectsPage"
-             xmlns:classroomsPage="clr-namespace:newUI.Views.ClassroomsPage"
-
-             xmlns:schedule = "clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
-
              xmlns:teachers="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
              xmlns:teacherList="clr-namespace:newUI.Views.TeachersPage.TeacherList"
-
              xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
              xmlns:schoolSubjectList="clr-namespace:newUI.Views.SchoolSubjectsPage.SchoolSubjectList"
-
-             xmlns:classrooms="clr-namespace:newUI.ViewModels.ClassroomsPage.Classrooms"
              xmlns:classroomList="clr-namespace:newUI.Views.ClassroomsPage.ClassroomList"
-             
-             x:Class="newUI.App"
+             xmlns:schedule="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
+             xmlns:schedulePage="clr-namespace:newUI.Views.SchedulePage.ScheduleWindow"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             
+             xmlns:mainPage="clr-namespace:newUI.ViewModels.MainPage"
+             xmlns:mainPage1="clr-namespace:newUI.Views.MainPage"
+             xmlns:converters="clr-namespace:newUI.Converters"
+             xmlns:classroomList1="clr-namespace:newUI.ViewModels.ClassroomsPage.ClassroomList"
+             xmlns:scheduleList="clr-namespace:newUI.Views.MainPage.ScheduleList"
+             x:Class="newUI.App"
              RequestedThemeVariant="Light">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
         <FluentTheme />
@@ -29,6 +22,14 @@
     </Application.Styles>
 
     <Application.DataTemplates>
+        <DataTemplate DataType="mainPage:ScheduleListViewModel">
+            <scheduleList:ScheduleListViewView />
+        </DataTemplate>
+        
+        <DataTemplate DataType="schedule:ScheduleViewModel">
+            <schedulePage:ScheduleWindow />
+        </DataTemplate>
+        
         <DataTemplate DataType="teachers:TeacherListViewModel">
             <teacherList:TeacherListView />
         </DataTemplate>
@@ -37,18 +38,15 @@
             <schoolSubjectList:SchoolSubjectListView />
         </DataTemplate>
 
-        <DataTemplate DataType="classrooms:ClassroomListViewModel">
+        <DataTemplate DataType="classroomList1:ClassroomListViewModel">
             <classroomList:ClassroomListView />
-        </DataTemplate>
-        
-        <DataTemplate DataType="schedule:ScheduleViewModel">
-            <schedulePage:ScheduleWindow />
         </DataTemplate>
     </Application.DataTemplates>
 
-             
     <Application.Resources>
         <sys:Double x:Key="LessonCardWidth">150</sys:Double>
         <sys:Double x:Key="LessonCardHeight">120</sys:Double>
+        
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Application.Resources>
 </Application>

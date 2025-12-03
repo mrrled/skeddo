@@ -5,9 +5,9 @@ using Application.IServices;
 using Avalonia.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
-using newUI.ViewModels.ClassroomsPage.Classrooms;
+using newUI.ViewModels.ClassroomsPage.ClassroomCreation;
 
-namespace newUI.ViewModels.ClassroomsPage.Classrooms;
+namespace newUI.ViewModels.ClassroomsPage.ClassroomList;
 
 public class ClassroomListViewModel : ViewModelBase
 {
@@ -39,7 +39,9 @@ public class ClassroomListViewModel : ViewModelBase
 
     private Task CreateClassroom()
     {
-        windowManager.Show<ClassroomCreationViewModel>();
+        var scope = scopeFactory.CreateScope();
+        var vm = scope.ServiceProvider.GetRequiredService<ClassroomCreationViewModel>();
+        windowManager.ShowWindow(vm);
         return Task.CompletedTask;
     }
 
