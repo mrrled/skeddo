@@ -5,7 +5,7 @@ namespace Application.DtoModels;
 public class LessonDto : IEquatable<LessonDto>
 {
     public int Id { get; set; }
-    public SchoolSubjectDto? Subject { get; set; }
+    public SchoolSubjectDto? SchoolSubject { get; set; }
     public LessonNumberDto? LessonNumber { get; set; }
     public TeacherDto? Teacher { get; set; }
     public StudyGroupDto? StudyGroup { get; set; }

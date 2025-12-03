@@ -24,7 +24,7 @@ public class LessonCreationViewModel : ViewModelBase
 
     public void SetStudyGroup(StudyGroupDto studyGroup) => lesson.StudyGroup = studyGroup;
 
-    public void SetSubject(SchoolSubjectDto subject) => lesson.Subject = subject;
+    public void SetSubject(SchoolSubjectDto subject) => lesson.SchoolSubject = subject;
 
     public async Task<LessonDto> CreateLesson()
     {

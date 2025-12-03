@@ -61,7 +61,7 @@ public class ExportDocument : IDocument
                             .Row((uint)i)
                             .Column((uint)j)
                             .Element(CellStyle)
-                            .Text(SchoolFormat(lesson.First().Classroom, lesson.First().Subject, lesson.First().Teacher));
+                            .Text(SchoolFormat(lesson.First().Classroom, lesson.First().SchoolSubject, lesson.First().Teacher));
                         continue;
                     }
 
@@ -96,7 +96,7 @@ public class ExportDocument : IDocument
                 {
                     if (_lessons.TryGetValue(_rows[i - 2], out var row) && row.TryGetValue(_cols[j - 2], out var lesson))
                     {
-                        worksheet.Cell(i, j).Value = SchoolFormat(lesson.First().Classroom, lesson.First().Subject, lesson.First().Teacher);
+                        worksheet.Cell(i, j).Value = SchoolFormat(lesson.First().Classroom, lesson.First().SchoolSubject, lesson.First().Teacher);
                         worksheet.Cell(i, j).Style.Alignment.WrapText = true;
                         worksheet.Cell(i, j).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                         worksheet.Cell(i, j).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;

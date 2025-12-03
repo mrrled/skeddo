@@ -32,7 +32,7 @@ public class LessonServices(
                 teacherDto.StudyGroups);
         var lesson = schedule.AddLesson(
             lessonDto.Id,
-            lessonDto.Subject?.Name,
+            lessonDto.SchoolSubject?.Name,
             lessonDto.LessonNumber.Number,
             teacher,
             lessonDto.StudyGroup?.Name,
@@ -49,7 +49,7 @@ public class LessonServices(
         var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId);
         var lesson = schedule.EditLesson(
             lessonDto.Id,
-            lessonDto.Subject?.ToSchoolSubject(),
+            lessonDto.SchoolSubject?.ToSchoolSubject(),
             lessonDto.LessonNumber?.ToLessonNumber(),
             lessonDto.Teacher?.ToTeacher(),
             lessonDto.StudyGroup?.ToStudyGroup(),
