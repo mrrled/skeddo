@@ -4,7 +4,6 @@
              xmlns:teacherList="clr-namespace:newUI.Views.TeachersPage.TeacherList"
              xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
              xmlns:schoolSubjectList="clr-namespace:newUI.Views.SchoolSubjectsPage.SchoolSubjectList"
-             xmlns:classrooms="clr-namespace:newUI.ViewModels.ClassroomsPage.Classrooms"
              xmlns:classroomList="clr-namespace:newUI.Views.ClassroomsPage.ClassroomList"
              xmlns:schedule="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
              xmlns:schedulePage="clr-namespace:newUI.Views.SchedulePage.ScheduleWindow"
@@ -12,6 +11,8 @@
              xmlns:mainPage="clr-namespace:newUI.ViewModels.MainPage"
              xmlns:mainPage1="clr-namespace:newUI.Views.MainPage"
              xmlns:converters="clr-namespace:newUI.Converters"
+             xmlns:classroomList1="clr-namespace:newUI.ViewModels.ClassroomsPage.ClassroomList"
+             xmlns:scheduleList="clr-namespace:newUI.Views.MainPage.ScheduleList"
              x:Class="newUI.App"
              RequestedThemeVariant="Light">
 
@@ -22,7 +23,7 @@
 
     <Application.DataTemplates>
         <DataTemplate DataType="mainPage:ScheduleListViewModel">
-            <mainPage1:ScheduleListViewView />
+            <scheduleList:ScheduleListViewView />
         </DataTemplate>
         
         <DataTemplate DataType="schedule:ScheduleViewModel">
@@ -37,7 +38,7 @@
             <schoolSubjectList:SchoolSubjectListView />
         </DataTemplate>
 
-        <DataTemplate DataType="classrooms:ClassroomListViewModel">
+        <DataTemplate DataType="classroomList1:ClassroomListViewModel">
             <classroomList:ClassroomListView />
         </DataTemplate>
     </Application.DataTemplates>

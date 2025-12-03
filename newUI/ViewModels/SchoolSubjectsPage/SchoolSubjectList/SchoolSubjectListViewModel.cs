@@ -5,6 +5,7 @@ using Application.IServices;
 using Avalonia.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
+using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectCreation;
 
 namespace newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
 

@@ -1,5 +1,5 @@
 ﻿using Avalonia.Controls;
-using newUI.ViewModels.ClassroomsPage.Classrooms;
+using newUI.ViewModels.ClassroomsPage.ClassroomCreation;
 
 namespace newUI.Views.ClassroomsPage.ClassroomCreation;
 

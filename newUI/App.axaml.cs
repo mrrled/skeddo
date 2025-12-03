@@ -15,13 +15,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using newUI.Services;
 using newUI.ViewModels;
-using newUI.ViewModels.ClassroomsPage.Classrooms;
+using newUI.ViewModels.ClassroomsPage.ClassroomCreation;
+using newUI.ViewModels.ClassroomsPage.ClassroomList;
 using newUI.ViewModels.MainPage;
 using newUI.ViewModels.MainPage.ScheduleCreation;
 using newUI.ViewModels.Navigation;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchedulePage.Lessons;
+using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectCreation;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
+using newUI.ViewModels.TeachersPage.TeacherCreation;
 using newUI.ViewModels.TeachersPage.Teachers;
 using newUI.Views.MainWindow;
 using newUI.Views.SchedulePage.ScheduleTable;
@@ -34,6 +37,7 @@ using newUI.Views.ClassroomsPage.ClassroomCreation;
 using newUI.Views.ClassroomsPage.ClassroomList;
 using newUI.Views.MainPage;
 using newUI.Views.MainPage.ScheduleCreation;
+using newUI.Views.MainPage.ScheduleList;
 
 namespace newUI;
 

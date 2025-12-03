@@ -5,7 +5,7 @@ using Application.DtoModels;
 using Application.IServices;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace newUI.ViewModels.TeachersPage.Teachers;
+namespace newUI.ViewModels.TeachersPage.TeacherCreation;
 
 public class TeacherCreationViewModel : ViewModelBase
 {

@@ -1,7 +1,7 @@
 using Application.DtoModels;
 using Application.IServices;
 
-namespace newUI.ViewModels.TeachersPage.Teachers;
+namespace newUI.ViewModels.TeachersPage.TeacherList;
 
 public class TeacherItemViewModel : ViewModelBase
 {

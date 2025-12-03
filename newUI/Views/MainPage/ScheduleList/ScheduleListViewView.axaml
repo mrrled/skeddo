@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:newUI.ViewModels.MainPage"
              xmlns:scheduleList="clr-namespace:newUI.ViewModels.MainPage.ScheduleList"
-             x:Class="newUI.Views.MainPage.ScheduleListViewView"
+             x:Class="newUI.Views.MainPage.ScheduleList.ScheduleListViewView"
              mc:Ignorable="d"
              x:DataType="vm:ScheduleListViewModel">
 
