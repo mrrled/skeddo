@@ -9,8 +9,9 @@ namespace newUI.ViewModels.MainPage.ScheduleCreation;
 
 public class ScheduleCreationViewModel : ViewModelBase
 {
-    private string scheduleName = string.Empty;
+    public event Action<ScheduleDto>? ScheduleCreated;
 
+    private string scheduleName = string.Empty;
     public string ScheduleName
     {
         get => scheduleName;
@@ -19,15 +20,13 @@ public class ScheduleCreationViewModel : ViewModelBase
 
     private readonly IServiceScopeFactory scopeFactory;
 
+    public ICommand SaveCommand { get; }
+
     public ScheduleCreationViewModel(IServiceScopeFactory scopeFactory)
     {
         this.scopeFactory = scopeFactory;
         SaveCommand = new RelayCommandAsync(SaveAsync);
     }
-
-    public ICommand SaveCommand { get; }
-
-    public event Action<ScheduleDto>? ScheduleCreated;
 
     private async Task SaveAsync()
     {
@@ -36,24 +35,11 @@ public class ScheduleCreationViewModel : ViewModelBase
 
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
-
         var schedule = new ScheduleDto { Name = ScheduleName };
+
         await service.AddSchedule(schedule);
 
-        // уведомляем подписчиков
+        // Событие для MainPageViewModel
         ScheduleCreated?.Invoke(schedule);
-
-        // закрываем окно
-        if (App.Current.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            foreach (var window in desktop.Windows)
-            {
-                if (window.DataContext == this)
-                {
-                    window.Close();
-                    break;
-                }
-            }
-        }
     }
 }

@@ -11,6 +11,7 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:mainPage="clr-namespace:newUI.ViewModels.MainPage"
              xmlns:mainPage1="clr-namespace:newUI.Views.MainPage"
+             xmlns:converters="clr-namespace:newUI.Converters"
              x:Class="newUI.App"
              RequestedThemeVariant="Light">
 
@@ -44,5 +45,7 @@
     <Application.Resources>
         <sys:Double x:Key="LessonCardWidth">150</sys:Double>
         <sys:Double x:Key="LessonCardHeight">120</sys:Double>
+        
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Application.Resources>
 </Application>

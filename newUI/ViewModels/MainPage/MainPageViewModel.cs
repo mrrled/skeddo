@@ -1,29 +1,34 @@
-﻿using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using newUI.Services;
-using newUI.ViewModels.MainPage.ScheduleCreation;
 using Application.DtoModels;
 using Application.IServices;
+using newUI.Services;
+using newUI.ViewModels.MainPage.ScheduleCreation;
+using newUI.ViewModels.MainPage.ScheduleList;
 
 namespace newUI.ViewModels.MainPage;
 
 public class MainPageViewModel : ViewModelBase
 {
+    private AvaloniaList<ScheduleDto> schedules = new();
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
+    public AvaloniaList<ScheduleItemViewModel> ScheduleItems { get; set; } = new();
 
-    public AvaloniaList<ScheduleDto> Schedules { get; } = new AvaloniaList<ScheduleDto>();
+    public AvaloniaList<ScheduleDto> Schedules
+    {
+        get => schedules;
+        set => SetProperty(ref schedules, value);
+    }
 
     public string SearchText { get; set; } = string.Empty;
 
     public ICommand AddScheduleCommand { get; }
     public ICommand LoadSchedulesCommand { get; }
-    public ICommand ClearSchedulesCommand { get; }
 
     public MainPageViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory)
     {
@@ -32,7 +37,9 @@ public class MainPageViewModel : ViewModelBase
 
         AddScheduleCommand = new RelayCommandAsync(AddSchedule);
         LoadSchedulesCommand = new RelayCommandAsync(LoadSchedules);
-        ClearSchedulesCommand = new RelayCommandAsync(ClearSchedules);
+
+        // Загружаем расписания при создании VM
+        _ = LoadSchedules();
     }
 
     private async Task AddSchedule()
@@ -40,35 +47,27 @@ public class MainPageViewModel : ViewModelBase
         var scope = scopeFactory.CreateScope();
         var vm = scope.ServiceProvider.GetRequiredService<ScheduleCreationViewModel>();
 
-        // Подписываемся на событие
+        // Подписка на событие создания нового расписания
         vm.ScheduleCreated += schedule =>
         {
-            // Добавляем в коллекцию на UI-потоке
             Avalonia.Threading.Dispatcher.UIThread.Post(() => Schedules.Add(schedule));
         };
 
-        windowManager.ShowWindow(vm); // метод ShowWindow должен устанавливать DataContext
+        windowManager.ShowWindow(vm);
     }
 
-    private Task ClearSchedules()
-    {
-        Schedules.Clear();
-        return Task.CompletedTask;
-    }
-
-    private Task LoadSchedules()
+    public async Task LoadSchedules()
     {
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
-        var fetchedItems = service.FetchSchedulesFromBackendAsync().Result;
+        var fetchedItems = await service.FetchSchedulesFromBackendAsync();
 
-        // Очищаем и добавляем по одному, чтобы уведомления сработали
-        Schedules.Clear();
-        foreach (var item in fetchedItems)
+        var items = new AvaloniaList<ScheduleItemViewModel>();
+        foreach (var schedule in fetchedItems)
         {
-            Schedules.Add(item);
+            items.Add(new ScheduleItemViewModel(schedule, windowManager));
         }
 
-        return Task.CompletedTask;
+        ScheduleItems = items;
     }
 }
