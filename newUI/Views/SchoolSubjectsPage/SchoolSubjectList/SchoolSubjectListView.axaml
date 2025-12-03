@@ -1,7 +1,7 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
-             x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectListView"
+             x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectList.SchoolSubjectListView"
              x:DataType="vm:SchoolSubjectListViewModel">
 
     <Design.DataContext>

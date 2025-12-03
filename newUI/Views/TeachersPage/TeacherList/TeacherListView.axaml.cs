@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 
-namespace newUI.Views.TeachersPage;
+namespace newUI.Views.TeachersPage.TeacherList;
 
 public partial class TeacherListView : UserControl
 {

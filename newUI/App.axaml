@@ -4,6 +4,8 @@
              xmlns:teachers="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
              xmlns:teachersPage="clr-namespace:newUI.Views.TeachersPage"
              xmlns:schoolSubjectsPage="clr-namespace:newUI.Views.SchoolSubjectsPage"
+             xmlns:teacherList="clr-namespace:newUI.Views.TeachersPage.TeacherList"
+             xmlns:schoolSubjectList="clr-namespace:newUI.Views.SchoolSubjectsPage.SchoolSubjectList"
              x:Class="newUI.App">
 
     <Application.Styles>
@@ -13,11 +15,11 @@
 
     <Application.DataTemplates>
         <DataTemplate DataType="teachers:TeacherListViewModel">
-            <teachersPage:TeacherListView />
+            <teacherList:TeacherListView />
         </DataTemplate>
 
         <DataTemplate DataType="schoolSubjects:SchoolSubjectListViewModel">
-            <schoolSubjectsPage:SchoolSubjectListView />
+            <schoolSubjectList:SchoolSubjectListView />
         </DataTemplate>
     </Application.DataTemplates>
 

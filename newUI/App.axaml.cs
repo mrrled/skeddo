@@ -29,6 +29,8 @@ using newUI.Views.SchoolSubjectsPage;
 using newUI.Views.TeachersPage;
 using newUI.Views.TeachersPage.TeacherCreationWindow;
 using newUI.Views.TeachersPage;
+using newUI.Views.TeachersPage.TeacherList;
+using newUI.Views.SchoolSubjectsPage.SchoolSubjectList;
 
 namespace newUI;
 
