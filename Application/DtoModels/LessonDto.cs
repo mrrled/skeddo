@@ -4,6 +4,11 @@ namespace Application.DtoModels;
 
 public class LessonDto : IEquatable<LessonDto>
 {
+    public LessonDto()
+    {
+        var rnd = new Random();
+        Id = rnd.Next();
+    }
     public int Id { get; set; }
     public SchoolSubjectDto? SchoolSubject { get; set; }
     public LessonNumberDto? LessonNumber { get; set; }

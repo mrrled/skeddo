@@ -5,13 +5,18 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using Avalonia.Collections;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using newUI.Services;
+using newUI.ViewModels.SchedulePage.Lessons;
+using newUI.ViewModels.TeachersPage.TeacherCreation;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
 public class ScheduleViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory scopeFactory;
+    private readonly IWindowManager windowManager;
     
     private AvaloniaList<ScheduleDto> scheduleList;
     private AvaloniaDictionary<ScheduleDto, LessonTableViewModel> lessonTables;
@@ -20,16 +25,17 @@ public class ScheduleViewModel : ViewModelBase
     private LessonTableViewModel currentTable;
     private bool isLoading;
 
-    public ScheduleViewModel( IServiceScopeFactory scopeFactory)
+    public ScheduleViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager)
     {
         this.scopeFactory = scopeFactory;
+        this.windowManager = windowManager;
 
-        Buffer = new LessonBufferViewModel();
+        Buffer = new LessonBufferViewModel(scopeFactory);
         
         LoadCurrentScheduleCommand = new RelayCommandAsync(LoadCurrentSchedule);
         LoadSchedulesCommand = new RelayCommandAsync(LoadSchedulesAsync);
         SaveScheduleCommand = new RelayCommandAsync(SaveScheduleAsync);
-        AddScheduleCommand = new RelayCommandAsync(AddScheduleAsync);
+        AddLessonCommand = new RelayCommandAsync(AddLessonAsync);
         
         _ = InitializeAsync();
     }
@@ -50,8 +56,7 @@ public class ScheduleViewModel : ViewModelBase
     public ICommand SaveScheduleCommand { get; }
     public ICommand LoadSchedulesCommand { get; }
     public ICommand LoadCurrentScheduleCommand { get; }
-    public ICommand AddScheduleCommand { get; }
-    
+    public ICommand AddLessonCommand { get; }
     public bool IsLoading
     {
         get => isLoading;
@@ -96,14 +101,12 @@ public class ScheduleViewModel : ViewModelBase
         get => currentTable;
         set => SetProperty(ref currentTable, value);
     }
-
-    private async Task AddScheduleAsync()
+    
+    public Task AddLessonAsync()
     {
-        using var scope = scopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetService<IScheduleServices>();
-        var newSchedule = new ScheduleDto();
-        await service.AddSchedule(newSchedule);
-        await LoadSchedulesAsync();
+        var vm = new LessonCreationViewModel(scopeFactory, CurrentSchedule, buffer);
+        windowManager.ShowWindow(vm);
+        return Task.CompletedTask;
     }
 
     private Task SaveScheduleAsync()

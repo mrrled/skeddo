@@ -91,7 +91,7 @@ public class LessonTableViewModel :
             if (lesson.LessonNumber != null && lesson.StudyGroup != null) 
                 lessonDictionary[(lesson.LessonNumber.Number, lesson.StudyGroup.Name)] = lesson;
             else
-                buffer.AddLessonToBuffer(new LessonCardViewModel(scopeFactory){ Lesson = lesson });
+                buffer.AddLessonToBuffer(lesson);
         }
 
         foreach (var lessonNumber in LessonNumbers)

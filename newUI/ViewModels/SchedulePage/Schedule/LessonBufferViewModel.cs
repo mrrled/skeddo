@@ -1,24 +1,37 @@
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Avalonia.Collections;
+using Microsoft.Extensions.DependencyInjection;
 using newUI.ViewModels.SchedulePage.Lessons;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
 public class LessonBufferViewModel : ViewModelBase
 {
-    private AvaloniaList<LessonCardViewModel> lessonCards = new();
+    private AvaloniaList<LessonDto> lessons = new();
+    private readonly IServiceScopeFactory scopeFactory;
 
-    public LessonBufferViewModel()
+    public LessonBufferViewModel(IServiceScopeFactory scopeFactory)
     {
+        this.scopeFactory = scopeFactory;
         AddLessonCommand = new RelayCommandAsync(AddLessonAsync);
+    }
+
+    public AvaloniaList<LessonDto> Lessons
+    {
+        get => lessons;
+        set => SetProperty(ref lessons, value);
     }
 
     public AvaloniaList<LessonCardViewModel> LessonCards
     {
-        get => lessonCards;
-        set => SetProperty(ref lessonCards, value);
+        get => new (lessons
+            .Select(lesson => new LessonCardViewModel(scopeFactory)
+            {
+                Lesson = lesson
+            }));
     }
     
     public ICommand AddLessonCommand { get; }
@@ -28,8 +41,8 @@ public class LessonBufferViewModel : ViewModelBase
         return Task.CompletedTask;
     }
 
-    public void AddLessonToBuffer(LessonCardViewModel lesson)
+    public void AddLessonToBuffer(LessonDto lesson)
     {
-        LessonCards.Add(lesson);
+        Lessons.Add(lesson);
     }
 }

@@ -30,6 +30,9 @@
             <Button Content="Обновить" 
                     Command="{Binding LoadCurrentScheduleCommand}"
                     Margin="5,0,0,0"/>
+            <Button Content="Создать урок" 
+                    Command="{Binding AddLessonCommand}"
+                    Margin="5,0,0,0"/>
             <!-- <Button Content="Сохранить"  -->
             <!--        Command="{Binding SaveScheduleCommand}" -->
             <!--        Margin="5,0,0,0"/> -->

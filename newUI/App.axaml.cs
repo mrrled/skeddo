@@ -38,6 +38,7 @@ using newUI.Views.ClassroomsPage.ClassroomList;
 using newUI.Views.MainPage;
 using newUI.Views.MainPage.ScheduleEditor;
 using newUI.Views.MainPage.ScheduleList;
+using newUI.Views.SchedulePage.LessonCreationWindow;
 
 namespace newUI;
 
@@ -87,18 +88,18 @@ public partial class App : Avalonia.Application
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }
 
-        ExportGenerator.GeneratePdf(
-            Services.GetService<ILessonRepository>(),
-            Services.GetService<ILessonNumberRepository>(),
-            Services.GetService<IStudyGroupRepository>(),
-            1
-        );
-        ExportGenerator.GenerateExcel(
-            Services.GetService<ILessonRepository>(),
-            Services.GetService<ILessonNumberRepository>(),
-            Services.GetService<IStudyGroupRepository>(),
-            1
-        );
+        // ExportGenerator.GeneratePdf(
+        //     Services.GetService<ILessonRepository>(),
+        //     Services.GetService<ILessonNumberRepository>(),
+        //     Services.GetService<IStudyGroupRepository>(),
+        //     1
+        // );
+        // ExportGenerator.GenerateExcel(
+        //     Services.GetService<ILessonRepository>(),
+        //     Services.GetService<ILessonNumberRepository>(),
+        //     Services.GetService<IStudyGroupRepository>(),
+        //     1
+        // );
         base.OnFrameworkInitializationCompleted();
     }
 
@@ -112,6 +113,9 @@ public partial class App : Avalonia.Application
         services.AddTransient<ScheduleListView>();
         services.AddTransient<ScheduleListViewModel>();
         services.AddTransient<ScheduleEditorViewModel>();
+        
+        services.AddTransient<LessonCreationViewModel>();
+        services.AddTransient<LessonCreationWindow>();
         
         services.AddTransient<ScheduleViewModel>();
         services.AddTransient<ScheduleWindow>();
@@ -172,6 +176,7 @@ public partial class App : Avalonia.Application
         ViewMappingService.RegisterWindow<ScheduleEditorViewModel, ScheduleEditorWindow>();
         ViewMappingService.RegisterUserControl<ScheduleListViewModel, ScheduleListView>();
         
+        ViewMappingService.RegisterWindow<LessonCreationViewModel, LessonCreationWindow>();
         ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
         
         ViewMappingService.RegisterWindow<TeacherCreationViewModel, TeacherCreationWindow>();
