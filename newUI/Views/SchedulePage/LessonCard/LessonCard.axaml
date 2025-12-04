@@ -22,7 +22,7 @@
         <Grid>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="5">
             <TextBlock 
-                Text="{Binding Lesson.Subject}"
+                Text="{Binding Lesson.SchoolSubject}"
                 FontWeight="Bold"
                 FontSize="14"
                 TextAlignment="Center"/>

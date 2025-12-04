@@ -56,7 +56,7 @@ public class Schedule(
 
     private void UpdateByTeacherSpecialization(Lesson lesson)
     {
-        if (lesson.Teacher is not null && !lesson.Teacher.SchoolSubjects.Contains(lesson.Subject))
+        if (lesson.Teacher is not null && !lesson.Teacher.SchoolSubjects.Contains(lesson.SchoolSubject))
             lesson.SetWarningType(WarningType.Warning);
     }
 }
