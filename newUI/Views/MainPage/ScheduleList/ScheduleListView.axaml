@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:newUI.ViewModels.MainPage"
              xmlns:scheduleList="clr-namespace:newUI.ViewModels.MainPage.ScheduleList"
-             x:Class="newUI.Views.MainPage.ScheduleList.ScheduleListViewView"
+             x:Class="newUI.Views.MainPage.ScheduleList.ScheduleListView"
              mc:Ignorable="d"
              x:DataType="vm:ScheduleListViewModel">
 
@@ -16,12 +16,12 @@
         </Grid.RowDefinitions>
 
         <!-- Поиск -->
-        <TextBox Grid.Row="0"
-                 Watermark="Введите название расписания"
-                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                 Width="400"
-                 HorizontalAlignment="Left"
-                 Margin="0,0,0,12"/>
+        <!-- <TextBox Grid.Row="0" -->
+        <!--          Watermark="Введите название расписания" -->
+        <!--          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" -->
+        <!--          Width="400" -->
+        <!--          HorizontalAlignment="Left" -->
+        <!--          Margin="0,0,0,12"/> -->
 
         <!-- Список расписаний с рамкой и скроллбаром -->
         <Border Grid.Row="1" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8">

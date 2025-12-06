@@ -4,9 +4,9 @@ using newUI.ViewModels.MainPage;
 
 namespace newUI.Views.MainPage.ScheduleList;
 
-public partial class ScheduleListViewView : UserControl
+public partial class ScheduleListView : UserControl
 {
-    public ScheduleListViewView()
+    public ScheduleListView()
     {
         InitializeComponent();
         DataContext = App.Services.GetRequiredService<ScheduleListViewModel>();

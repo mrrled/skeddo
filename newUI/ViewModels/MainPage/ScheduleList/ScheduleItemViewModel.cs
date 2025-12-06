@@ -1,21 +1,18 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Application.DtoModels;
-using newUI.Services;
 
 namespace newUI.ViewModels.MainPage.ScheduleList;
 
 public class ScheduleItemViewModel : ObservableObject
 {
-    private bool isEditing = false;
-    public bool IsEditing
-    {
-        get => isEditing;
-        set => SetProperty(ref isEditing, value);
-    }
+    public event Action<ScheduleItemViewModel>? RequestDelete;
+    public event Action<ScheduleItemViewModel>? RequestEdit;
 
     public ScheduleDto Schedule { get; }
+
     public string Name
     {
         get => Schedule.Name;
@@ -25,24 +22,10 @@ public class ScheduleItemViewModel : ObservableObject
     public ICommand EditCommand { get; }
     public ICommand DeleteCommand { get; }
 
-    private readonly IWindowManager windowManager;
-
-    public ScheduleItemViewModel(ScheduleDto schedule, IWindowManager windowManager)
+    public ScheduleItemViewModel(ScheduleDto schedule)
     {
         Schedule = schedule;
-        this.windowManager = windowManager;
-
-        EditCommand = new RelayCommand(Edit);
-        DeleteCommand = new RelayCommand(Delete);
-    }
-
-    private void Edit()
-    {
-        IsEditing = !IsEditing;
-    }
-
-    private void Delete()
-    {
-        // Можно добавить логику удаления через сервис
+        EditCommand = new RelayCommand(() => RequestEdit?.Invoke(this));
+        DeleteCommand = new RelayCommand(() => RequestDelete?.Invoke(this));
     }
 }

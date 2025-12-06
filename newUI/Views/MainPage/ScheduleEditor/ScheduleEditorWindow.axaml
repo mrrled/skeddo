@@ -1,10 +1,10 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:scheduleCreation="clr-namespace:newUI.ViewModels.MainPage.ScheduleCreation"
-        x:Class="newUI.Views.MainPage.ScheduleCreation.ScheduleCreationWindow"
+        xmlns:scheduleCreation="clr-namespace:newUI.ViewModels.MainPage.ScheduleEditor"
+        x:Class="newUI.Views.MainPage.ScheduleEditor.ScheduleEditorWindow"
         Width="370" Height="300"
         Title="Создание расписания"
-        x:DataType="scheduleCreation:ScheduleCreationViewModel">
+        x:DataType="scheduleCreation:ScheduleEditorViewModel">
 
     <StackPanel Margin="20" Spacing="15">
         <TextBlock Text="Добавление нового расписания"

@@ -23,7 +23,7 @@
 
     <Application.DataTemplates>
         <DataTemplate DataType="mainPage:ScheduleListViewModel">
-            <scheduleList:ScheduleListViewView />
+            <scheduleList:ScheduleListView />
         </DataTemplate>
         
         <DataTemplate DataType="schedule:ScheduleViewModel">
