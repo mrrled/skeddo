@@ -73,6 +73,8 @@ public class DboMappingProfile : Profile
         CreateMap<Schedule, ScheduleDbo>()
             .ForMember(dest => dest.ScheduleGroupId, opt => opt.Ignore())
             .ForMember(dest => dest.ScheduleGroup, opt => opt.Ignore())
-            .ForMember(dest => dest.LessonNumbers, opt => opt.Ignore());
+            .ForMember(dest => dest.LessonNumbers, opt => opt.Ignore())
+            .ForMember(dest => dest.LessonDrafts, opt => opt.Ignore())
+            .ForMember(dest => dest.Lessons, opt => opt.Ignore());
     }
 }
