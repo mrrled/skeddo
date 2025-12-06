@@ -8,6 +8,7 @@ namespace newUI.ViewModels.MainPage.ScheduleList;
 
 public class ScheduleItemViewModel : ObservableObject
 {
+    public event Action<ScheduleItemViewModel>? RequestSelect;
     public event Action<ScheduleItemViewModel>? RequestDelete;
     public event Action<ScheduleItemViewModel>? RequestEdit;
 
@@ -25,12 +26,14 @@ public class ScheduleItemViewModel : ObservableObject
         }
     }
 
+    public ICommand SelectCommand { get; }
     public ICommand EditCommand { get; }
     public ICommand DeleteCommand { get; }
 
     public ScheduleItemViewModel(ScheduleDto schedule)
     {
         Schedule = schedule;
+        SelectCommand = new RelayCommand(() => RequestSelect?.Invoke(this));
         EditCommand = new RelayCommand(() => RequestEdit?.Invoke(this));
         DeleteCommand = new RelayCommand(() => RequestDelete?.Invoke(this));
     }

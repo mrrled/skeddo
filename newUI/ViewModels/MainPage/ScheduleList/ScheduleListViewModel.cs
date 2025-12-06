@@ -11,6 +11,7 @@ using Application.IServices;
 using newUI.Services;
 using newUI.ViewModels.MainPage.ScheduleEditor;
 using newUI.ViewModels.MainPage.ScheduleList;
+using newUI.ViewModels.SchedulePage.Schedule;
 
 namespace newUI.ViewModels.MainPage;
 
@@ -18,6 +19,8 @@ public class ScheduleListViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
+    private readonly NavigationService navigationService;
+    private readonly IServiceProvider provider;
 
     private string searchText = string.Empty;
 
@@ -40,10 +43,13 @@ public class ScheduleListViewModel : ViewModelBase
     public ICommand AddScheduleCommand { get; }
     public ICommand LoadSchedulesCommand { get; }
 
-    public ScheduleListViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory)
+    public ScheduleListViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory,
+        NavigationService navigationService, IServiceProvider provider)
     {
         this.windowManager = windowManager;
         this.scopeFactory = scopeFactory;
+        this.navigationService = navigationService;
+        this.provider = provider;
 
         AddScheduleCommand = new RelayCommandAsync(AddSchedule);
         LoadSchedulesCommand = new RelayCommandAsync(LoadSchedules);
@@ -71,6 +77,22 @@ public class ScheduleListViewModel : ViewModelBase
 
     private async Task SubscribeItemEvents(ScheduleItemViewModel itemVm)
     {
+        itemVm.RequestSelect += item =>
+        {
+            var scheduleVm = provider.GetRequiredService<ScheduleViewModel>();
+
+            if (scheduleVm != null && scheduleVm.ScheduleList != null)
+            {
+                var scheduleDto = scheduleVm.ScheduleList.FirstOrDefault(s => s.Id == item.Schedule.Id);
+                if (scheduleDto != null)
+                {
+                    scheduleVm.CurrentSchedule = scheduleDto;
+                }
+            }
+
+            navigationService.Navigate<ScheduleViewModel>();
+        };
+
         itemVm.RequestDelete += async item =>
         {
             using var scope = scopeFactory.CreateScope();

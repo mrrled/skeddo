@@ -70,7 +70,7 @@ public class ScheduleViewModel : ViewModelBase
         set => SetProperty(ref lessonTables, value);
     }
 
-    public ScheduleDto CurrentSchedule
+    public ScheduleDto CurrentSchedule // <-- Используем это свойство
     {
         get => currentSchedule;
         set 
