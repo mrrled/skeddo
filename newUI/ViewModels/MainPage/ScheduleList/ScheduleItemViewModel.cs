@@ -16,7 +16,13 @@ public class ScheduleItemViewModel : ObservableObject
     public string Name
     {
         get => Schedule.Name;
-        set => Schedule.Name = value;
+        set
+        {
+            if (Schedule.Name == value)
+                return;
+            Schedule.Name = value;
+            OnPropertyChanged();
+        }
     }
 
     public ICommand EditCommand { get; }

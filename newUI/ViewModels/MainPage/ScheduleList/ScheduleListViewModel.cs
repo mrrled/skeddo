@@ -1,4 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -8,8 +11,6 @@ using Application.IServices;
 using newUI.Services;
 using newUI.ViewModels.MainPage.ScheduleEditor;
 using newUI.ViewModels.MainPage.ScheduleList;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace newUI.ViewModels.MainPage;
 
@@ -18,7 +19,23 @@ public class ScheduleListViewModel : ViewModelBase
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
 
-    public AvaloniaList<ScheduleItemViewModel> ScheduleItems { get; set; } = new();
+    private string searchText = string.Empty;
+
+    public string SearchText
+    {
+        get => searchText;
+        set
+        {
+            if (SetProperty(ref searchText, value))
+                ApplyFilter();
+        }
+    }
+
+    // Источник правды
+    private readonly AvaloniaList<ScheduleItemViewModel> allItems = new();
+
+    // Коллекция для UI
+    public AvaloniaList<ScheduleItemViewModel> ScheduleItems { get; } = new();
 
     public ICommand AddScheduleCommand { get; }
     public ICommand LoadSchedulesCommand { get; }
@@ -40,18 +57,19 @@ public class ScheduleListViewModel : ViewModelBase
         var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
         var fetchedItems = await service.FetchSchedulesFromBackendAsync();
 
-        var items = new AvaloniaList<ScheduleItemViewModel>();
+        allItems.Clear();
+        ScheduleItems.Clear();
+
         foreach (var schedule in fetchedItems)
         {
             var itemVm = new ScheduleItemViewModel(schedule);
-            SubscribeItemEvents(itemVm);
-            items.Add(itemVm);
+            await SubscribeItemEvents(itemVm);
+            allItems.Add(itemVm);
+            ScheduleItems.Add(itemVm);
         }
-
-        ScheduleItems = items;
     }
 
-    private void SubscribeItemEvents(ScheduleItemViewModel itemVm)
+    private async Task SubscribeItemEvents(ScheduleItemViewModel itemVm)
     {
         itemVm.RequestDelete += async item =>
         {
@@ -59,6 +77,8 @@ public class ScheduleListViewModel : ViewModelBase
             var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
             await service.DeleteSchedule(item.Schedule);
 
+            // Удаляем из обеих коллекций
+            allItems.Remove(item);
             Avalonia.Threading.Dispatcher.UIThread.Post(() => ScheduleItems.Remove(item));
         };
 
@@ -71,13 +91,8 @@ public class ScheduleListViewModel : ViewModelBase
             {
                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
-                    var index = ScheduleItems.IndexOf(item);
-                    if (index >= 0)
-                    {
-                        var newItemVm = new ScheduleItemViewModel(updatedSchedule);
-                        SubscribeItemEvents(newItemVm);
-                        ScheduleItems[index] = newItemVm;
-                    }
+                    item.Name = updatedSchedule.Name;
+                    ApplyFilter();
                 });
             };
 
@@ -90,13 +105,27 @@ public class ScheduleListViewModel : ViewModelBase
         using var scope = scopeFactory.CreateScope();
         var vm = new ScheduleEditorViewModel(scopeFactory);
 
-        vm.ScheduleSaved += schedule =>
+        vm.ScheduleSaved += async schedule =>
         {
             var itemVm = new ScheduleItemViewModel(schedule);
-            SubscribeItemEvents(itemVm);
-            Avalonia.Threading.Dispatcher.UIThread.Post(() => ScheduleItems.Add(itemVm));
+            await SubscribeItemEvents(itemVm);
+            allItems.Add(itemVm);
+            Avalonia.Threading.Dispatcher.UIThread.Post(ApplyFilter);
         };
 
         await windowManager.ShowDialog<ScheduleEditorViewModel, ScheduleDto>(vm);
+    }
+
+    private void ApplyFilter()
+    {
+        var filtered = string.IsNullOrWhiteSpace(SearchText)
+            ? allItems
+            : new AvaloniaList<ScheduleItemViewModel>(
+                allItems.Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+            );
+
+        ScheduleItems.Clear();
+        foreach (var item in filtered)
+            ScheduleItems.Add(item);
     }
 }
