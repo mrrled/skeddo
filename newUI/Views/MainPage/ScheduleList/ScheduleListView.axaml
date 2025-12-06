@@ -21,11 +21,11 @@
         </Style>
 
         <Style Selector="Button.AddScheduleButton:pointerover">
-            <Setter Property="Background" Value="#333333"/>
+            <Setter Property="Background" Value="#757575"/>
         </Style>
         
         <Style Selector="Button.AddScheduleButton:pressed">
-            <Setter Property="Background" Value="#333333"/>
+            <Setter Property="Background" Value="#757575"/>
         </Style>
 
         <Style Selector="Button.AddScheduleButton:pointerover Border.FabCircle">
@@ -152,11 +152,11 @@
                         Background="White"
                         CornerRadius="28"
                         Width="56" Height="56"
-                        BorderBrush="#333333"
+                        BorderBrush="#757575"
                         BorderThickness="2" />
                 
                 <Path Data="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
-                      Fill="#333333"
+                      Fill="#757575"
                       Stretch="Uniform"
                       Width="24" Height="24"
                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
