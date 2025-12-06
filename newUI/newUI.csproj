@@ -58,7 +58,7 @@
       <DependentUpon>TeacherListView.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\MainPage\ScheduleList\ScheduleListViewView.axaml.cs">
+    <Compile Update="Views\MainPage\ScheduleList\ScheduleListView.axaml.cs">
       <DependentUpon>ScheduleListViewView.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>

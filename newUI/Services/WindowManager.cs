@@ -36,8 +36,10 @@ public class WindowManager : IWindowManager
     {
         var dialog = CreateWindowInstance<TViewModel>();
         dialog.DataContext = viewModel;
-        var owner = GetActiveWindow();
+        
+        viewModel.Window = dialog;
 
+        var owner = GetActiveWindow();
         if (owner == null)
             throw new InvalidOperationException("Не найдено активное главное окно для модального диалога.");
 

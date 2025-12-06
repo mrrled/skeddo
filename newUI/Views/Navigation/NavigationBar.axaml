@@ -12,27 +12,27 @@
                     Margin="10,0"
                     Spacing="10">
                 
-            <Button Content="Main"
+            <Button Content="Главная"
                     Command="{Binding NavigateMainCommand}"
                     BorderThickness="1"
                     Padding="5,2"/>
                     
-            <Button Content="Schedule Table"
+            <Button Content="Расписание"
                     Command="{Binding NavigateScheduleTableCommand}"
                     BorderThickness="1"
                     Padding="5,2"/>
 
-            <Button Content="Teachers"
+            <Button Content="Преподаватели"
                     Command="{Binding NavigateTeachersCommand}"
                     BorderThickness="1"
                     Padding="5,2"/>
 
-            <Button Content="School Subjects"
+            <Button Content="Предметы"
                     Command="{Binding NavigateSchoolSubjectsCommand}"
                     BorderThickness="1"
                     Padding="5,2"/>
 
-            <Button Content="Classrooms"
+            <Button Content="Аудитории"
                     Command="{Binding NavigateClassroomsCommand}"
                     BorderThickness="1"
                     Padding="5,2"/>

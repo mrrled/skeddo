@@ -18,7 +18,7 @@ using newUI.ViewModels;
 using newUI.ViewModels.ClassroomsPage.ClassroomCreation;
 using newUI.ViewModels.ClassroomsPage.ClassroomList;
 using newUI.ViewModels.MainPage;
-using newUI.ViewModels.MainPage.ScheduleCreation;
+using newUI.ViewModels.MainPage.ScheduleEditor;
 using newUI.ViewModels.Navigation;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchedulePage.Lessons;
@@ -36,7 +36,7 @@ using newUI.Views.SchoolSubjectsPage.SchoolSubjectList;
 using newUI.Views.ClassroomsPage.ClassroomCreation;
 using newUI.Views.ClassroomsPage.ClassroomList;
 using newUI.Views.MainPage;
-using newUI.Views.MainPage.ScheduleCreation;
+using newUI.Views.MainPage.ScheduleEditor;
 using newUI.Views.MainPage.ScheduleList;
 
 namespace newUI;
@@ -109,9 +109,9 @@ public partial class App : Avalonia.Application
         
         services.AddSingleton<IWindowManager, WindowManager>();
         
-        services.AddTransient<ScheduleListViewView>();
+        services.AddTransient<ScheduleListView>();
         services.AddTransient<ScheduleListViewModel>();
-        services.AddTransient<ScheduleCreationViewModel>();
+        services.AddTransient<ScheduleEditorViewModel>();
         
         services.AddTransient<ScheduleViewModel>();
         services.AddTransient<ScheduleWindow>();
@@ -169,8 +169,8 @@ public partial class App : Avalonia.Application
     {
         ViewMappingService.RegisterWindow<MainViewModel, MainWindow>();
         
-        ViewMappingService.RegisterWindow<ScheduleCreationViewModel, ScheduleCreationWindow>();
-        ViewMappingService.RegisterUserControl<ScheduleListViewModel, ScheduleListViewView>();
+        ViewMappingService.RegisterWindow<ScheduleEditorViewModel, ScheduleEditorWindow>();
+        ViewMappingService.RegisterUserControl<ScheduleListViewModel, ScheduleListView>();
         
         ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
         
