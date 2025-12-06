@@ -16,14 +16,4 @@ public static class LessonDtoExtensions
     {
         return DtoMapper.ToLessonDto(lessons);
     }
-    
-    public static Lesson ToLesson(this LessonDto lesson)
-    {
-        return DtoMapper.ToLesson(lesson);
-    }
-    
-    public static List<Lesson> ToLessons(this ICollection<LessonDto> lessons)
-    {
-        return DtoMapper.ToLesson(lessons);
-    }
 }

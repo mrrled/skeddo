@@ -16,13 +16,4 @@ public static class StudyGroupDtoExtensions
     {
         return DtoMapper.ToStudyGroupDto(studyGroups);
     }
-    public static StudyGroup ToStudyGroup(this StudyGroupDto studyGroup)
-    {
-        return DtoMapper.ToStudyGroup(studyGroup);
-    }
-    
-    public static List<StudyGroup> ToStudyGroups(this ICollection<StudyGroupDto> studyGroups)
-    {
-        return DtoMapper.ToStudyGroup(studyGroups);
-    }
 }

@@ -1,3 +1,5 @@
+using Microsoft.IdentityModel.Tokens;
+
 namespace Domain.Models;
 
 public class Teacher(
@@ -16,28 +18,51 @@ public class Teacher(
     public List<SchoolSubject> SchoolSubjects { get; private set; } = schoolSubjects;
     public List<StudyGroup> StudyGroups { get; private set; } = studyGroups;
 
-    public Teacher Update(string? name, string? surname, string? patronymic, List<string> schoolSubjects,
-        List<string> studyGroups, string? description = null)
+    public void SetName(string? name)
     {
-        if (name is null || surname is null || patronymic is null)
-            throw new ArgumentNullException();
+        if (name is null)
+           throw new ArgumentNullException();
         Name = name;
+    }
+
+    public void SetSurname(string? surname)
+    {
+        if (surname is null)
+            throw new ArgumentNullException();
         Surname = surname;
+    }
+
+    public void SetPatronymic(string? patronymic)
+    {
+        if (patronymic is null)
+            throw new ArgumentNullException();
         Patronymic = patronymic;
-        SchoolSubjects = schoolSubjects.Select(SchoolSubject.CreateSchoolSubject).ToList();
-        StudyGroups = studyGroups.Select(StudyGroup.CreateStudyGroup).ToList();
+    }
+
+    public void SetDescription(string? description)
+    {
+        if (description is null)
+            throw new ArgumentNullException();
         Description = description;
-        return this;
+    }
+
+    public void SetSchoolSubjects(List<SchoolSubject> schoolSubjects)
+    {
+        SchoolSubjects = schoolSubjects;
+    }
+
+    public void SetStudyGroups(List<StudyGroup> studyGroups)
+    {
+        StudyGroups = studyGroups;
     }
     
     public static Teacher CreateTeacher(int teacherId,
         string? name, string? surname, string? patronymic,
-        List<string> schoolSubjects, List<string> studyGroups)
+        List<SchoolSubject> schoolSubjects, List<StudyGroup> studyGroups)
     {
         if (name is null || surname is null || patronymic is null)
             throw new ArgumentNullException();
-        var subjects = schoolSubjects.Select(SchoolSubject.CreateSchoolSubject).ToList();
-        var groups = studyGroups.Select(StudyGroup.CreateStudyGroup).ToList();
-        return new Teacher(teacherId, name, surname, patronymic, subjects, groups);
+        return new Teacher(teacherId, name, surname, patronymic, schoolSubjects, studyGroups);
     }
+    //setProperty..
 }

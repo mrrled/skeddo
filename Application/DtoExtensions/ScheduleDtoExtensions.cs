@@ -16,14 +16,4 @@ public static class ScheduleDtoExtensions
     {
         return DtoMapper.ToScheduleDto(schedules);
     }
-    
-    public static Schedule ToSchedule(this ScheduleDto schedule)
-    {
-        return DtoMapper.ToSchedule(schedule);
-    }
-    
-    public static List<Schedule> ToSchedules(this ICollection<ScheduleDto> schedules)
-    {
-        return DtoMapper.ToSchedule(schedules);
-    }
 }

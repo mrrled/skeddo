@@ -2,6 +2,7 @@
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ScheduleDbContext))]
-    partial class ScheduleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251206095328_AddLessonDraft")]
+    partial class AddLessonDraft
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
@@ -349,7 +352,7 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("LessonNumberId");
 
                     b.HasOne("Infrastructure.DboModels.ScheduleDbo", "Schedule")
-                        .WithMany("LessonDrafts")
+                        .WithMany()
                         .HasForeignKey("ScheduleId");
 
                     b.HasOne("Infrastructure.DboModels.SchoolSubjectDbo", "SchoolSubject")
@@ -464,8 +467,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.DboModels.ScheduleDbo", b =>
                 {
-                    b.Navigation("LessonDrafts");
-
                     b.Navigation("LessonNumbers");
 
                     b.Navigation("Lessons");

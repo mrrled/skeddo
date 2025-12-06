@@ -44,7 +44,7 @@ public static class ExportGenerator
         var lessons = await lessonRepository.GetLessonsByScheduleIdAsync(scheduleId);
         var table = lessons.ToTable();
         var lessonNumbers = await lessonNumberRepository.GetLessonNumbersByScheduleIdAsync(scheduleId);
-        var studyGroups = await studyGroupRepository.GetStudyGroupListAsync();
+        var studyGroups = await studyGroupRepository.GetStudyGroupListAsync(1);
         return new ExportDocument(table, studyGroups, lessonNumbers);
     }
 }

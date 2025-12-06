@@ -1,11 +1,20 @@
 namespace Domain.Models;
 
-public record StudyGroup(string Name)
+public class StudyGroup(int id, string name) : Entity<int>(id)
 {
-    public static StudyGroup CreateStudyGroup(string? name)
+    public string Name { get; private set; } = name;
+
+    public static StudyGroup CreateStudyGroup(int id, string? name)
     {
         if (name is null)
             throw new ArgumentNullException();
-        return new StudyGroup(name);
+        return new StudyGroup(id, name);
+    }
+    
+    public void SetName(string? name)
+    {
+        if (name is null)
+            throw new ArgumentNullException();
+        Name = name;
     }
 }

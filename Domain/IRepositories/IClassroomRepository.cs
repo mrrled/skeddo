@@ -4,8 +4,9 @@ namespace Domain.IRepositories;
 
 public interface IClassroomRepository
 {
-    Task<List<Classroom>> GetClassroomListAsync();
-    Task AddAsync(Classroom classroom);
-    Task UpdateAsync(Classroom oldClassroom, Classroom newClassroom);
+    Task<List<Classroom>> GetClassroomListAsync(int scheduleGroupId);
+    Task<Classroom> GetClassroomByIdAsync(int classroomId);
+    Task AddAsync(Classroom classroom, int scheduleGroupId);
+    Task UpdateAsync(Classroom classroom);
     Task Delete(Classroom classroom);
 }

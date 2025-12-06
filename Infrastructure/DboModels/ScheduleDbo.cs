@@ -13,5 +13,6 @@ public class ScheduleDbo
     public string Name { get; set; }
     public ScheduleGroupDbo ScheduleGroup { get; set; }
     public ICollection<LessonDbo> Lessons { get; set; } 
+    public ICollection<LessonDraftDbo> LessonDrafts { get; set; }
     public ICollection<LessonNumberDbo> LessonNumbers { get; set; }
 }

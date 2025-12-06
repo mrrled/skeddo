@@ -22,15 +22,12 @@ public class DboMappingProfile : Profile
             .ForAllMembers(opt => opt.Ignore());
         CreateMap<Teacher, TeacherDbo>()
             .ConstructUsing((src, ctx) =>
-                new TeacherDbo()
+                new TeacherDbo
                 {
                     Id = src.Id,
                     Name = src.Name,
                     Surname = src.Surname,
-                    Patronymic = src.Patronymic,
-                    ScheduleGroupId = 1,
-                    SchoolSubjects = ctx.Mapper.Map<List<SchoolSubjectDbo>>(src.SchoolSubjects),
-                    StudyGroups = ctx.Mapper.Map<List<StudyGroupDbo>>(src.StudyGroups)
+                    Patronymic = src.Patronymic
                 })
             .ForAllMembers(opt => opt.Ignore());
         CreateMap<ClassroomDbo, Classroom>().ReverseMap();
@@ -45,14 +42,34 @@ public class DboMappingProfile : Profile
             ))
             .ForAllMembers(opt => opt.Ignore());
         CreateMap<Lesson, LessonDbo>()
-            .ForMember(dest => dest.ClassroomId, opt => opt.Ignore())
             .ForMember(dest => dest.LessonNumberId, opt => opt.Ignore())
-            .ForMember(dest => dest.StudyGroupId, opt => opt.Ignore())
-            .ForMember(dest => dest.SchoolSubjectId, opt => opt.Ignore())
+            .ForMember(dest => dest.LessonNumber, opt => opt.Ignore())
             .ForMember(dest => dest.ScheduleId, opt => opt.Ignore())
+            .ForMember(dest => dest.SchoolSubject, opt => opt.Ignore())
+            .ForMember(dest => dest.StudyGroup, opt => opt.Ignore())
+            .ForMember(dest => dest.Classroom, opt => opt.Ignore())
+            .ForMember(dest => dest.Teacher, opt => opt.Ignore())
             .ForMember(dest => dest.Schedule, opt => opt.Ignore());
-        CreateMap<ScheduleDbo, Schedule>()
-            .ForMember(dest => dest.UpdatedLessons, opt => opt.Ignore());
+        CreateMap<LessonDraftDbo, LessonDraft>()
+            .ConstructUsing((src, ctx) => new LessonDraft(
+                src.Id,
+                ctx.Mapper.Map<SchoolSubject>(src.SchoolSubject),
+                ctx.Mapper.Map<LessonNumber>(src.LessonNumber),
+                ctx.Mapper.Map<Teacher>(src.Teacher),
+                ctx.Mapper.Map<StudyGroup>(src.StudyGroup),
+                ctx.Mapper.Map<Classroom>(src.Classroom)
+            ))
+            .ForAllMembers(opt => opt.Ignore());;
+        CreateMap<LessonDraft, LessonDraftDbo>()
+            .ForMember(dest => dest.LessonNumberId, opt => opt.Ignore())
+            .ForMember(dest => dest.LessonNumber, opt => opt.Ignore())
+            .ForMember(dest => dest.ScheduleId, opt => opt.Ignore())
+            .ForMember(dest => dest.SchoolSubject, opt => opt.Ignore())
+            .ForMember(dest => dest.StudyGroup, opt => opt.Ignore())
+            .ForMember(dest => dest.Classroom, opt => opt.Ignore())
+            .ForMember(dest => dest.Teacher, opt => opt.Ignore())
+            .ForMember(dest => dest.Schedule, opt => opt.Ignore());
+        CreateMap<ScheduleDbo, Schedule>();
         CreateMap<Schedule, ScheduleDbo>()
             .ForMember(dest => dest.ScheduleGroupId, opt => opt.Ignore())
             .ForMember(dest => dest.ScheduleGroup, opt => opt.Ignore())

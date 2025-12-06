@@ -16,14 +16,4 @@ public static class TeacherDtoExtensions
     {
         return DtoMapper.ToTeacherDto(teachers);
     }
-    
-    public static Teacher ToTeacher(this TeacherDto teacher)
-    {
-        return DtoMapper.ToTeacher(teacher);
-    }
-    
-    public static List<Teacher> ToTeachers(this ICollection<TeacherDto> teachers)
-    {
-        return DtoMapper.ToTeacher(teachers);
-    }
 }

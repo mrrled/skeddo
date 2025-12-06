@@ -8,16 +8,14 @@ public class DtoMappingProfile : Profile
 {
     public DtoMappingProfile()
     {
-        CreateMap<Classroom, ClassroomDto>().ReverseMap();
-        CreateMap<Lesson, LessonDto>().ReverseMap();
-        CreateMap<Schedule, ScheduleDto>().ReverseMap();
-        CreateMap<SchoolSubject, SchoolSubjectDto>().ReverseMap();
-        CreateMap<Teacher, TeacherDto>()
-            .ForMember(dest => dest.SchoolSubjects,
-                opt => opt.MapFrom(src => src.SchoolSubjects.Select(x => x.Name).ToList()))
-            .ForMember(dest => dest.StudyGroups,
-                opt => opt.MapFrom(src => src.StudyGroups.Select(x => x.Name).ToList()));
-        CreateMap<StudyGroup, StudyGroupDto>().ReverseMap();
-        CreateMap<LessonNumber, LessonNumberDto>().ReverseMap();
+        CreateMap<Classroom, ClassroomDto>();
+        CreateMap<Lesson, LessonDto>();
+        CreateMap<Schedule, ScheduleDto>();
+        CreateMap<SchoolSubject, SchoolSubjectDto>();
+        CreateMap<Teacher, TeacherDto>();
+        CreateMap<StudyGroup, StudyGroupDto>();
+        CreateMap<LessonNumber, LessonNumberDto>()
+            .ForMember(x => x.Id, opt => opt.Ignore());
+        CreateMap<LessonDraft, LessonDraftDto>();
     }
 }

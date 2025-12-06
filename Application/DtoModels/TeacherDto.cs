@@ -7,6 +7,6 @@ public class TeacherDto
     public string Surname { get; set; } = string.Empty;
     public string Patronymic { get; set; } = string.Empty;
     public string? Description { get; set; } = string.Empty;
-    public List<string> SchoolSubjects { get; set; } = new();
-    public List<string> StudyGroups { get; set; } = new();
+    public List<SchoolSubjectDto> SchoolSubjects { get; set; } = new();
+    public List<StudyGroupDto> StudyGroups { get; set; } = new();
 }

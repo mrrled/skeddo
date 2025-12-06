@@ -2,43 +2,67 @@ namespace Domain.Models;
 
 public class Lesson(
     int id,
-    SchoolSubject? schoolSubject,
-    LessonNumber? lessonNumber,
-    Teacher? teacher,
-    StudyGroup? studyGroup,
-    Classroom? classroom,
-    string comment = "",
+    SchoolSubject schoolSubject,
+    LessonNumber lessonNumber,
+    Teacher teacher,
+    StudyGroup studyGroup,
+    Classroom classroom,
+    string? comment = null,
     WarningType warningType = WarningType.Normal
 ) : Entity<int>(id)
 {
-    public SchoolSubject? SchoolSubject { get; private set; } = schoolSubject; //предмет всегда должен быть
-    public LessonNumber? LessonNumber { get; private set; } = lessonNumber;
-    public Teacher? Teacher { get; private set; } = teacher;
-    public StudyGroup? StudyGroup { get; private set; } = studyGroup;
-    public Classroom? Classroom { get; private set; } = classroom;
+    public SchoolSubject SchoolSubject { get; private set; } = schoolSubject;
+    public LessonNumber LessonNumber { get; private set; } = lessonNumber;
+    public Teacher Teacher { get; private set; } = teacher;
+    public StudyGroup StudyGroup { get; private set; } = studyGroup;
+    public Classroom Classroom { get; private set; } = classroom;
     public string? Comment { get; private set; } = comment;
-
     public WarningType WarningType { get; private set; } = warningType;
-
-    //хранить список с кем конфликтует?
+    
     internal void SetWarningType(WarningType warningType)
     {
         WarningType = warningType;
     }
 
-    public Lesson Update(SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher, StudyGroup? studyGroup,
-        Classroom? classroom, string? comment = null)
+    public void SetSchoolSubject(SchoolSubject? schoolSubject)
     {
-        SchoolSubject = subject;
+        if (schoolSubject is null)
+            throw new ArgumentNullException(nameof(schoolSubject));
+        SchoolSubject = schoolSubject;
+    }
+
+    public void SetLessonNumber(LessonNumber? lessonNumber)
+    {
+        if (lessonNumber is null)
+            throw new ArgumentNullException(nameof(lessonNumber));
         LessonNumber = lessonNumber;
+    }
+
+    public void SetTeacher(Teacher? teacher)
+    {
+        if (teacher is null)
+            throw new ArgumentNullException(nameof(teacher));
         Teacher = teacher;
+    }
+
+    public void SetStudyGroup(StudyGroup? studyGroup)
+    {
+        if (studyGroup is null)
+            throw new ArgumentNullException(nameof(studyGroup));
         StudyGroup = studyGroup;
+    }
+
+    public void SetClassroom(Classroom? classroom)
+    {
+        if (classroom is null)
+            throw new ArgumentNullException(nameof(classroom));
         Classroom = classroom;
+    }
+
+    public void SetComment(string? comment)
+    {
+        if (comment is null)
+            throw new ArgumentNullException(nameof(comment));
         Comment = comment;
-        return this;
     }
 }
-
-//setClassroom
-//setstudygroup
-//черновик, фабрика

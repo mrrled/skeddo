@@ -8,15 +8,10 @@ namespace Infrastructure.Repositories;
 
 public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
 {
-    public async Task<List<Schedule>> GetScheduleListAsync()
+    public async Task<List<Schedule>> GetScheduleListAsync(int scheduleGroupId)
     {
-        var scheduleGroup = await context.ScheduleGroups
-            .Include(x => x.Schedules)
-            .FirstOrDefaultAsync();
-        if (scheduleGroup is null)
-            throw new NullReferenceException();
-        var hui = await context.Schedules
-            .Where(s => s.ScheduleGroupId == scheduleGroup.Id)
+        var scheduleDbos = await context.Schedules
+            .Where(x => x.ScheduleGroupId == scheduleGroupId)
             .Include(s => s.Lessons)
             .ThenInclude(l => l.LessonNumber)
             .Include(s => s.Lessons)
@@ -27,20 +22,23 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
             .ThenInclude(l => l.SchoolSubject)
             .Include(s => s.Lessons)
             .ThenInclude(l => l.Classroom)
-            .Include(s => s.LessonNumbers)
+            .Include(s => s.LessonDrafts)
+            .ThenInclude(l => l.LessonNumber)
+            .Include(s => s.LessonDrafts)
+            .ThenInclude(l => l.StudyGroup)
+            .Include(s => s.LessonDrafts)
+            .ThenInclude(l => l.Teacher)
+            .Include(s => s.LessonDrafts)
+            .ThenInclude(l => l.SchoolSubject)
+            .Include(s => s.LessonDrafts)
+            .ThenInclude(l => l.Classroom)
             .ToListAsync();
-        return hui.ToSchedules();
+        return scheduleDbos.ToSchedules();
     }
     
     public async Task<Schedule> GetScheduleByIdAsync(int scheduleId)
     {
-        var scheduleGroup = await context.ScheduleGroups
-            .Include(x => x.Schedules)
-            .FirstOrDefaultAsync();
-        if (scheduleGroup is null)
-            throw new NullReferenceException();
-        var hui = await context.Schedules
-            .Where(s => s.ScheduleGroupId == scheduleGroup.Id)
+        var scheduleDbo = await context.Schedules
             .Include(s => s.Lessons)
             .ThenInclude(l => l.LessonNumber)
             .Include(s => s.Lessons)
@@ -51,9 +49,20 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
             .ThenInclude(l => l.SchoolSubject)
             .Include(s => s.Lessons)
             .ThenInclude(l => l.Classroom)
-            .Include(s => s.LessonNumbers)
+            .Include(s => s.LessonDrafts)
+            .ThenInclude(l => l.LessonNumber)
+            .Include(s => s.LessonDrafts)
+            .ThenInclude(l => l.StudyGroup)
+            .Include(s => s.LessonDrafts)
+            .ThenInclude(l => l.Teacher)
+            .Include(s => s.LessonDrafts)
+            .ThenInclude(l => l.SchoolSubject)
+            .Include(s => s.LessonDrafts)
+            .ThenInclude(l => l.Classroom)
             .FirstOrDefaultAsync(s => s.Id == scheduleId);
-        return hui.ToSchedule();
+        if (scheduleDbo is null)
+            throw new InvalidOperationException();
+        return scheduleDbo.ToSchedule();
     }
     
     //Для рабочести временно поменяла методы, пожалуйста не злитесь
@@ -83,38 +92,27 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
     //     return schedule.ToSchedule();
     // }
     
-    public async Task AddAsync(Schedule schedule)
+    public async Task AddAsync(Schedule schedule, int scheduleGroupId)
     {
         var scheduleDbo = schedule.ToScheduleDbo();
-        var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync();
+        var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync(x => x.Id == scheduleGroupId);
         if (scheduleGroup is null)
-            throw new NullReferenceException();
-        scheduleGroup.Schedules.Add(scheduleDbo);
+            throw new InvalidOperationException();
+        scheduleDbo.ScheduleGroupId = scheduleGroupId;
+        await context.AddAsync(scheduleDbo);
     }
 
-    public async Task UpdateAsync(Schedule oldSchedule, Schedule newSchedule)
+    public async Task UpdateAsync(Schedule schedule)
     {
-        var scheduleGroup = await context.ScheduleGroups
-            .Include(scheduleGroupDbo => scheduleGroupDbo.Schedules)
-            .FirstOrDefaultAsync();
-        if (scheduleGroup is null)
-            throw new NullReferenceException();
-        var scheduleDbo = scheduleGroup.Schedules.FirstOrDefault(x => x.Id == oldSchedule.Id);
+        var scheduleDbo = await context.Schedules
+            .FirstOrDefaultAsync(x => x.Id == schedule.Id);
         if (scheduleDbo is null)
-            throw new NullReferenceException();
-        DboMapper.Mapper.Map(newSchedule, scheduleDbo);
+            throw new InvalidOperationException();
+        DboMapper.Mapper.Map(schedule, scheduleDbo);
     }
 
     public async Task Delete(Schedule schedule)
     {
-        var scheduleGroup = await context.ScheduleGroups
-            .Include(scheduleGroupDbo => scheduleGroupDbo.Schedules)
-            .FirstOrDefaultAsync();
-        if (scheduleGroup is null)
-            throw new NullReferenceException();
-        var scheduleDbo = scheduleGroup.Schedules.FirstOrDefault(x => x.Id == schedule.Id);
-        if (scheduleDbo is null)
-            throw new NullReferenceException();
-        scheduleGroup.Schedules.Remove(scheduleDbo);
+        await context.Schedules.Where(x => x.Id == schedule.Id).ExecuteDeleteAsync();
     }
 }

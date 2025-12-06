@@ -10,35 +10,40 @@ public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWor
 {
     public async Task<List<ScheduleDto>> FetchSchedulesFromBackendAsync()
     {
-        var scheduleList = await scheduleRepository.GetScheduleListAsync();
+        var scheduleList = await scheduleRepository.GetScheduleListAsync(1);
         return scheduleList.ToSchedulesDto();
     }
 
     public async Task<ScheduleDto> FetchScheduleByIdAsync(int id)
     {
         var schedule = await scheduleRepository.GetScheduleByIdAsync(id);
-        return  schedule.ToScheduleDto();
+        return schedule.ToScheduleDto();
     }
 
     public async Task AddSchedule(ScheduleDto scheduleDto)
     {
-        var schedule = new Schedule(scheduleDto.Id, scheduleDto.Name, []);
-        await scheduleRepository.AddAsync(schedule);
+        var schedule = Schedule.CreateSchedule(scheduleDto.Id, scheduleDto.Name);
+        await scheduleRepository.AddAsync(schedule, 1);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditSchedule(ScheduleDto oldScheduleDto, ScheduleDto newScheduleDto)
+    public async Task EditSchedule(ScheduleDto scheduleDto)
     {
-        var oldSchoolSubject = new Schedule(oldScheduleDto.Id, newScheduleDto.Name, []);
-        var newSchoolSubject = new Schedule(oldScheduleDto.Id, newScheduleDto.Name, []);
-        await scheduleRepository.UpdateAsync(oldSchoolSubject, newSchoolSubject);
+        var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleDto.Id);
+        if (schedule is null)
+            throw new ArgumentException($"Schedule with id {scheduleDto.Id} not found");
+        if (schedule.Name != scheduleDto.Name)
+            schedule.SetName(scheduleDto.Name);
+        await scheduleRepository.UpdateAsync(schedule);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteSchedule(ScheduleDto scheduleDto)
     {
-        var schoolSubject = new Schedule(scheduleDto.Id, scheduleDto.Name, []);
-        await scheduleRepository.Delete(schoolSubject);
+        var schedule = await  scheduleRepository.GetScheduleByIdAsync(scheduleDto.Id);
+        if (schedule is null)
+            throw new ArgumentException($"Schedule with id {scheduleDto.Id} not found");
+        await scheduleRepository.Delete(schedule);
         await unitOfWork.SaveChangesAsync();
     }
 

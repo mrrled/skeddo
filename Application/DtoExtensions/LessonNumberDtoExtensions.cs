@@ -16,16 +16,5 @@ public static class LessonNumberDtoExtensions
     {
         return DtoMapper.ToLessonNumberDto(dtoLessonNumber);
     }
-    
-    public static LessonNumber ToLessonNumber(this LessonNumberDto lessonNumberDto)
-    {
-        var ln = DtoMapper.ToLessonNumber(lessonNumberDto);
-        return ln;
-    }
-
-    public static List<LessonNumber> ToLessonNumbers(this ICollection<LessonNumberDto> dtoLessonNumber)
-    {
-        return DtoMapper.ToLessonNumber(dtoLessonNumber);
-    }
 
 }

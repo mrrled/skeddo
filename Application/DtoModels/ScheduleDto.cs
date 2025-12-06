@@ -4,7 +4,8 @@ public class ScheduleDto : IComparable<ScheduleDto>
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public List<LessonDto> Lessons { get; set; } = new List<LessonDto>();
+    public List<LessonDto> Lessons { get; set; } = new();
+    public List<LessonDraftDto> LessonDrafts { get; set; } = new();
     
     public override int GetHashCode()
     {

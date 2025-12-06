@@ -20,70 +20,81 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
         return lessons.ToLessons();
     }
 
-    public async Task<Lesson> GetLessonByIdAsync(int id, int scheduleId)
+    public async Task<Lesson> GetLessonByIdAsync(int id)
     {
-        var schedule = await context.Schedules
-            .Include(x => x.Lessons)
-            .FirstOrDefaultAsync(x => x.Id == scheduleId);
-        if (schedule is null)
-            throw new NullReferenceException();
-        var lesson = schedule.Lessons.FirstOrDefault(x => x.Id == id);
-        if (lesson is null)
-            throw new NullReferenceException();
-        return lesson.ToLesson();
+        var lessonDbo = await context.Lessons
+            .Include(x => x.Teacher)
+            .Include(x => x.Classroom)
+            .Include(x => x.StudyGroup)
+            .Include(x => x.SchoolSubject)
+            .Include(x => x.LessonNumber)
+            .FirstOrDefaultAsync(x => x.Id == id);
+        if (lessonDbo is null)
+            throw new InvalidOperationException();
+        return lessonDbo.ToLesson();
+    }
+
+    public async Task<List<Lesson>> GetLessonsByIdsAsync(List<int> lessonIds)
+    {
+        var lessons = await context.Lessons
+            .Include(x => x.Teacher)
+            .Include(x => x.Classroom)
+            .Include(x => x.StudyGroup)
+            .Include(x => x.SchoolSubject)
+            .Include(x => x.LessonNumber)
+            .Where(x => lessonIds.Contains(x.Id))
+            .ToListAsync();
+        return lessons.ToLessons();
     }
 
     public async Task AddAsync(Lesson lesson, int scheduleId)
     {
         var lessonDbo = lesson.ToLessonDbo();
+        var lessonNumber =
+            await context.LessonNumbers.FirstOrDefaultAsync(x =>
+                x.ScheduleId == scheduleId && x.Number == lesson.LessonNumber.Number);
+        if (lessonNumber is null)
+            throw new InvalidOperationException();
         var schedule = await context.Schedules
             .Where(x => x.Id == scheduleId)
             .FirstOrDefaultAsync();
         if (schedule is null)
-            throw new NullReferenceException();
-        schedule.Lessons.Add(lessonDbo);
+            throw new InvalidOperationException();
+        lessonDbo.ScheduleId = scheduleId;
+        lessonDbo.LessonNumberId = lessonNumber.Id;
+        await context.Lessons.AddAsync(lessonDbo);
     }
 
-    public async Task UpdateAsync(Lesson lesson, int scheduleId)
+    public async Task UpdateAsync(Lesson lesson)
     {
-        var schedule = await context.Schedules
-            .Include(scheduleDbo => scheduleDbo.Lessons)
-            .FirstOrDefaultAsync(x => x.Id == scheduleId);
-        if (schedule is null)
-            throw new NullReferenceException();
-        var lessonDbo = schedule.Lessons.FirstOrDefault(x => x.Id == lesson.Id);
+        var lessonDbo = await context.Lessons
+            .Include(x => x.Teacher)
+            .Include(x => x.Classroom)
+            .Include(x => x.StudyGroup)
+            .Include(x => x.SchoolSubject)
+            .Include(x => x.LessonNumber)
+            .FirstOrDefaultAsync(x => x.Id == lesson.Id);
         if (lessonDbo is null)
-            throw new NullReferenceException();
+            throw new InvalidOperationException();
         DboMapper.Mapper.Map(lesson, lessonDbo);
     }
 
-    public async Task Delete(Lesson lesson, int scheduleId)
+    public async Task Delete(Lesson lesson)
     {
-        var schedule = await context.Schedules
-            .Include(scheduleDbo => scheduleDbo.Lessons)
-            .FirstOrDefaultAsync(x => x.Id == scheduleId);
-        if (schedule is null)
-            throw new NullReferenceException();
-        var lessonDbo = schedule.Lessons.FirstOrDefault(x => x.Id == lesson.Id);
-        if (lessonDbo is null)
-            throw new NullReferenceException();
-        schedule.Lessons.Remove(lessonDbo);
+        await context.Lessons.Where(x => x.Id == lesson.Id).ExecuteDeleteAsync();
     }
 
-    public async Task UpdateRangeAsync(List<Lesson> lessons, int scheduleId)
+    public async Task UpdateRangeAsync(List<Lesson> lessons)
     {
-        var schedule = await context.Schedules
-            .Include(scheduleDbo => scheduleDbo.Lessons)
-            .FirstOrDefaultAsync(x => x.Id == scheduleId);
-        if (schedule is null)
-            throw new NullReferenceException();
+        var lessonIds = lessons.Select(x => x.Id).ToList();
+        var lessonDbos = await context.Lessons
+            .Where(x => lessonIds.Contains(x.Id))
+            .ToListAsync();
+        var dboDict = lessonDbos.ToDictionary(x => x.Id);
         foreach (var lesson in lessons)
         {
-            var dbo = schedule.Lessons.FirstOrDefault(x => x.Id == lesson.Id);
-            if (dbo is not null)
-            {
-                DboMapper.Mapper.Map(lesson, dbo);
-            }
+            if (dboDict.TryGetValue(lesson.Id, out var lessonDbo))
+                DboMapper.Mapper.Map(lesson, lessonDbo);
         }
     }
 }

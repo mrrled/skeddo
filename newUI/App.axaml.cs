@@ -66,6 +66,7 @@ public partial class App : Avalonia.Application
         
         RegisterServices(services);
         RegisterRepositories(services);
+        services.AddScoped<ILessonFactory, LessonFactory>();
         
         services.AddDbContext<ScheduleDbContext>(options =>
         {
@@ -149,6 +150,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<ISchoolSubjectServices, SchoolSubjectServices>();
         services.AddScoped<IStudyGroupServices, StudyGroupServices>();
         services.AddScoped<ITeacherServices, TeacherServices>();
+        services.AddScoped<ILessonDraftServices, LessonDraftServices>();
     }
 
     private void RegisterRepositories(ServiceCollection services)
@@ -160,6 +162,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<ISchoolSubjectRepository, SchoolSubjectRepository>();
         services.AddScoped<IStudyGroupRepository, StudyGroupRepository>();
         services.AddScoped<ITeacherRepository, TeacherRepository>();
+        services.AddScoped<ILessonDraftRepository, LessonDraftRepository>();
     }
     
     private static void RegisterViewMappings()

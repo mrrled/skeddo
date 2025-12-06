@@ -1,11 +1,19 @@
 namespace Domain.Models;
 
-public record SchoolSubject(string Name)
+public class SchoolSubject(int id, string name) : Entity<int>(id)
 {
-    public static SchoolSubject CreateSchoolSubject(string? name)
+    public string Name { get; set; } = name;
+    public static SchoolSubject CreateSchoolSubject(int id, string? name)
     {
         if (name is null)
             throw new ArgumentNullException();
-        return new SchoolSubject(name);
+        return new SchoolSubject(id, name);
+    }
+
+    public void SetName(string? name)
+    {
+        if (name is null)
+            throw new ArgumentNullException();
+        Name = name;
     }
 }

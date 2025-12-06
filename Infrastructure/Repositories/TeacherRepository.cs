@@ -8,10 +8,10 @@ namespace Infrastructure.Repositories;
 
 public class TeacherRepository(ScheduleDbContext context) : ITeacherRepository
 {
-    public async Task<List<Teacher>> GetTeacherListAsync()
+    public async Task<List<Teacher>> GetTeacherListAsync(int scheduleGroupId)
     {
         var teachers = await context.Teachers
-            .Where(x => x.ScheduleGroupId == 1)
+            .Where(x => x.ScheduleGroupId == scheduleGroupId)
             .Include(teacherDbo => teacherDbo.SchoolSubjects)
             .Include(teacherDbo => teacherDbo.StudyGroups)
             .ToListAsync();
@@ -21,23 +21,19 @@ public class TeacherRepository(ScheduleDbContext context) : ITeacherRepository
 
     public async Task<Teacher> GetTeacherByIdAsync(int id)
     {
-        var scheduleGroup = await context.ScheduleGroups
-            .Include(x => x.Teachers)
-            .FirstOrDefaultAsync();
-        if (scheduleGroup is null)
-            throw new NullReferenceException();
-        var teacher = scheduleGroup.Teachers.FirstOrDefault(x => x.Id == id);
+        var teacher = await context.Teachers.FirstOrDefaultAsync(x => x.Id == id);
         if (teacher is null)
-            throw new NullReferenceException();
+            throw new InvalidOperationException();
         return teacher.ToTeacher();
     }
 
-    public async Task AddAsync(Teacher teacher)
+    public async Task AddAsync(Teacher teacher, int scheduleGroupId)
     {
         var teacherDbo = teacher.ToTeacherDbo();
         var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync();
         if (scheduleGroup is null)
-            throw new NullReferenceException();
+            throw new InvalidOperationException();
+        teacherDbo.ScheduleGroupId = scheduleGroupId;
         context.Teachers.Add(teacherDbo);
     }
 
@@ -45,20 +41,12 @@ public class TeacherRepository(ScheduleDbContext context) : ITeacherRepository
     {
         var teacherDbo = await context.Teachers.FirstOrDefaultAsync(x => x.Id == teacher.Id);
         if (teacherDbo is null)
-            throw new ArgumentException();
+            throw new InvalidOperationException();
         DboMapper.Mapper.Map(teacher, teacherDbo);
     }
 
     public async Task Delete(Teacher teacher)
     {
-        var scheduleGroup = await context.ScheduleGroups
-            .Include(scheduleGroupDbo => scheduleGroupDbo.Teachers)
-            .FirstOrDefaultAsync();
-        if (scheduleGroup is null)
-            throw new NullReferenceException();
-        var teacherDbo = scheduleGroup.Teachers.FirstOrDefault(x => x.Id == teacher.Id);
-        if (teacherDbo is null)
-            throw new NullReferenceException();
-        scheduleGroup.Teachers.Remove(teacherDbo);
+        await context.Teachers.Where(x => x.Id == teacher.Id).ExecuteDeleteAsync();
     }
 }

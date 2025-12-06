@@ -4,8 +4,10 @@ namespace Domain.IRepositories;
 
 public interface ISchoolSubjectRepository
 {
-    Task<List<SchoolSubject>> GetSchoolSubjectListAsync();
-    Task AddAsync(SchoolSubject schoolSubject);
-    Task UpdateAsync(SchoolSubject oldSchoolSubject, SchoolSubject newSchoolSubject);
+    Task<List<SchoolSubject>> GetSchoolSubjectListAsync(int scheduleGroupId);
+    Task<SchoolSubject> GetSchoolSubjectByIdAsync(int schoolSubjectId);
+    Task<List<SchoolSubject>> GetSchoolSubjectListByIdsAsync(List<int> schoolSubjectIds);
+    Task AddAsync(SchoolSubject schoolSubject, int scheduleGroupId);
+    Task UpdateAsync(SchoolSubject schoolSubject);
     Task Delete(SchoolSubject schoolSubject);
 }

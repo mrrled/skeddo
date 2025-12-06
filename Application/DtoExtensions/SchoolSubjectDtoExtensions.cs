@@ -17,13 +17,4 @@ public static class SchoolSubjectDtoExtensions
         return DtoMapper.ToSchoolSubjectDto(schoolSubjects);
     }
     
-    public static SchoolSubject ToSchoolSubject(this SchoolSubjectDto schoolSubject)
-    {
-        return DtoMapper.ToSchoolSubject(schoolSubject);
-    }
-    
-    public static List<SchoolSubject> ToSchoolSubjects(this ICollection<SchoolSubjectDto> schoolSubjects)
-    {
-        return DtoMapper.ToSchoolSubject(schoolSubjects);
-    }
 }

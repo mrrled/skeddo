@@ -111,7 +111,7 @@ public class ScheduleViewModel : ViewModelBase
         using (var scope = scopeFactory.CreateScope())
         {
             var service = scope.ServiceProvider.GetService<IScheduleServices>();
-            service.EditSchedule(currentSchedule, currentSchedule); 
+            service.EditSchedule(currentSchedule);
             //TODO: сделать копию расписания, чтобы был oldSchedule
         }
         return Task.CompletedTask;

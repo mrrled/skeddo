@@ -150,4 +150,24 @@ public static class DboMapper
     {
         return Mapper.Map<List<Teacher>>(teachers);
     }
+
+    public static LessonDraftDbo ToLessonDraftDbo(LessonDraft lessonDraft)
+    {
+        return Mapper.Map<LessonDraftDbo>(lessonDraft);
+    }
+
+    public static List<LessonDraftDbo> ToLessonDraftDbo(ICollection<LessonDraft> lessonDrafts)
+    {
+        return Mapper.Map<List<LessonDraftDbo>>(lessonDrafts);
+    }
+
+    public static LessonDraft ToLessonDraft(LessonDraftDbo lessonDraft)
+    {
+        return Mapper.Map<LessonDraft>(lessonDraft);
+    }
+
+    public static List<LessonDraft> ToLessonDraft(ICollection<LessonDraftDbo> lessonDrafts)
+    {
+        return Mapper.Map<List<LessonDraft>>(lessonDrafts);
+    }
 }

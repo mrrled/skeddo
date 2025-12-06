@@ -24,16 +24,6 @@ public static class DtoMapper
         return Mapper.Map<List<ClassroomDto>>(classrooms);
     }
     
-    public static Classroom ToClassroom(ClassroomDto classroom)
-    {
-        return Mapper.Map<Classroom>(classroom);
-    }
-    
-    public static List<Classroom> ToClassroom(ICollection<ClassroomDto> classrooms)
-    {
-        return Mapper.Map<List<Classroom>>(classrooms);
-    }
-    
     public static LessonDto ToLessonDto(Lesson lesson)
     {
         return Mapper.Map<LessonDto>(lesson);
@@ -44,16 +34,6 @@ public static class DtoMapper
         return Mapper.Map<List<LessonDto>>(lessons);
     }
     
-    public static Lesson ToLesson(LessonDto lesson)
-    {
-        return Mapper.Map<Lesson>(lesson);
-    }
-    
-    public static List<Lesson> ToLesson(ICollection<LessonDto> lessons)
-    {
-        return Mapper.Map<List<Lesson>>(lessons);
-    }
-    
     public static LessonNumberDto ToLessonNumberDto(LessonNumber dtoLessonNumber)
     {
         return Mapper.Map<LessonNumberDto>(dtoLessonNumber);
@@ -61,16 +41,6 @@ public static class DtoMapper
     public static List<LessonNumberDto> ToLessonNumberDto(ICollection<LessonNumber> dtoLessonNumber)
     {
         return Mapper.Map<List<LessonNumberDto>>(dtoLessonNumber);
-    }
-    
-    public static LessonNumber ToLessonNumber(LessonNumberDto lessonNumberDto)
-    {
-        return Mapper.Map<LessonNumber>(lessonNumberDto);
-    }
-
-    public static List<LessonNumber> ToLessonNumber(ICollection<LessonNumberDto> dtoLessonNumber)
-    {
-        return Mapper.Map<List<LessonNumber>>(dtoLessonNumber);
     }
     
     public static ScheduleDto ToScheduleDto(Schedule schedule)
@@ -83,16 +53,6 @@ public static class DtoMapper
         return Mapper.Map<List<ScheduleDto>>(schedules);
     }
     
-    public static Schedule ToSchedule(ScheduleDto schedule)
-    {
-        return Mapper.Map<Schedule>(schedule);
-    }
-    
-    public static List<Schedule> ToSchedule(ICollection<ScheduleDto> schedules)
-    {
-        return Mapper.Map<List<Schedule>>(schedules);
-    }
-    
     public static SchoolSubjectDto ToSchoolSubjectDto(SchoolSubject schoolSubject)
     {
         return Mapper.Map<SchoolSubjectDto>(schoolSubject);
@@ -101,16 +61,6 @@ public static class DtoMapper
     public static List<SchoolSubjectDto> ToSchoolSubjectDto(ICollection<SchoolSubject> schoolSubjects)
     {
         return Mapper.Map<List<SchoolSubjectDto>>(schoolSubjects);
-    }
-    
-    public static SchoolSubject ToSchoolSubject(SchoolSubjectDto schoolSubject)
-    {
-        return Mapper.Map<SchoolSubject>(schoolSubject);
-    }
-    
-    public static List<SchoolSubject> ToSchoolSubject(ICollection<SchoolSubjectDto> schoolSubjects)
-    {
-        return Mapper.Map<List<SchoolSubject>>(schoolSubjects);
     }
     
     public static StudyGroupDto ToStudyGroupDto(StudyGroup studyGroup)
@@ -122,15 +72,6 @@ public static class DtoMapper
     {
         return Mapper.Map<List<StudyGroupDto>>(studyGroups);
     }
-    public static StudyGroup ToStudyGroup(StudyGroupDto studyGroup)
-    {
-        return Mapper.Map<StudyGroup>(studyGroup);
-    }
-    
-    public static List<StudyGroup> ToStudyGroup(ICollection<StudyGroupDto> studyGroups)
-    {
-        return Mapper.Map<List<StudyGroup>>(studyGroups);
-    }
     
     public static TeacherDto ToTeacherDto(Teacher teacher)
     {
@@ -141,14 +82,14 @@ public static class DtoMapper
     {
         return Mapper.Map<List<TeacherDto>>(teachers);
     }
-    
-    public static Teacher ToTeacher(TeacherDto teacher)
+
+    public static LessonDraftDto ToLessonDraftDto(LessonDraft lesson)
     {
-        return Mapper.Map<Teacher>(teacher);
+        return Mapper.Map<LessonDraftDto>(lesson);
     }
-    
-    public static List<Teacher> ToTeacher(ICollection<TeacherDto> teachers)
+
+    public static List<LessonDraftDto> ToLessonDraftDto(ICollection<LessonDraft> lessons)
     {
-        return Mapper.Map<List<Teacher>>(teachers);
+        return Mapper.Map<List<LessonDraftDto>>(lessons);
     }
 }

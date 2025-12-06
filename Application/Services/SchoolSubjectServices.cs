@@ -10,29 +10,33 @@ public class SchoolSubjectServices(ISchoolSubjectRepository schoolSubjectReposit
 {
     public async Task<List<SchoolSubjectDto>> FetchSchoolSubjectsFromBackendAsync()
     {
-        var schoolSubjectList = await schoolSubjectRepository.GetSchoolSubjectListAsync();
+        var schoolSubjectList = await schoolSubjectRepository.GetSchoolSubjectListAsync(1);
         return schoolSubjectList.ToSchoolSubjectsDto();
     }
 
     public async Task AddSchoolSubject(SchoolSubjectDto schoolSubjectDto)
     {
-        var schoolSubject = SchoolSubject.CreateSchoolSubject(schoolSubjectDto.Name);
-        await schoolSubjectRepository.AddAsync(schoolSubject);
+        var schoolSubject = SchoolSubject.CreateSchoolSubject(schoolSubjectDto.Id, schoolSubjectDto.Name);
+        await schoolSubjectRepository.AddAsync(schoolSubject, 1);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditSchoolSubject(SchoolSubjectDto oldSubjectSchoolSubjectDto,
-        SchoolSubjectDto newSubjectSchoolSubjectDto)
+    public async Task EditSchoolSubject(SchoolSubjectDto schoolSubjectDto)
     {
-        var oldSchoolSubject = SchoolSubject.CreateSchoolSubject(oldSubjectSchoolSubjectDto.Name);
-        var newSchoolSubject = SchoolSubject.CreateSchoolSubject(newSubjectSchoolSubjectDto.Name);
-        await schoolSubjectRepository.UpdateAsync(oldSchoolSubject, newSchoolSubject);
+        var schoolSubject = await schoolSubjectRepository.GetSchoolSubjectByIdAsync(schoolSubjectDto.Id);
+        if (schoolSubject is null)
+            throw new  ArgumentException($"School subject with id {schoolSubjectDto.Id} not found");
+        if (schoolSubject.Name != schoolSubjectDto.Name)
+            schoolSubject.SetName(schoolSubjectDto.Name);
+        await schoolSubjectRepository.UpdateAsync(schoolSubject);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteSchoolSubject(SchoolSubjectDto schoolSubjectDto)
     {
-        var schoolSubject = SchoolSubject.CreateSchoolSubject(schoolSubjectDto.Name);
+        var schoolSubject = await schoolSubjectRepository.GetSchoolSubjectByIdAsync(schoolSubjectDto.Id);
+        if (schoolSubject is null)
+            throw new  ArgumentException($"School subject with id {schoolSubjectDto.Id} not found");
         await schoolSubjectRepository.Delete(schoolSubject);
         await unitOfWork.SaveChangesAsync();
     }

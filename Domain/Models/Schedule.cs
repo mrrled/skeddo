@@ -2,61 +2,73 @@ namespace Domain.Models;
 
 public class Schedule(
     int id,
-    string Name,
-    HashSet<Lesson> lessons
+    string name
 ) : Entity<int>(id)
 {
-    private HashSet<Lesson> _lessons = lessons;
-    public List<Lesson> UpdatedLessons { get; private set; } = new();
+    private HashSet<Lesson> _lessons = new();
+    private HashSet<LessonDraft> _lessonDrafts = new();
+    public IReadOnlyCollection<LessonDraft> LessonDrafts => _lessonDrafts;
     public IReadOnlyCollection<Lesson> Lessons => _lessons;
-    public string Name { get; } = Name;
+    public string Name { get; set; } = name;
     
-    public Lesson AddLesson(int id, string? subject, int lessonNumber, Teacher? teacher, string? studyGroup,
-        string? classroom, string? classroomDescription)
+    public IEnumerable<Lesson> AddLesson(Lesson lesson)
     {
-        var warningType = WarningType.Normal;
-        if (teacher is null || classroom is null)
-            warningType = WarningType.Conflict;
-        var lesson = new Lesson(id,
-            subject is null ? null : SchoolSubject.CreateSchoolSubject(subject),
-            new LessonNumber(lessonNumber, null), //а если не указан lessonNumber?
-            teacher,
-            studyGroup is null ? null : StudyGroup.CreateStudyGroup(studyGroup),
-            classroom is null ? null : Classroom.CreateClassroom(classroom, classroomDescription),
-            warningType: warningType);
         _lessons.Add(lesson);
-        UpdateByLesson(lesson);
-        return lesson;
+        var editedLessons = UpdateByLesson(lesson);
+        return editedLessons;
     }
-    public Lesson EditLesson(int id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher, StudyGroup? studyGroup,
+
+    public void AddLessonDraft(LessonDraft lessonDraft)
+    {
+        _lessonDrafts.Add(lessonDraft);
+    }
+    public IEnumerable<Lesson> EditLesson(int id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher, StudyGroup? studyGroup,
         Classroom? classroom, string? comment = null)
     {
         var lesson = Lessons.FirstOrDefault(x => x.Id == id);
         if (lesson is null)
             throw new ArgumentException($"There is no lesson with id {id}");
-        lesson.Update(subject, lessonNumber, teacher, studyGroup, classroom, comment);
-        UpdateByLesson(lesson);
-        return lesson;
+        lesson.SetSchoolSubject(subject);
+        lesson.SetLessonNumber(lessonNumber);
+        lesson.SetTeacher(teacher);
+        lesson.SetStudyGroup(studyGroup);
+        lesson.SetClassroom(classroom);
+        lesson.SetComment(comment);
+        var editedLessons = UpdateByLesson(lesson);
+        return editedLessons;
     }
 
-    private void UpdateByLesson(Lesson lesson) //возможно стоит возвращать список измененных уроков
+    public static Schedule CreateSchedule(int id, string? name)
     {
-        UpdatedLessons = _lessons
+        if (name is null)
+            throw new ArgumentNullException();
+        return new Schedule(id, name);
+    }
+
+    public void SetName(string name)
+    {
+        Name = name;
+    }
+
+    private IEnumerable<Lesson> UpdateByLesson(Lesson lesson)
+    {
+        var updatableLessons = _lessons
             .Where(l => l.StudyGroup == lesson.StudyGroup || l.LessonNumber == lesson.LessonNumber)
             .ToList();
-        foreach (var element in UpdatedLessons.Where(l =>
-                     l.Teacher?.Id == lesson.Teacher?.Id && l.Classroom == lesson.Classroom))
+        foreach (var element in updatableLessons.Where(l =>
+                     l.Teacher.Id == lesson.Teacher.Id && l.Classroom == lesson.Classroom))
         {
             element.SetWarningType(WarningType.Warning);
             lesson.SetWarningType(WarningType.Warning);
         }
 
         UpdateByTeacherSpecialization(lesson);
+        return updatableLessons;
     }
 
     private void UpdateByTeacherSpecialization(Lesson lesson)
     {
-        if (lesson.Teacher is not null && !lesson.Teacher.SchoolSubjects.Contains(lesson.SchoolSubject))
+        if (!lesson.Teacher.SchoolSubjects.Contains(lesson.SchoolSubject))
             lesson.SetWarningType(WarningType.Warning);
     }
 }

@@ -10,28 +10,35 @@ public class ClassroomServices(IClassroomRepository classroomRepository, IUnitOf
 {
     public async Task<List<ClassroomDto>> FetchClassroomsFromBackendAsync()
     {
-        var classroomList = await classroomRepository.GetClassroomListAsync();
+        var classroomList = await classroomRepository.GetClassroomListAsync(1);
         return classroomList.ToClassroomsDto();
     }
 
     public async Task AddClassroom(ClassroomDto classroomDto)
     {
-        var classroom = Classroom.CreateClassroom(classroomDto.Name, classroomDto.Description);
-        await classroomRepository.AddAsync(classroom);
+        var classroom = Classroom.CreateClassroom(classroomDto.Id, classroomDto.Name, classroomDto.Description);
+        await classroomRepository.AddAsync(classroom, 1);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditClassroom(ClassroomDto oldClassroomDto, ClassroomDto newClassroomDto)
+    public async Task EditClassroom(ClassroomDto classroomDto)
     {
-        var oldClassroom = Classroom.CreateClassroom(oldClassroomDto.Name, oldClassroomDto.Description);
-        var newClassroom = Classroom.CreateClassroom(newClassroomDto.Name, newClassroomDto.Description);
-        await classroomRepository.UpdateAsync(oldClassroom, newClassroom);
+        var classroom = await classroomRepository.GetClassroomByIdAsync(classroomDto.Id);
+        if (classroom is null)
+            throw new ArgumentException($"Classroom with id {classroomDto.Id} not found");
+        if (classroomDto.Name != classroom.Name)
+            classroom.SetName(classroomDto.Name);
+        if (classroomDto.Description != classroom.Description)
+            classroom.SetDescription(classroomDto.Description);
+        await classroomRepository.UpdateAsync(classroom);
         await unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteClassroom(ClassroomDto classroomDto)
     {
-        var classroom = Classroom.CreateClassroom(classroomDto.Name, classroomDto.Description);
+        var classroom = await classroomRepository.GetClassroomByIdAsync(classroomDto.Id);
+        if (classroom is null)
+            throw new ArgumentException($"Classroom with id {classroomDto.Id} not found");
         await classroomRepository.Delete(classroom);
         await unitOfWork.SaveChangesAsync();
     }

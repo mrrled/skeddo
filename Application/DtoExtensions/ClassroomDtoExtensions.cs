@@ -16,15 +16,4 @@ public static class ClassroomDtoExtensions
     {
         return DtoMapper.ToClassroomDto(classrooms);
     }
-    
-    public static Classroom ToClassroom(this ClassroomDto classroom)
-    {
-        return DtoMapper.ToClassroom(classroom);
-    }
-    
-    public static List<Classroom> ToClassrooms(this ICollection<ClassroomDto> classrooms)
-    {
-        return DtoMapper.ToClassroom(classrooms);
-    }
-    
 }
