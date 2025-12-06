@@ -34,19 +34,6 @@ public class TeacherCreationViewModel : ViewModelBase
     {
         using (var scope = scopeFactory.CreateScope())
         {
-            var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
-            await scheduleService.GetScheduleByIdAsync(1);
-            var ser = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-            await ser.AddLesson(new LessonDto
-            {
-                Classroom = new ClassroomDto { Id = 1, Name = "513" },
-                Id = 5,
-                LessonNumber = new LessonNumberDto { Id = 1, Number = 1 },
-                SchoolSubject = new SchoolSubjectDto { Id = 2, Name = "алгем" },
-                StudyGroup = new StudyGroupDto { Id = 1, Name = "ФТ-202" },
-                Teacher = null,
-                WarningType = WarningType.Normal
-            }, 1);
             var service = scope.ServiceProvider.GetRequiredService<ITeacherServices>();
             await service.AddTeacher(teacher);
         } 
