@@ -1,5 +1,4 @@
-﻿using Application.DtoModels;
-using AutoMapper;
+﻿using AutoMapper;
 using Domain.Models;
 using Infrastructure.DboModels;
 
@@ -9,10 +8,22 @@ public class DboMappingProfile : Profile
 {
     public DboMappingProfile()
     {
+        CreateMap<StudySubgroupDbo, StudySubgroup>()
+            .ForMember(dest => dest.StudyGroup, opt => opt.Ignore());
+        CreateMap<StudySubgroup, StudySubgroupDbo>()
+            .ForMember(dest => dest.StudyGroupId, opt => opt.Ignore())
+            .ForMember(dest => dest.StudyGroup, opt => opt.Ignore())
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<SchoolSubjectDbo, SchoolSubject>().ReverseMap();
-        CreateMap<StudyGroupDbo, StudyGroup>().ReverseMap();
+        CreateMap<StudyGroup, StudyGroupDbo>()
+            .ForMember(dest => dest.ScheduleGroupId, opt => opt.Ignore())
+            .ForMember(dest => dest.ScheduleGroup, opt => opt.Ignore())
+            .ForMember(dest => dest.Teachers, opt => opt.Ignore());
+        CreateMap<StudyGroupDbo, StudyGroup>();
         CreateMap<LessonNumber, LessonNumberDbo>()
-            .ForMember(dest => dest.ScheduleId, opt => opt.Ignore());
+            .ForMember(dest => dest.ScheduleId, opt => opt.Ignore())
+            .ForMember(dest => dest.Schedule, opt => opt.Ignore())
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<LessonNumberDbo, LessonNumber>();
         CreateMap<TeacherDbo, Teacher>()
             .ConstructUsing((src, ctx) => new Teacher(
@@ -76,8 +87,5 @@ public class DboMappingProfile : Profile
             .ForMember(dest => dest.ScheduleGroupId, opt => opt.Ignore())
             .ForMember(dest => dest.ScheduleGroup, opt => opt.Ignore())
             .ForMember(dest => dest.LessonNumbers, opt => opt.Ignore());
-        CreateMap<StudySubgroupDbo, StudySubgroup>()
-            .ForMember(dest => dest.Group, opt => opt.Ignore());
-        CreateMap<StudySubgroup, StudySubgroupDbo>();
     }
 }

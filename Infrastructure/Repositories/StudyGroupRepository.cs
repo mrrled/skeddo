@@ -11,6 +11,7 @@ public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupReposi
     public async Task<List<StudyGroup>> GetStudyGroupListAsync(int scheduleGroupId)
     {
         var studyGroupDbos = await context.StudyGroups
+            .Include(x => x.StudySubgroups)
             .Where(x => x.ScheduleGroupId == scheduleGroupId)
             .ToListAsync();
         return studyGroupDbos.ToStudyGroups();
@@ -18,7 +19,9 @@ public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupReposi
 
     public async Task<StudyGroup> GetStudyGroupByIdAsync(int studyGroupId)
     {
-        var studyGroupDbo = await context.StudyGroups.FirstOrDefaultAsync(s => s.Id == studyGroupId);
+        var studyGroupDbo = await context.StudyGroups
+            .Include(x => x.StudySubgroups)
+            .FirstOrDefaultAsync(s => s.Id == studyGroupId);
         if (studyGroupDbo is null)
             throw new InvalidOperationException();
         return studyGroupDbo.ToStudyGroup();
@@ -27,6 +30,7 @@ public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupReposi
     public async Task<List<StudyGroup>> GetStudyGroupListByIdsAsync(List<int> studyGroupIds)
     {
         var studyGroupDbos = await context.StudyGroups
+            .Include(x => x.StudySubgroups)
             .Where(x => studyGroupIds.Contains(x.Id))
             .ToListAsync();
         return studyGroupDbos.ToStudyGroups();
