@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,10 +14,10 @@ namespace newUI.ViewModels.SchedulePage.Lessons;
 
 public class LessonCreationViewModel : ViewModelBase
 {
+    public event Action<LessonDto>? LessonCreated;
+    
     private readonly LessonDto lesson;
     private readonly IServiceScopeFactory scopeFactory;
-    private readonly ScheduleDto schedule;
-    private readonly LessonBufferViewModel buffer;
 
     private AvaloniaList<TeacherDto> teachers;
     private AvaloniaList<ClassroomDto> classrooms;
@@ -30,13 +31,13 @@ public class LessonCreationViewModel : ViewModelBase
     private SchoolSubjectDto? selectedSubject;
     private LessonNumberDto? selectedTimeSlot;
     
+    public readonly int ScheduleId;
+    
     public LessonCreationViewModel(IServiceScopeFactory scopeFactory,
-        ScheduleDto schedule,
-        LessonBufferViewModel buffer)
+        int scheduleId)
     {
         this.scopeFactory = scopeFactory;
-        this.schedule = schedule;
-        this.buffer = buffer;
+        ScheduleId = scheduleId;
         lesson = new LessonDto();
         _ = Initialize();
         
@@ -173,19 +174,19 @@ public class LessonCreationViewModel : ViewModelBase
         Subjects = new AvaloniaList<SchoolSubjectDto>(subjects);
         
         var timeSlotService = scope.ServiceProvider.GetRequiredService<ILessonNumberServices>();
-        var lessonNumbers = await timeSlotService.GetLessonNumbersByScheduleId(schedule.Id);
+        var lessonNumbers = await timeSlotService.GetLessonNumbersByScheduleId(ScheduleId);
         TimeSlots = new AvaloniaList<LessonNumberDto>(lessonNumbers);
     }
     
-    private async Task<LessonDto> CreateLessonAsync()
+    private async Task CreateLessonAsync()
     {
         using var scope = scopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-        if (CanCreate && selectedStudyGroup != null && selectedTimeSlot != null)
-            service.AddLesson(lesson, schedule.Id);
-        else
-            buffer.AddLessonToBuffer(lesson);
-        return lesson;
+        if (CanCreate)
+        {
+            LessonCreated?.Invoke(lesson);
+        }
+        Console.WriteLine(Window);
+        Window?.Close();
     }
     
     public IEnumerable<TeacherDto> FilterTeachers(string searchText)

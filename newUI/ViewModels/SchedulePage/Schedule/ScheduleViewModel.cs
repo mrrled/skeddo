@@ -5,11 +5,9 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using Avalonia.Collections;
-using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
 using newUI.ViewModels.SchedulePage.Lessons;
-using newUI.ViewModels.TeachersPage.TeacherCreation;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
@@ -34,7 +32,6 @@ public class ScheduleViewModel : ViewModelBase
         
         LoadCurrentScheduleCommand = new RelayCommandAsync(LoadCurrentSchedule);
         LoadSchedulesCommand = new RelayCommandAsync(LoadSchedulesAsync);
-        SaveScheduleCommand = new RelayCommandAsync(SaveScheduleAsync);
         AddLessonCommand = new RelayCommandAsync(AddLessonAsync);
         
         _ = InitializeAsync();
@@ -52,11 +49,10 @@ public class ScheduleViewModel : ViewModelBase
             IsLoading = false;
         }
     }
-    
-    public ICommand SaveScheduleCommand { get; }
     public ICommand LoadSchedulesCommand { get; }
     public ICommand LoadCurrentScheduleCommand { get; }
     public ICommand AddLessonCommand { get; }
+    
     public bool IsLoading
     {
         get => isLoading;
@@ -104,19 +100,21 @@ public class ScheduleViewModel : ViewModelBase
     
     public Task AddLessonAsync()
     {
-        var vm = new LessonCreationViewModel(scopeFactory, CurrentSchedule, buffer);
-        windowManager.ShowWindow(vm);
-        return Task.CompletedTask;
-    }
-
-    private Task SaveScheduleAsync()
-    {
-        using (var scope = scopeFactory.CreateScope())
+        var vm = new LessonCreationViewModel(scopeFactory, CurrentSchedule.Id);
+        vm.LessonCreated += lesson =>
         {
-            var service = scope.ServiceProvider.GetService<IScheduleServices>();
-            service.EditSchedule(currentSchedule);
-            //TODO: сделать копию расписания, чтобы был oldSchedule
-        }
+            if (lesson is { LessonNumber: not null, StudyGroup: not null })
+            {
+                var scope = scopeFactory.CreateScope();
+                var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
+                service.AddLesson(lesson, vm.ScheduleId);
+            }
+            else
+            {
+                Buffer.AddLessonToBuffer(lesson);
+            }
+        };
+        vm.Window = windowManager.ShowWindow(vm);
         return Task.CompletedTask;
     }
 

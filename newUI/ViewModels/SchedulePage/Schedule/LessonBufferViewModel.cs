@@ -16,7 +16,7 @@ public class LessonBufferViewModel : ViewModelBase
     public LessonBufferViewModel(IServiceScopeFactory scopeFactory)
     {
         this.scopeFactory = scopeFactory;
-        AddLessonCommand = new RelayCommandAsync(AddLessonAsync);
+        ClearCommand = new RelayCommandAsync(ClearAsync);
     }
 
     public AvaloniaList<LessonDto> Lessons
@@ -34,15 +34,20 @@ public class LessonBufferViewModel : ViewModelBase
             }));
     }
     
-    public ICommand AddLessonCommand { get; }
+    public ICommand ClearCommand { get; }
 
-    private Task AddLessonAsync()
+    private Task ClearAsync()
     {
+        Lessons.Clear();
+        OnPropertyChanged(nameof(Lessons));
+        OnPropertyChanged(nameof(LessonCards));
         return Task.CompletedTask;
     }
 
     public void AddLessonToBuffer(LessonDto lesson)
     {
         Lessons.Add(lesson);
+        OnPropertyChanged(nameof(Lessons));
+        OnPropertyChanged(nameof(LessonCards));
     }
 }

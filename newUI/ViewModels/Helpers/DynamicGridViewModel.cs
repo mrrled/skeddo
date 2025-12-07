@@ -6,11 +6,12 @@ using System.Linq;
 
 namespace newUI.ViewModels.Helpers;
 
-public class DynamicGridViewModel<TCell, TColumn, TRow> : ViewModelBase
+public abstract class DynamicGridViewModel<TCell, TColumn, TRow> : ViewModelBase
     where TRow : notnull
     where TColumn : notnull
     where TCell : ViewModelBase
 {
+    private ObservableCollection<TColumn> columns = new();
     private ObservableCollection<TableDataRow<TCell, TColumn, TRow>> rows = [];
 
     public ObservableCollection<TableDataRow<TCell, TColumn, TRow>> Rows
@@ -19,11 +20,6 @@ public class DynamicGridViewModel<TCell, TColumn, TRow> : ViewModelBase
         set => SetProperty(ref rows, value);
     }
     public ObservableCollection<TColumn> Columns { get; } = [];
-
-    public DynamicGridViewModel()
-    {
-
-    }
 
     public void LoadDataFromBackend(Func<List<(TRow RowHeader, Dictionary<TColumn, TCell> CellData)>> dataLoader)
     {

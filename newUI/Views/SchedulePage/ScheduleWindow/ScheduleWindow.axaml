@@ -67,7 +67,11 @@
                               FontSize="16" 
                               HorizontalAlignment="Center" 
                               Margin="10"/>
-                    
+                    <Button Content="Очистить буфер" 
+                            Margin="10" 
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding Buffer.ClearCommand}"/>
+                    <ScrollViewer>
                     <ItemsControl ItemsSource="{Binding Buffer.LessonCards}"
                                  Margin="10">
                         <ItemsControl.ItemTemplate>
@@ -81,10 +85,7 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    
-                    <Button Content="Очистить буфер" 
-                           Margin="10" 
-                           HorizontalAlignment="Stretch"/>
+                    </ScrollViewer>
                 </StackPanel>
             </Border>
         </Grid>

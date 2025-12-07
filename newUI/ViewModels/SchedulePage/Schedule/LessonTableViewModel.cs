@@ -19,7 +19,9 @@ public class LessonTableViewModel :
     private AvaloniaList<LessonNumberDto> lessonNumbers;
     private AvaloniaList<StudyGroupDto> studyGroups;
 
-    public LessonTableViewModel(ScheduleDto schedule, IServiceScopeFactory scopeFactory, LessonBufferViewModel buffer)
+    public LessonTableViewModel(ScheduleDto schedule,
+        IServiceScopeFactory scopeFactory,
+        LessonBufferViewModel buffer)
     {
         this.schedule = schedule;
         this.scopeFactory = scopeFactory;
