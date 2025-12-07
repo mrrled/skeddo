@@ -134,7 +134,7 @@ public class LessonCreationViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedSubject, value))
             {
-                lesson.Subject = value;
+                lesson.SchoolSubject = value;
                 OnPropertyChanged(nameof(CanCreate));
             }
         }
