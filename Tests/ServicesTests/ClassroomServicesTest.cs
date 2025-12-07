@@ -5,6 +5,7 @@ using Domain.IRepositories;
 using Moq;
 using Xunit;
 using Application;
+// ReSharper disable PreferConcreteValueOverDefault
 
 namespace Tests.ServicesTests;
 
