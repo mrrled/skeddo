@@ -1,63 +1,94 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace newUI.ViewModels.Helpers;
 
 public class TableDataRow<TCell, TColumn, TRow> : ViewModelBase where TCell : ViewModelBase where TColumn : notnull
 {
-    private Dictionary<TColumn, TCell> cells = new();
-    private List<TCell> orderedCells = new();
+    private readonly Dictionary<TColumn, int> columnIndexMap = new();
+    private readonly ObservableCollection<TCell> cells = new();
     private TRow rowHeader;
-    private List<TColumn> columnOrder;
 
-    public TableDataRow(TRow rowHeader)
+    public TableDataRow(TRow rowHeader, IReadOnlyList<TColumn> columns)
     {
         this.rowHeader = rowHeader;
+        InitializeCells(columns);
     }
     
-    public ObservableCollection<TCell> Cells 
-    {
-        get
-        {
-            orderedCells.Clear();
-            foreach (var column in columnOrder)
-            {
-                if (cells.TryGetValue(column, out var cell))
-                {
-                    orderedCells.Add(cell);
-                }
-            }
-            return new ObservableCollection<TCell>(orderedCells);
-        }
-    }
+    public ObservableCollection<TCell> Cells => cells;
     
-    public Dictionary<TColumn, TCell> CellDictionary => cells;
-
     public TRow RowHeader
     {
         get => rowHeader;
-        set => SetProperty(ref rowHeader, value, nameof(rowHeader));
+        set => SetProperty(ref rowHeader, value);
+    }
+    
+    private void InitializeCells(IReadOnlyList<TColumn> columns)
+    {
+        columnIndexMap.Clear();
+        cells.Clear();
+        
+        for (int i = 0; i < columns.Count; i++)
+        {
+            columnIndexMap[columns[i]] = i;
+            cells.Add(default);
+        }
     }
     
     public void SetCell(TColumn column, TCell cell)
     {
-        cells[column] = cell;
-        if (!columnOrder.Contains(column))
+        if (columnIndexMap.TryGetValue(column, out int index))
         {
-            columnOrder.Add(column);
+            cells[index] = cell;
         }
-        OnPropertyChanged(nameof(Cells));
+        else
+        {
+            int newIndex = cells.Count;
+            columnIndexMap[column] = newIndex;
+            cells.Add(cell);
+        }
     }
     
-    public TCell? this[TColumn column]
+    public TCell? GetCell(TColumn column)
     {
-        get => cells.TryGetValue(column, out var cell) ? cell : default;
-        set => SetCell(column, value!);
+        if (columnIndexMap.TryGetValue(column, out int index))
+        {
+            return cells[index];
+        }
+        return default;
     }
     
-    public void UpdateColumnOrder(List<TColumn> newColumnOrder)
+    public void UpdateColumnOrder(IReadOnlyList<TColumn> columns)
     {
-        columnOrder = newColumnOrder;
-        OnPropertyChanged(nameof(Cells));
+        var newCells = new ObservableCollection<TCell>();
+        var newIndexMap = new Dictionary<TColumn, int>();
+        
+        for (int i = 0; i < columns.Count; i++)
+        {
+            var column = columns[i];
+            newIndexMap[column] = i;
+            
+            if (columnIndexMap.TryGetValue(column, out int oldIndex))
+            {
+                newCells.Add(cells[oldIndex]);
+            }
+            else
+            {
+                newCells.Add(default(TCell));
+            }
+        }
+        
+        cells.Clear();
+        foreach (var cell in newCells)
+        {
+            cells.Add(cell);
+        }
+        
+        columnIndexMap.Clear();
+        foreach (var kvp in newIndexMap)
+        {
+            columnIndexMap[kvp.Key] = kvp.Value;
+        }
     }
 }

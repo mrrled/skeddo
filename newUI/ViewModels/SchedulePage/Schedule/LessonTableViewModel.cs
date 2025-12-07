@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.DtoModels;
@@ -72,7 +74,7 @@ public class LessonTableViewModel :
 
     private void LoadDataToGrid()
     {
-        LoadDataFromBackend(() => LoadData().Result);
+        LoadDataFromBackend(LoadData().Result);
     }
 
     private async Task<List<(LessonNumberDto RowHeader, Dictionary<StudyGroupDto, LessonCardViewModel?> CellData)>> LoadData()
@@ -112,5 +114,10 @@ public class LessonTableViewModel :
         }
         
         return result;
+    }
+
+    protected override LessonCardViewModel CreateEmptyCell()
+    {
+        throw new System.NotImplementedException();
     }
 }
