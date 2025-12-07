@@ -10,7 +10,9 @@ public class StudySubgroupRepository(ScheduleDbContext context) : IStudySubgroup
 {
     public async Task AddAsync(StudySubgroup studySubgroup, int studyGroupId)
     {
+        var random = new Random();
         var studySubgroupDbo = studySubgroup.ToStudySubgroupDbo();
+        studySubgroupDbo.Id = random.Next(1, 1000);
         studySubgroupDbo.StudyGroupId = studyGroupId;
         var studyGroupDbo = await context.StudyGroups
             .FirstOrDefaultAsync(x => x.Id == studyGroupId);

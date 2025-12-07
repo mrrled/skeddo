@@ -20,8 +20,10 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
 
     public async Task AddAsync(LessonNumber lessonNumber, int scheduleId)
     {
+        var random = new Random();
         var lessonNumberDbo = lessonNumber.ToLessonNumberDbo();
         lessonNumberDbo.ScheduleId = scheduleId;
+        lessonNumberDbo.Id = random.Next(1, 1000);
         var schedule = await context.Schedules
             .Where(x => x.Id == scheduleId)
             .FirstOrDefaultAsync();
