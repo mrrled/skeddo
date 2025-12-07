@@ -151,6 +151,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IStudyGroupServices, StudyGroupServices>();
         services.AddScoped<ITeacherServices, TeacherServices>();
         services.AddScoped<ILessonDraftServices, LessonDraftServices>();
+        services.AddScoped<IStudySubgroupService, StudySubgroupService>();
     }
 
     private void RegisterRepositories(ServiceCollection services)
@@ -163,6 +164,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IStudyGroupRepository, StudyGroupRepository>();
         services.AddScoped<ITeacherRepository, TeacherRepository>();
         services.AddScoped<ILessonDraftRepository, LessonDraftRepository>();
+        services.AddScoped<IStudySubgroupRepository, StudySubgroupRepository>();
     }
     
     private static void RegisterViewMappings()

@@ -1,4 +1,5 @@
-﻿using Application.IServices;
+﻿using Application.DtoModels;
+using Application.IServices;
 using Domain.IRepositories;
 using Domain.Models;
 
@@ -6,31 +7,39 @@ namespace Application.Services;
 
 public class StudySubgroupService(
     IStudyGroupRepository studyGroupRepository,
+    IStudySubgroupRepository studySubgroupRepository,
     IUnitOfWork unitOfWork) : IStudySubgroupService
 {
-    public async Task AddStudySubgroup(StudySubgroup studySubgroup, int scheduleId)
+    public async Task AddStudySubgroup(StudySubgroupDto studySubgroupDto)
     {
-        var studyGroup = await studyGroupRepository.GetStudyGroupByIdAsync(studySubgroup.Group.Id);
-        studyGroup.AddSubgroup(studySubgroup.Name);
-        await studyGroupRepository.UpdateAsync(studyGroup);
+        var studyGroup = await studyGroupRepository.GetStudyGroupByIdAsync(studySubgroupDto.StudyGroup.Id);
+        if  (studyGroup is null)
+            throw new ArgumentNullException();
+        var studySubgroup = StudySubgroup.CreateStudySubgroup(studyGroup, studySubgroupDto.Name);
+        await studySubgroupRepository.AddAsync(studySubgroup, studyGroup.Id);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task EditStudySubgroup(StudySubgroup oldStudySubgroup, StudySubgroup newStudySubgroup, int scheduleId)
+    public async Task EditStudySubgroup(StudySubgroupDto oldStudySubgroupDto, StudySubgroupDto newStudySubgroupDto)
     {
-        if (oldStudySubgroup.Group.Id != newStudySubgroup.Group.Id)
+        if (oldStudySubgroupDto.StudyGroup.Id != newStudySubgroupDto.StudyGroup.Id)
             throw new ArgumentException();
-        var studyGroup = await studyGroupRepository.GetStudyGroupByIdAsync(oldStudySubgroup.Group.Id);
-        studyGroup.EditSubgroup(oldStudySubgroup.Name, newStudySubgroup.Name);
-        await studyGroupRepository.UpdateAsync(studyGroup);
+        var studyGroup = await studyGroupRepository.GetStudyGroupByIdAsync(oldStudySubgroupDto.StudyGroup.Id);
+        if  (studyGroup is null)
+            throw new ArgumentNullException();
+        var oldStudySubgroup = StudySubgroup.CreateStudySubgroup(studyGroup, oldStudySubgroupDto.Name);
+        var newStudySubgroup =  StudySubgroup.CreateStudySubgroup(studyGroup, newStudySubgroupDto.Name);
+        await studySubgroupRepository.UpdateAsync(oldStudySubgroup, newStudySubgroup, studyGroup.Id);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task DeleteStudySubgroup(StudySubgroup studySubgroup, int scheduleId)
+    public async Task DeleteStudySubgroup(StudySubgroupDto studySubgroupDto)
     {
-        var studyGroup = await studyGroupRepository.GetStudyGroupByIdAsync(studySubgroup.Group.Id);
-        studyGroup.DeleteSubgroup(studySubgroup.Name);
-        await studyGroupRepository.UpdateAsync(studyGroup);
+        var studyGroup = await studyGroupRepository.GetStudyGroupByIdAsync(studySubgroupDto.StudyGroup.Id);
+        if  (studyGroup is null)
+            throw new ArgumentNullException();
+        var studySubgroup = StudySubgroup.CreateStudySubgroup(studyGroup, studySubgroupDto.Name);
+        await studySubgroupRepository.Delete(studySubgroup, studyGroup.Id);
         await unitOfWork.SaveChangesAsync();
     }
 }
