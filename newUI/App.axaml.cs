@@ -86,19 +86,6 @@ public partial class App : Avalonia.Application
         {
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }
-
-        ExportGenerator.GeneratePdf(
-            Services.GetService<ILessonRepository>(),
-            Services.GetService<ILessonNumberRepository>(),
-            Services.GetService<IStudyGroupRepository>(),
-            1
-        );
-        ExportGenerator.GenerateExcel(
-            Services.GetService<ILessonRepository>(),
-            Services.GetService<ILessonNumberRepository>(),
-            Services.GetService<IStudyGroupRepository>(),
-            1
-        );
         base.OnFrameworkInitializationCompleted();
     }
 
