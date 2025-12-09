@@ -60,6 +60,11 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .FirstOrDefaultAsync();
         if (schedule is null)
             throw new InvalidOperationException();
+        var studySubgroup = lesson.StudySubgroup is null
+            ? null
+            : await context.StudySubgroups.FirstOrDefaultAsync(x =>
+                x.StudyGroup.Id == lesson.StudyGroup.Id && x.Name == lesson.StudySubgroup.Name);
+        lessonDbo.StudySubgroupId = studySubgroup?.Id;
         lessonDbo.ScheduleId = scheduleId;
         lessonDbo.LessonNumberId = lessonNumber.Id;
         await context.Lessons.AddAsync(lessonDbo);

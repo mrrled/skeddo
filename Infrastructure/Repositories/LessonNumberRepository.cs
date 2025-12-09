@@ -20,38 +20,33 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
 
     public async Task AddAsync(LessonNumber lessonNumber, int scheduleId)
     {
+        var random = new Random();
         var lessonNumberDbo = lessonNumber.ToLessonNumberDbo();
+        lessonNumberDbo.ScheduleId = scheduleId;
+        lessonNumberDbo.Id = random.Next(1, 1000);
         var schedule = await context.Schedules
             .Where(x => x.Id == scheduleId)
             .FirstOrDefaultAsync();
         if (schedule is null)
             throw new NullReferenceException();
-        schedule.LessonNumbers.Add(lessonNumberDbo);
+        await context.LessonNumbers.AddAsync(lessonNumberDbo);
     }
 
     public async Task UpdateAsync(LessonNumber oldLessonNumber, LessonNumber newLessonNumber, int scheduleId)
     {
-        var schedule = await context.Schedules
-            .Include(scheduleDbo => scheduleDbo.LessonNumbers)
-            .FirstOrDefaultAsync(x => x.Id == scheduleId);
-        if (schedule is null)
-            throw new NullReferenceException();
-        var lessonNumberDbo = schedule.LessonNumbers.FirstOrDefault(x => x.Number == oldLessonNumber.Number);
+        var lessonNumberDbo = await context.LessonNumbers
+            .FirstOrDefaultAsync(x => x.ScheduleId == scheduleId && x.Number == oldLessonNumber.Number);
         if (lessonNumberDbo is null)
-            throw new NullReferenceException();
-        DboMapper.Mapper.Map(newLessonNumber, lessonNumberDbo);
+            throw new InvalidOperationException();
+        var newLessonNumberDbo = newLessonNumber.ToLessonNumberDbo();
+        newLessonNumberDbo.ScheduleId = scheduleId;
+        DboMapper.Mapper.Map(newLessonNumberDbo, lessonNumberDbo);
     }
 
     public async Task Delete(LessonNumber lessonNumber, int scheduleId)
     {
-        var schedule = await context.Schedules
-            .Include(scheduleDbo => scheduleDbo.LessonNumbers)
-            .FirstOrDefaultAsync(x => x.Id == scheduleId);
-        if (schedule is null)
-            throw new NullReferenceException();
-        var lessonNumberDbo = schedule.LessonNumbers.FirstOrDefault(x => x.Number == lessonNumber.Number);
-        if (lessonNumberDbo is null)
-            throw new NullReferenceException();
-        schedule.LessonNumbers.Remove(lessonNumberDbo);
+        await context.LessonNumbers
+            .Where(x => x.ScheduleId == scheduleId && x.Number == lessonNumber.Number)
+            .ExecuteDeleteAsync();
     }
 }

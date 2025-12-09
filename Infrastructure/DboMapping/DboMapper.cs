@@ -170,4 +170,24 @@ public static class DboMapper
     {
         return Mapper.Map<List<LessonDraft>>(lessonDrafts);
     }
+    
+    public static StudySubgroupDbo ToStudySubgroupDbo(StudySubgroup lessonDraft)
+    {
+        return Mapper.Map<StudySubgroupDbo>(lessonDraft);
+    }
+
+    public static List<StudySubgroupDbo> ToStudySubgroupDbo(ICollection<StudySubgroup> lessonDrafts)
+    {
+        return Mapper.Map<List<StudySubgroupDbo>>(lessonDrafts);
+    }
+
+    public static StudySubgroup ToStudySubgroup(StudySubgroupDbo lessonDraft)
+    {
+        return Mapper.Map<StudySubgroup>(lessonDraft);
+    }
+
+    public static List<StudySubgroup> ToStudySubgroup(ICollection<StudySubgroupDbo> lessonDrafts)
+    {
+        return Mapper.Map<List<StudySubgroup>>(lessonDrafts);
+    }
 }

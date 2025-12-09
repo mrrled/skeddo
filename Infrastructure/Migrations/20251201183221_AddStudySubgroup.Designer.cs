@@ -2,6 +2,7 @@
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ScheduleDbContext))]
-    partial class ScheduleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251201183221_AddStudySubgroup")]
+    partial class AddStudySubgroup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
@@ -57,9 +60,6 @@ namespace Infrastructure.Migrations
                     b.Property<int>("StudyGroupId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("StudySubgroupId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("TeacherId")
                         .HasColumnType("INTEGER");
 
@@ -78,57 +78,9 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("StudyGroupId");
 
-                    b.HasIndex("StudySubgroupId");
-
                     b.HasIndex("TeacherId");
 
                     b.ToTable("Lessons");
-                });
-
-            modelBuilder.Entity("Infrastructure.DboModels.LessonDraftDbo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ClassroomId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("LessonNumberId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ScheduleId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("SchoolSubjectId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("StudyGroupId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("StudySubgroupId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("TeacherId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClassroomId");
-
-                    b.HasIndex("LessonNumberId");
-
-                    b.HasIndex("ScheduleId");
-
-                    b.HasIndex("SchoolSubjectId");
-
-                    b.HasIndex("StudyGroupId");
-
-                    b.HasIndex("StudySubgroupId");
-
-                    b.HasIndex("TeacherId");
-
-                    b.ToTable("LessonDrafts");
                 });
 
             modelBuilder.Entity("Infrastructure.DboModels.LessonNumberDbo", b =>
@@ -349,10 +301,6 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.DboModels.StudySubgroupDbo", "StudySubgroup")
-                        .WithMany()
-                        .HasForeignKey("StudySubgroupId");
-
                     b.HasOne("Infrastructure.DboModels.TeacherDbo", "Teacher")
                         .WithMany("Lessons")
                         .HasForeignKey("TeacherId")
@@ -368,53 +316,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("SchoolSubject");
 
                     b.Navigation("StudyGroup");
-
-                    b.Navigation("StudySubgroup");
-
-                    b.Navigation("Teacher");
-                });
-
-            modelBuilder.Entity("Infrastructure.DboModels.LessonDraftDbo", b =>
-                {
-                    b.HasOne("Infrastructure.DboModels.ClassroomDbo", "Classroom")
-                        .WithMany()
-                        .HasForeignKey("ClassroomId");
-
-                    b.HasOne("Infrastructure.DboModels.LessonNumberDbo", "LessonNumber")
-                        .WithMany()
-                        .HasForeignKey("LessonNumberId");
-
-                    b.HasOne("Infrastructure.DboModels.ScheduleDbo", "Schedule")
-                        .WithMany("LessonDrafts")
-                        .HasForeignKey("ScheduleId");
-
-                    b.HasOne("Infrastructure.DboModels.SchoolSubjectDbo", "SchoolSubject")
-                        .WithMany()
-                        .HasForeignKey("SchoolSubjectId");
-
-                    b.HasOne("Infrastructure.DboModels.StudyGroupDbo", "StudyGroup")
-                        .WithMany()
-                        .HasForeignKey("StudyGroupId");
-
-                    b.HasOne("Infrastructure.DboModels.StudySubgroupDbo", "StudySubgroup")
-                        .WithMany()
-                        .HasForeignKey("StudySubgroupId");
-
-                    b.HasOne("Infrastructure.DboModels.TeacherDbo", "Teacher")
-                        .WithMany()
-                        .HasForeignKey("TeacherId");
-
-                    b.Navigation("Classroom");
-
-                    b.Navigation("LessonNumber");
-
-                    b.Navigation("Schedule");
-
-                    b.Navigation("SchoolSubject");
-
-                    b.Navigation("StudyGroup");
-
-                    b.Navigation("StudySubgroup");
 
                     b.Navigation("Teacher");
                 });
@@ -517,8 +418,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.DboModels.ScheduleDbo", b =>
                 {
-                    b.Navigation("LessonDrafts");
-
                     b.Navigation("LessonNumbers");
 
                     b.Navigation("Lessons");

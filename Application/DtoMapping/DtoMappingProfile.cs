@@ -17,5 +17,6 @@ public class DtoMappingProfile : Profile
         CreateMap<LessonNumber, LessonNumberDto>()
             .ForMember(x => x.Id, opt => opt.Ignore());
         CreateMap<LessonDraft, LessonDraftDto>();
+        CreateMap<StudySubgroup, StudySubgroupDto>();
     }
 }

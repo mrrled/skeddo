@@ -7,6 +7,7 @@ public class Lesson(
     Teacher teacher,
     StudyGroup studyGroup,
     Classroom classroom,
+    StudySubgroup? studySubgroup = null,
     string? comment = null,
     WarningType warningType = WarningType.Normal
 ) : Entity<int>(id)
@@ -15,6 +16,7 @@ public class Lesson(
     public LessonNumber LessonNumber { get; private set; } = lessonNumber;
     public Teacher Teacher { get; private set; } = teacher;
     public StudyGroup StudyGroup { get; private set; } = studyGroup;
+    public StudySubgroup? StudySubgroup { get; private set; } = studySubgroup;
     public Classroom Classroom { get; private set; } = classroom;
     public string? Comment { get; private set; } = comment;
     public WarningType WarningType { get; private set; } = warningType;
