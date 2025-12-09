@@ -11,7 +11,7 @@ public class Schedule(
     public IReadOnlyCollection<Lesson> Lessons => _lessons;
     public string Name { get; set; } = name;
     
-    public IEnumerable<Lesson> AddLesson(Lesson lesson)
+    public List<Lesson> AddLesson(Lesson lesson)
     {
         _lessons.Add(lesson);
         var editedLessons = UpdateByLesson(lesson);
@@ -22,7 +22,7 @@ public class Schedule(
     {
         _lessonDrafts.Add(lessonDraft);
     }
-    public IEnumerable<Lesson> EditLesson(int id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher, StudyGroup? studyGroup,
+    public List<Lesson> EditLesson(int id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher, StudyGroup? studyGroup,
         Classroom? classroom, string? comment = null)
     {
         var lesson = Lessons.FirstOrDefault(x => x.Id == id);
@@ -50,13 +50,13 @@ public class Schedule(
         Name = name;
     }
 
-    private IEnumerable<Lesson> UpdateByLesson(Lesson lesson)
+    private List<Lesson> UpdateByLesson(Lesson lesson)
     {
         var updatableLessons = _lessons
             .Where(l => l.StudyGroup == lesson.StudyGroup || l.LessonNumber == lesson.LessonNumber)
             .ToList();
         foreach (var element in updatableLessons.Where(l =>
-                     l.Teacher.Id == lesson.Teacher.Id && l.Classroom == lesson.Classroom))
+                     l.Teacher.Id == lesson.Teacher.Id || l.Classroom == lesson.Classroom))
         {
             element.SetWarningType(WarningType.Warning);
             lesson.SetWarningType(WarningType.Warning);
