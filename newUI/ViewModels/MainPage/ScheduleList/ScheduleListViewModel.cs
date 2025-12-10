@@ -2,18 +2,15 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Avalonia.Collections;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.DependencyInjection;
 using Application.DtoModels;
 using Application.IServices;
+using Avalonia.Collections;
+using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
 using newUI.ViewModels.MainPage.ScheduleEditor;
-using newUI.ViewModels.MainPage.ScheduleList;
 using newUI.ViewModels.SchedulePage.Schedule;
 
-namespace newUI.ViewModels.MainPage;
+namespace newUI.ViewModels.MainPage.ScheduleList;
 
 public class ScheduleListViewModel : ViewModelBase
 {

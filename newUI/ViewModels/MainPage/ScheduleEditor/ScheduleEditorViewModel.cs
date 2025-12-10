@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
-using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace newUI.ViewModels.MainPage.ScheduleEditor;
@@ -13,6 +12,7 @@ public class ScheduleEditorViewModel : ViewModelBase
     public event Action<ScheduleDto>? ScheduleSaved;
 
     private string scheduleName = string.Empty;
+
     public string ScheduleName
     {
         get => scheduleName;

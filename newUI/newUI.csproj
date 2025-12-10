@@ -68,8 +68,4 @@
     <Folder Include="ViewModels\SchedulePage\" />
     <Folder Include="Views\SchedulePage\BufferWindow\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="Views\MainPage\ScheduleList\ScheduleListViewView.axaml" />
-  </ItemGroup>
 </Project>

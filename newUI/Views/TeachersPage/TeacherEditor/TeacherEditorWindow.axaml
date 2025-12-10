@@ -1,0 +1,96 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:teacherCreation="clr-namespace:newUI.ViewModels.TeachersPage.TeacherEditor"
+        x:Class="newUI.Views.TeachersPage.TeacherEditor.TeacherEditorWindow"
+        Width="370" Height="300"
+        Title="Добавление преподавателя"
+        x:DataType="teacherCreation:TeacherEditorViewModel">
+
+    <Window.Styles>
+        <Style Selector="Button.accent">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/> <Setter Property="Padding" Value="15, 8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        
+        <Style Selector="Button.accent:pointerover">
+            <Setter Property="Background" Value="#1976D2"/>
+        </Style>
+    </Window.Styles>
+
+    <StackPanel Margin="20" Spacing="10">
+        
+        <TextBlock Text="Добавление нового преподавателя"
+                   FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"
+                   Margin="0,0,0,10"/>
+        
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="Фамилия:" 
+                       Width="100" 
+                       VerticalAlignment="Center"
+                       FontSize="16"/>
+                       
+            <Border CornerRadius="8"
+                    BorderBrush="#BDBDBD"
+                    BorderThickness="1"
+                    Background="White"
+                    Width="220"
+                    Height="36"
+                    Padding="5, 0">
+                <TextBox Watermark="Введите фамилию"
+                         Text="{Binding TeacherSurname, Mode=TwoWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         VerticalAlignment="Center" />
+            </Border>
+        </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="Имя:" 
+                       Width="100" 
+                       VerticalAlignment="Center"
+                       FontSize="16"/>
+                       
+            <Border CornerRadius="8"
+                    BorderBrush="#BDBDBD"
+                    BorderThickness="1"
+                    Background="White"
+                    Width="220"
+                    Height="36"
+                    Padding="5, 0">
+                <TextBox Watermark="Введите имя"
+                         Text="{Binding TeacherName, Mode=TwoWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         VerticalAlignment="Center" />
+            </Border>
+        </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="Отчество:" 
+                       Width="100" 
+                       VerticalAlignment="Center"
+                       FontSize="16"/>
+                       
+            <Border CornerRadius="8"
+                    BorderBrush="#BDBDBD"
+                    BorderThickness="1"
+                    Background="White"
+                    Width="220"
+                    Height="36"
+                    Padding="5, 0">
+                <TextBox Watermark="Введите отчество"
+                         Text="{Binding TeacherPatronymic, Mode=TwoWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         VerticalAlignment="Center" />
+            </Border>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+            <Button Content="Сохранить" 
+                    Command="{Binding SaveCommand}" 
+                    Classes="accent"/> </StackPanel>
+    </StackPanel>
+</Window>
