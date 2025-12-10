@@ -45,7 +45,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Главная страница"
+        <TextBlock Text="Страница преподавателей"
                    Grid.Row="0"
                    FontSize="24"
                    FontWeight="Bold"

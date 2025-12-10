@@ -1,44 +1,164 @@
-﻿<UserControl
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="clr-namespace:newUI.ViewModels.ClassroomsPage.ClassroomList"
-    x:Class="newUI.Views.ClassroomsPage.ClassroomList.ClassroomListView"
-    x:DataType="vm:ClassroomListViewModel">
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:classroomList="clr-namespace:newUI.ViewModels.ClassroomsPage.ClassroomList"
+             x:Class="newUI.Views.ClassroomsPage.ClassroomList.ClassroomListView"
+             mc:Ignorable="d"
+             x:DataType="classroomList:ClassroomListViewModel">
 
-    <Design.DataContext>
-        <vm:ClassroomListViewModel/>
-    </Design.DataContext>
+    <UserControl.Styles>
+        <Style Selector="Button.AddClassroomButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="CornerRadius" Value="28"/>
+            <Setter Property="Width" Value="56"/>
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="0,12,0,0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
 
-    <ScrollViewer>
-        <StackPanel Margin="20">
-            <TextBlock Text="Список аудиторий" FontWeight="Bold" Margin="0 0 0 5"/>
+        <Style Selector="Button.AddClassroomButton:pointerover">
+            <Setter Property="Background" Value="#757575"/>
+        </Style>
+        
+        <Style Selector="Button.AddClassroomButton:pressed">
+            <Setter Property="Background" Value="#757575"/>
+        </Style>
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Content="Загрузить аудитории"
-                        Command="{Binding LoadClassroomsCommand}"
-                        HorizontalAlignment="Left"
-                        Margin="0 0 0 15"/>
+        <Style Selector="Button.AddClassroomButton:pointerover Border.FabCircle">
+             <Setter Property="Background" Value="Transparent"/>
+             <Setter Property="BorderThickness" Value="0"/>
+        </Style>
 
-                <Button Content="Скрыть аудитории"
-                        Command="{Binding HideClassroomsCommand}"
-                        HorizontalAlignment="Left"
-                        Margin="0 0 0 15"/>
+        <Style Selector="Button.AddClassroomButton:pointerover Path">
+             <Setter Property="Fill" Value="White"/>
+        </Style>
+    </UserControl.Styles>
 
-                <Button Content="Добавить аудиторию"
-                        Command="{Binding CreateClassroomCommand}"
-                        HorizontalAlignment="Left"
-                        Margin="0 0 0 15"/>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Страница аудиторий"
+                   Grid.Row="0"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,16" />
+
+        <Border Grid.Row="1"
+                CornerRadius="16"
+                BorderBrush="#BDBDBD"
+                BorderThickness="1"
+                Background="#F5F5F5"
+                Width="450"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,16"
+                Padding="10,6">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="8">
+
+                <Path
+                    Data="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                    Width="18"
+                    Height="18"
+                    Fill="#757575"
+                    VerticalAlignment="Center" />
+
+                <TextBox Watermark="Введите название предмета"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         VerticalAlignment="Center"
+                         Width="400"
+                         HorizontalAlignment="Left" />
             </StackPanel>
+        </Border>
+        
+        <Border Grid.Row="2"
+                BorderBrush="#BDBDBD"
+                BorderThickness="1"
+                CornerRadius="16"
+                Background="#F5F5F5">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding ClassroomItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="classroomList:ClassroomItemViewModel">
 
-            <ListBox ItemsSource="{Binding Classrooms}" Height="200" BorderBrush="#CCCCCC" BorderThickness="1" Margin="0 0 0 20">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Spacing="10">
-                            <TextBlock Text="{Binding Name}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </StackPanel>
-    </ScrollViewer>
+                            <Button Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="0"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch">
+
+                                <Border Margin="8" 
+                                        Padding="8" 
+                                        Background="White" 
+                                        CornerRadius="12" 
+                                        BorderBrush="#CCC"
+                                        BorderThickness="0.5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontSize="16"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,10,0" />
+
+                                        <Button Grid.Column="1"
+                                                Content="✏"
+                                                Command="{Binding EditCommand}"
+                                                Width="36" Height="36"
+                                                Margin="8,0"
+                                                CommandParameter="{x:Null}"
+                                                CornerRadius="18"
+                                                Background="#E0E0E0"/>
+
+                                        <Button Grid.Column="2"
+                                                Content="🗑"
+                                                Command="{Binding DeleteCommand}"
+                                                Width="36" Height="36"
+                                                Margin="8,0,0,0"
+                                                CommandParameter="{x:Null}"
+                                                CornerRadius="18"
+                                                Background="#E0E0E0"/>
+                                    </Grid>
+                                </Border>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+
+        <Button Grid.Row="3"
+                Command="{Binding AddClassroomCommand}"
+                Classes="AddClassroomButton"> 
+            
+            <Grid Width="56" Height="56">
+                <Border Classes="FabCircle"
+                        Background="White"
+                        CornerRadius="28"
+                        Width="56" Height="56"
+                        BorderBrush="#757575"
+                        BorderThickness="2" />
+                
+                <Path Data="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
+                      Fill="#757575"
+                      Stretch="Uniform"
+                      Width="24" Height="24"
+                      VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Grid>
+        </Button>
+    </Grid>
 </UserControl>

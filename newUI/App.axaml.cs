@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using newUI.Services;
 using newUI.ViewModels;
-using newUI.ViewModels.ClassroomsPage.ClassroomCreation;
+using newUI.ViewModels.ClassroomsPage.ClassroomEditor;
 using newUI.ViewModels.ClassroomsPage.ClassroomList;
 using newUI.ViewModels.MainPage.ScheduleEditor;
 using newUI.ViewModels.MainPage.ScheduleList;
@@ -30,7 +30,7 @@ using newUI.Views.MainWindow;
 using newUI.Views.SchedulePage.ScheduleTable;
 using newUI.Views.SchedulePage.ScheduleWindow;
 using newUI.Views.TeachersPage.TeacherList;
-using newUI.Views.ClassroomsPage.ClassroomCreation;
+using newUI.Views.ClassroomsPage.ClassroomEditor;
 using newUI.Views.ClassroomsPage.ClassroomList;
 using newUI.Views.MainPage.ScheduleEditor;
 using newUI.Views.MainPage.ScheduleList;
@@ -119,7 +119,7 @@ public partial class App : Avalonia.Application
         
         services.AddTransient<ClassroomListView>();
         services.AddTransient<ClassroomListViewModel>();
-        services.AddTransient<ClassroomCreationViewModel>();
+        services.AddTransient<ClassroomEditorViewModel>();
         
         services.AddTransient<LessonCardViewModel>();
 
@@ -173,7 +173,7 @@ public partial class App : Avalonia.Application
         ViewMappingService.RegisterWindow<SchoolSubjectEditorViewModel, SchoolSubjectEditorWindow>();
         ViewMappingService.RegisterUserControl<SchoolSubjectListViewModel, SchoolSubjectListView>();
         
-        ViewMappingService.RegisterWindow<ClassroomCreationViewModel, ClassroomCreationWindow>();
+        ViewMappingService.RegisterWindow<ClassroomEditorViewModel, ClassroomEditorWindow>();
         ViewMappingService.RegisterUserControl<ClassroomListViewModel, ClassroomListView>();
     }
 }
