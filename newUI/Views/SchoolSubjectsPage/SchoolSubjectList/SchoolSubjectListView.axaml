@@ -9,31 +9,31 @@
 
     <UserControl.Styles>
         <Style Selector="Button.AddSchoolSubjectButton">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="CornerRadius" Value="28"/>
-            <Setter Property="Width" Value="56"/>
-            <Setter Property="Height" Value="56"/>
-            <Setter Property="HorizontalAlignment" Value="Right"/>
-            <Setter Property="Margin" Value="0,12,0,0"/>
-            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="28" />
+            <Setter Property="Width" Value="56" />
+            <Setter Property="Height" Value="56" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,12,0,0" />
+            <Setter Property="Padding" Value="0" />
         </Style>
 
         <Style Selector="Button.AddSchoolSubjectButton:pointerover">
-            <Setter Property="Background" Value="#757575"/>
+            <Setter Property="Background" Value="#757575" />
         </Style>
-        
+
         <Style Selector="Button.AddSchoolSubjectButton:pressed">
-            <Setter Property="Background" Value="#757575"/>
+            <Setter Property="Background" Value="#757575" />
         </Style>
 
         <Style Selector="Button.AddSchoolSubjectButton:pointerover Border.FabCircle">
-             <Setter Property="Background" Value="Transparent"/>
-             <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
         </Style>
 
         <Style Selector="Button.AddSchoolSubjectButton:pointerover Path">
-             <Setter Property="Fill" Value="White"/>
+            <Setter Property="Fill" Value="White" />
         </Style>
     </UserControl.Styles>
 
@@ -80,7 +80,7 @@
                          HorizontalAlignment="Left" />
             </StackPanel>
         </Border>
-        
+
         <Border Grid.Row="2"
                 BorderBrush="#BDBDBD"
                 BorderThickness="1"
@@ -91,50 +91,43 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="schoolSubjectList:SchoolSubjectItemViewModel">
 
-                            <Button Background="Transparent"
-                                    BorderThickness="0"
-                                    Padding="0"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Stretch">
+                            <Border Margin="8"
+                                    Padding="8"
+                                    Background="White"
+                                    CornerRadius="12"
+                                    BorderBrush="#CCC"
+                                    BorderThickness="0.5">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                                <Border Margin="8" 
-                                        Padding="8" 
-                                        Background="White" 
-                                        CornerRadius="12" 
-                                        BorderBrush="#CCC"
-                                        BorderThickness="0.5">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}"
+                                               FontSize="16"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,10,0" />
 
-                                        <TextBlock Text="{Binding Name}"
-                                                   FontSize="16"
-                                                   VerticalAlignment="Center"
-                                                   Margin="0,0,10,0" />
+                                    <Button Grid.Column="1"
+                                            Content="✏"
+                                            Command="{Binding EditCommand}"
+                                            Width="36" Height="36"
+                                            Margin="8,0"
+                                            CommandParameter="{x:Null}"
+                                            CornerRadius="18"
+                                            Background="#E0E0E0" />
 
-                                        <Button Grid.Column="1"
-                                                Content="✏"
-                                                Command="{Binding EditCommand}"
-                                                Width="36" Height="36"
-                                                Margin="8,0"
-                                                CommandParameter="{x:Null}"
-                                                CornerRadius="18"
-                                                Background="#E0E0E0"/>
-
-                                        <Button Grid.Column="2"
-                                                Content="🗑"
-                                                Command="{Binding DeleteCommand}"
-                                                Width="36" Height="36"
-                                                Margin="8,0,0,0"
-                                                CommandParameter="{x:Null}"
-                                                CornerRadius="18"
-                                                Background="#E0E0E0"/>
-                                    </Grid>
-                                </Border>
-                            </Button>
+                                    <Button Grid.Column="2"
+                                            Content="🗑"
+                                            Command="{Binding DeleteCommand}"
+                                            Width="36" Height="36"
+                                            Margin="8,0,0,0"
+                                            CommandParameter="{x:Null}"
+                                            CornerRadius="18"
+                                            Background="#E0E0E0" />
+                                </Grid>
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -143,8 +136,8 @@
 
         <Button Grid.Row="3"
                 Command="{Binding AddSchoolSubjectCommand}"
-                Classes="AddSchoolSubjectButton"> 
-            
+                Classes="AddSchoolSubjectButton">
+
             <Grid Width="56" Height="56">
                 <Border Classes="FabCircle"
                         Background="White"
@@ -152,12 +145,12 @@
                         Width="56" Height="56"
                         BorderBrush="#757575"
                         BorderThickness="2" />
-                
+
                 <Path Data="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
                       Fill="#757575"
                       Stretch="Uniform"
                       Width="24" Height="24"
-                      VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                      VerticalAlignment="Center" HorizontalAlignment="Center" />
             </Grid>
         </Button>
     </Grid>
