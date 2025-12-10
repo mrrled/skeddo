@@ -8,6 +8,7 @@ using Avalonia.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectEditor;
+using newUI.ViewModels.Shared;
 
 namespace newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectList;
 
@@ -70,6 +71,14 @@ public class SchoolSubjectListViewModel : ViewModelBase
     {
         itemVm.RequestDelete += async item =>
         {
+            var confirmVm = new ConfirmDeleteViewModel(
+                message: $"Вы уверены, что хотите удалить \"{item.Name}\"?"
+            );
+
+            var result = await windowManager.ShowDialog<ConfirmDeleteViewModel, bool?>(confirmVm);
+
+            if (result != true) return;
+            
             using var scope = scopeFactory.CreateScope();
             var service = scope.ServiceProvider.GetRequiredService<ISchoolSubjectServices>();
             await service.DeleteSchoolSubject(item.SchoolSubject);
