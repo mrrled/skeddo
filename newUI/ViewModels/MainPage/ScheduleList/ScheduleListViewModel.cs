@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
 using newUI.ViewModels.MainPage.ScheduleEditor;
 using newUI.ViewModels.SchedulePage.Schedule;
+using newUI.ViewModels.Shared;
 
 namespace newUI.ViewModels.MainPage.ScheduleList;
 
@@ -92,6 +93,14 @@ public class ScheduleListViewModel : ViewModelBase
 
         itemVm.RequestDelete += async item =>
         {
+            var confirmVm = new ConfirmDeleteViewModel(
+                message: $"Вы уверены, что хотите удалить \"{item.Name}\"?"
+            );
+
+            var result = await windowManager.ShowDialog<ConfirmDeleteViewModel, bool?>(confirmVm);
+
+            if (result != true) return;
+            
             using var scope = scopeFactory.CreateScope();
             var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
             await service.DeleteSchedule(item.Schedule);
