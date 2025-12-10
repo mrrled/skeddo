@@ -3,8 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using newUI.Services;
 using newUI.ViewModels.ClassroomsPage.ClassroomList;
 using newUI.ViewModels.SchedulePage.Schedule;
-using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
 using newUI.ViewModels.MainPage.ScheduleList;
+using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectList;
 using newUI.ViewModels.TeachersPage.TeacherList;
 
 namespace newUI.ViewModels.Navigation;
