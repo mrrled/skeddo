@@ -2,11 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:newUI.ViewModels.MainPage"
              xmlns:scheduleList="clr-namespace:newUI.ViewModels.MainPage.ScheduleList"
              x:Class="newUI.Views.MainPage.ScheduleList.ScheduleListView"
              mc:Ignorable="d"
-             x:DataType="vm:ScheduleListViewModel">
+             x:DataType="scheduleList:ScheduleListViewModel">
 
     <UserControl.Styles>
         <Style Selector="Button.AddScheduleButton">

@@ -1,6 +1,5 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:teachers="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
              xmlns:teacherList="clr-namespace:newUI.Views.TeachersPage.TeacherList"
              xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
              xmlns:schoolSubjectList="clr-namespace:newUI.Views.SchoolSubjectsPage.SchoolSubjectList"
@@ -8,11 +7,11 @@
              xmlns:schedule="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
              xmlns:schedulePage="clr-namespace:newUI.Views.SchedulePage.ScheduleWindow"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:mainPage="clr-namespace:newUI.ViewModels.MainPage"
-             xmlns:mainPage1="clr-namespace:newUI.Views.MainPage"
              xmlns:converters="clr-namespace:newUI.Converters"
              xmlns:classroomList1="clr-namespace:newUI.ViewModels.ClassroomsPage.ClassroomList"
              xmlns:scheduleList="clr-namespace:newUI.Views.MainPage.ScheduleList"
+             xmlns:scheduleList1="clr-namespace:newUI.ViewModels.MainPage.ScheduleList"
+             xmlns:teacherList1="clr-namespace:newUI.ViewModels.TeachersPage.TeacherList"
              x:Class="newUI.App"
              RequestedThemeVariant="Light">
 
@@ -22,7 +21,7 @@
     </Application.Styles>
 
     <Application.DataTemplates>
-        <DataTemplate DataType="mainPage:ScheduleListViewModel">
+        <DataTemplate DataType="scheduleList1:ScheduleListViewModel">
             <scheduleList:ScheduleListView />
         </DataTemplate>
         
@@ -30,7 +29,7 @@
             <schedulePage:ScheduleWindow />
         </DataTemplate>
         
-        <DataTemplate DataType="teachers:TeacherListViewModel">
+        <DataTemplate DataType="teacherList1:TeacherListViewModel">
             <teacherList:TeacherListView />
         </DataTemplate>
 

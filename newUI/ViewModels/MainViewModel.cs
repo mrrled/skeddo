@@ -5,8 +5,8 @@ using Application.DtoModels;
 using Avalonia.Collections;
 using newUI.Services;
 using newUI.ViewModels.MainPage;
+using newUI.ViewModels.MainPage.ScheduleList;
 using newUI.ViewModels.Navigation;
-using newUI.ViewModels.TeachersPage.Teachers;
 
 namespace newUI.ViewModels;
 
