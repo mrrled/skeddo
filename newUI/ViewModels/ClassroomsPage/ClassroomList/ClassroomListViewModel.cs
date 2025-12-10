@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -130,8 +131,13 @@ public class ClassroomListViewModel : ViewModelBase
                 allItems.Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
             );
 
+        UpdateClassroomItems(filtered);
+    }
+
+    private void UpdateClassroomItems(IEnumerable<ClassroomItemViewModel> items)
+    {
         ClassroomItems.Clear();
-        foreach (var item in filtered)
+        foreach (var item in items)
             ClassroomItems.Add(item);
     }
 }

@@ -129,51 +129,30 @@ public class TeacherListViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(SearchText))
         {
-            TeacherItems.Clear();
-            foreach (var item in allItems)
-                TeacherItems.Add(item);
+            UpdateTeacherItems(allItems);
             return;
         }
 
-        // Разбиваем текст поиска на слова, убираем пустые
-        var parts = SearchText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var tokens = SearchText.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(t => t.Trim())
+            .Where(t => !string.IsNullOrEmpty(t))
+            .ToArray();
 
-        IEnumerable<TeacherItemViewModel> filtered = allItems;
+        var filtered = allItems.Where(teacher =>
+            tokens.All(token =>
+                teacher.Surname.Contains(token, StringComparison.OrdinalIgnoreCase)
+                || teacher.Name.Contains(token, StringComparison.OrdinalIgnoreCase)
+                || teacher.Patronymic.Contains(token, StringComparison.OrdinalIgnoreCase)
+            )
+        );
 
-        switch (parts.Length)
-        {
-            case 1:
-            {
-                var lastNamePart = parts[0];
-                filtered = allItems.Where(x => x.Surname.Contains(lastNamePart, StringComparison.OrdinalIgnoreCase));
-                break;
-            }
-            case 2:
-            {
-                var lastNamePart = parts[0];
-                var firstNamePart = parts[1];
-                filtered = allItems.Where(x =>
-                    x.Surname.Contains(lastNamePart, StringComparison.OrdinalIgnoreCase) &&
-                    x.Name.Contains(firstNamePart, StringComparison.OrdinalIgnoreCase)
-                );
-                break;
-            }
-            case >= 3:
-            {
-                var lastNamePart = parts[0];
-                var firstNamePart = parts[1];
-                var patronymicPart = parts[2];
-                filtered = allItems.Where(x =>
-                    x.Surname.Contains(lastNamePart, StringComparison.OrdinalIgnoreCase) &&
-                    x.Name.Contains(firstNamePart, StringComparison.OrdinalIgnoreCase) &&
-                    x.Patronymic.Contains(patronymicPart, StringComparison.OrdinalIgnoreCase)
-                );
-                break;
-            }
-        }
-        
+        UpdateTeacherItems(filtered);
+    }
+
+    private void UpdateTeacherItems(IEnumerable<TeacherItemViewModel> items)
+    {
         TeacherItems.Clear();
-        foreach (var item in filtered)
+        foreach (var item in items)
             TeacherItems.Add(item);
     }
 }
