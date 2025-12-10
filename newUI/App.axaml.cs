@@ -22,21 +22,21 @@ using newUI.ViewModels.MainPage.ScheduleList;
 using newUI.ViewModels.Navigation;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchedulePage.Lessons;
-using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectCreation;
-using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
+using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectEditor;
+using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectList;
 using newUI.ViewModels.TeachersPage.TeacherEditor;
 using newUI.ViewModels.TeachersPage.TeacherList;
 using newUI.Views.MainWindow;
 using newUI.Views.SchedulePage.ScheduleTable;
 using newUI.Views.SchedulePage.ScheduleWindow;
 using newUI.Views.TeachersPage.TeacherList;
-using newUI.Views.SchoolSubjectsPage.SchoolSubjectCreation;
-using newUI.Views.SchoolSubjectsPage.SchoolSubjectList;
 using newUI.Views.ClassroomsPage.ClassroomCreation;
 using newUI.Views.ClassroomsPage.ClassroomList;
 using newUI.Views.MainPage.ScheduleEditor;
 using newUI.Views.MainPage.ScheduleList;
 using newUI.Views.SchedulePage.LessonCreationWindow;
+using newUI.Views.SchoolSubjectsPage.SchoolSubjectEditor;
+using newUI.Views.SchoolSubjectsPage.SchoolSubjectList;
 using newUI.Views.TeachersPage.TeacherEditor;
 
 namespace newUI;
@@ -115,7 +115,7 @@ public partial class App : Avalonia.Application
         
         services.AddTransient<SchoolSubjectListView>();
         services.AddTransient<SchoolSubjectListViewModel>();
-        services.AddTransient<SchoolSubjectCreationViewModel>();
+        services.AddTransient<SchoolSubjectEditorViewModel>();
         
         services.AddTransient<ClassroomListView>();
         services.AddTransient<ClassroomListViewModel>();
@@ -170,7 +170,7 @@ public partial class App : Avalonia.Application
         ViewMappingService.RegisterWindow<TeacherEditorViewModel, TeacherEditorWindow>();
         ViewMappingService.RegisterUserControl<TeacherListViewModel, TeacherListView>();
         
-        ViewMappingService.RegisterWindow<SchoolSubjectCreationViewModel, SchoolSubjectCreationWindow>();
+        ViewMappingService.RegisterWindow<SchoolSubjectEditorViewModel, SchoolSubjectEditorWindow>();
         ViewMappingService.RegisterUserControl<SchoolSubjectListViewModel, SchoolSubjectListView>();
         
         ViewMappingService.RegisterWindow<ClassroomCreationViewModel, ClassroomCreationWindow>();

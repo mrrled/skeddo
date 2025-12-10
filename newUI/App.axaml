@@ -1,7 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:teacherList="clr-namespace:newUI.Views.TeachersPage.TeacherList"
-             xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
              xmlns:schoolSubjectList="clr-namespace:newUI.Views.SchoolSubjectsPage.SchoolSubjectList"
              xmlns:classroomList="clr-namespace:newUI.Views.ClassroomsPage.ClassroomList"
              xmlns:schedule="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
@@ -12,6 +11,7 @@
              xmlns:scheduleList="clr-namespace:newUI.Views.MainPage.ScheduleList"
              xmlns:scheduleList1="clr-namespace:newUI.ViewModels.MainPage.ScheduleList"
              xmlns:teacherList1="clr-namespace:newUI.ViewModels.TeachersPage.TeacherList"
+             xmlns:schoolSubjectList1="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectList"
              x:Class="newUI.App"
              RequestedThemeVariant="Light">
 
@@ -33,7 +33,7 @@
             <teacherList:TeacherListView />
         </DataTemplate>
 
-        <DataTemplate DataType="schoolSubjects:SchoolSubjectListViewModel">
+        <DataTemplate DataType="schoolSubjectList1:SchoolSubjectListViewModel">
             <schoolSubjectList:SchoolSubjectListView />
         </DataTemplate>
 

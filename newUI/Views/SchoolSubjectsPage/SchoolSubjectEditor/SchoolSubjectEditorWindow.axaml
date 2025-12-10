@@ -1,10 +1,10 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:scheduleCreation="clr-namespace:newUI.ViewModels.MainPage.ScheduleEditor"
-        x:Class="newUI.Views.MainPage.ScheduleEditor.ScheduleEditorWindow"
+        xmlns:schoolSubjectCreation="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectEditor"
+        x:Class="newUI.Views.SchoolSubjectsPage.SchoolSubjectEditor.SchoolSubjectEditorWindow"
         Width="370" Height="300"
-        Title="Окно создания расписания"
-        x:DataType="scheduleCreation:ScheduleEditorViewModel">
+        Title="Окно добавления предмета"
+        x:DataType="schoolSubjectCreation:SchoolSubjectEditorViewModel">
 
     <Window.Styles>
         <Style Selector="Button.accent">
@@ -21,7 +21,7 @@
 
     <StackPanel Margin="20" Spacing="10">
         
-        <TextBlock Text="Создание расписания"
+        <TextBlock Text="Добавление предмета"
                    FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"
                    Margin="0,0,0,10"/>
         
@@ -39,7 +39,7 @@
                     Height="36"
                     Padding="5, 0">
                 <TextBox Watermark="Введите название"
-                         Text="{Binding ScheduleName, Mode=TwoWay}"
+                         Text="{Binding SchoolSubjectName, Mode=TwoWay}"
                          Background="Transparent"
                          BorderThickness="0"
                          VerticalAlignment="Center" />
