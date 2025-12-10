@@ -1,10 +1,13 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:teacherCreation="clr-namespace:newUI.ViewModels.TeachersPage.TeacherEditor"
+        xmlns:scheduleEditor="clr-namespace:newUI.ViewModels.TeachersPage.TeacherEditor"
         x:Class="newUI.Views.TeachersPage.TeacherEditor.TeacherEditorWindow"
-        Width="370" Height="300"
-        Title="Окно добавления преподавателя"
-        x:DataType="teacherCreation:TeacherEditorViewModel">
+        Title=""
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        SizeToContent="WidthAndHeight"
+        MaxWidth="500"
+        x:DataType="scheduleEditor:TeacherEditorViewModel">
 
     <Window.Styles>
         <Style Selector="Button.accent">
@@ -21,7 +24,7 @@
 
     <StackPanel Margin="20" Spacing="10">
         
-        <TextBlock Text="Добавление преподавателя"
+        <TextBlock Text="{Binding HeaderText}"
                    FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"
                    Margin="0,0,0,10"/>
         

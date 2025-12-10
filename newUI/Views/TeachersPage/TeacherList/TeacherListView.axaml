@@ -71,7 +71,7 @@
                     Fill="#757575"
                     VerticalAlignment="Center" />
 
-                <TextBox Watermark="Введите имя преподавателя"
+                <TextBox Watermark="Введите ФИО преподавателя"
                          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                          Background="Transparent"
                          BorderThickness="0"
@@ -90,51 +90,44 @@
                 <ItemsControl ItemsSource="{Binding TeacherItems}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="teacherList:TeacherItemViewModel">
+                            
+                            <Border Margin="8"
+                                    Padding="8"
+                                    Background="White"
+                                    CornerRadius="12"
+                                    BorderBrush="#CCC"
+                                    BorderThickness="0.5">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                            <Button Background="Transparent"
-                                    BorderThickness="0"
-                                    Padding="0"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Stretch">
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding FullName}"
+                                               FontSize="16"
+                                               VerticalAlignment="Center" />
 
-                                <Border Margin="8"
-                                        Padding="8"
-                                        Background="White"
-                                        CornerRadius="12"
-                                        BorderBrush="#CCC"
-                                        BorderThickness="0.5">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="1"
+                                            Content="✏"
+                                            Command="{Binding EditCommand}"
+                                            Width="36" Height="36"
+                                            Margin="8,0"
+                                            CommandParameter="{x:Null}"
+                                            CornerRadius="18"
+                                            Background="#E0E0E0" />
 
-                                        <TextBlock Grid.Column="0"
-                                                   Text="{Binding FullName}"
-                                                   FontSize="16"
-                                                   VerticalAlignment="Center" />
-
-                                        <Button Grid.Column="1"
-                                                Content="✏"
-                                                Command="{Binding EditCommand}"
-                                                Width="36" Height="36"
-                                                Margin="8,0"
-                                                CommandParameter="{x:Null}"
-                                                CornerRadius="18"
-                                                Background="#E0E0E0" />
-
-                                        <Button Grid.Column="2"
-                                                Content="🗑"
-                                                Command="{Binding DeleteCommand}"
-                                                Width="36" Height="36"
-                                                Margin="8,0,0,0"
-                                                CommandParameter="{x:Null}"
-                                                CornerRadius="18"
-                                                Background="#E0E0E0" />
-                                    </Grid>
-                                </Border>
-                            </Button>
+                                    <Button Grid.Column="2"
+                                            Content="🗑"
+                                            Command="{Binding DeleteCommand}"
+                                            Width="36" Height="36"
+                                            Margin="8,0,0,0"
+                                            CommandParameter="{x:Null}"
+                                            CornerRadius="18"
+                                            Background="#E0E0E0" />
+                                </Grid>
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

@@ -9,6 +9,7 @@ namespace newUI.ViewModels.ClassroomsPage.ClassroomEditor;
 
 public class ClassroomEditorViewModel : ViewModelBase
 {
+    public string HeaderText { get; }
     public event Action<ClassroomDto>? ClassroomSaved;
 
     private string classroomName = string.Empty;
@@ -29,6 +30,7 @@ public class ClassroomEditorViewModel : ViewModelBase
     {
         this.scopeFactory = scopeFactory;
         SaveCommand = new RelayCommandAsync(SaveAsync);
+        HeaderText = "Добавление аудитории";
     }
 
     // Для редактирования существующего
@@ -37,6 +39,7 @@ public class ClassroomEditorViewModel : ViewModelBase
     {
         editingClassroom = classroomToEdit;
         ClassroomName = classroomToEdit.Name;
+        HeaderText = "Редактирование аудитории";
     }
 
     private async Task SaveAsync()

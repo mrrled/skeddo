@@ -3,7 +3,7 @@
         xmlns:viewModels="clr-namespace:newUI.ViewModels"
         xmlns:navigation="clr-namespace:newUI.Views.Navigation"
         x:Class="newUI.Views.MainWindow.MainWindow"
-        Title="Avalonia List App"
+        Title=""
         x:DataType="viewModels:MainViewModel">
 
     <DockPanel>

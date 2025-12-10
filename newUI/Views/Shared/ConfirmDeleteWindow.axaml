@@ -1,0 +1,47 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shared="clr-namespace:newUI.ViewModels.Shared"
+        x:Class="newUI.Views.Shared.ConfirmDeleteWindow"
+        Title=""
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        SizeToContent="WidthAndHeight"
+        MaxWidth="400"
+        x:DataType="shared:ConfirmDeleteViewModel">
+
+    <Window.Styles>
+        <Style Selector="Button.accent">
+            <Setter Property="Background" Value="#D32F2F" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="15,8" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="Button.accent:pointerover">
+            <Setter Property="Background" Value="#B71C1C" />
+        </Style>
+    </Window.Styles>
+
+    <StackPanel Margin="20" Spacing="20" HorizontalAlignment="Center">
+        <TextBlock Text="{Binding Message}"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   TextWrapping="Wrap"
+                   MaxWidth="360"
+                   Margin="0,0,0,10"
+                   HorizontalAlignment="Center" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+            <Button Content="Удалить" Command="{Binding ConfirmCommand}" Classes="accent" />
+            <Button Content="Отмена"
+                    Command="{Binding CancelCommand}"
+                    Background="#E0E0E0"
+                    Foreground="Black"
+                    BorderThickness="0"
+                    CornerRadius="8"
+                    Padding="15,8"
+                    HorizontalContentAlignment="Center"
+                    MinWidth="80" />
+        </StackPanel>
+    </StackPanel>
+</Window>
