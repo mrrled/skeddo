@@ -1,10 +1,13 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:classroomCreation="clr-namespace:newUI.ViewModels.ClassroomsPage.ClassroomEditor"
+        xmlns:scheduleEditor="clr-namespace:newUI.ViewModels.ClassroomsPage.ClassroomEditor"
         x:Class="newUI.Views.ClassroomsPage.ClassroomEditor.ClassroomEditorWindow"
-        Width="420" Height="300"
-        Title="Окно добавления аудитории"
-        x:DataType="classroomCreation:ClassroomEditorViewModel">
+        Title=""
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        SizeToContent="WidthAndHeight"
+        MaxWidth="500"
+        x:DataType="scheduleEditor:ClassroomEditorViewModel">
 
     <Window.Styles>
         <Style Selector="Button.accent">
@@ -21,7 +24,7 @@
 
     <StackPanel Margin="20" Spacing="10">
 
-        <TextBlock Text="Добавление аудитории"
+        <TextBlock Text="{Binding HeaderText}"
                    FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"
                    Margin="0,0,0,10" />
 

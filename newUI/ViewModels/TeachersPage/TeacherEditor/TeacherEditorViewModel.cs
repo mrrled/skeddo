@@ -9,6 +9,7 @@ namespace newUI.ViewModels.TeachersPage.TeacherEditor;
 
 public class TeacherEditorViewModel : ViewModelBase
 {
+    public string HeaderText { get; }
     public event Action<TeacherDto>? TeacherSaved;
 
     private string teacherSurname = string.Empty;
@@ -45,6 +46,7 @@ public class TeacherEditorViewModel : ViewModelBase
     {
         this.scopeFactory = scopeFactory;
         SaveCommand = new RelayCommandAsync(SaveAsync);
+        HeaderText = "Добавление преподавателя";
     }
 
     // Для редактирования существующего
@@ -55,6 +57,7 @@ public class TeacherEditorViewModel : ViewModelBase
         TeacherSurname = teacherToEdit.Surname;
         TeacherName = teacherToEdit.Name;
         teacherPatronymic = teacherToEdit.Patronymic;
+        HeaderText = "Редактирование преподавателя";
     }
 
     private async Task SaveAsync()

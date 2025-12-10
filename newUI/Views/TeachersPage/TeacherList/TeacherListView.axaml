@@ -71,7 +71,7 @@
                     Fill="#757575"
                     VerticalAlignment="Center" />
 
-                <TextBox Watermark="Введите имя преподавателя"
+                <TextBox Watermark="Введите ФИО преподавателя"
                          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                          Background="Transparent"
                          BorderThickness="0"
