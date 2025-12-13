@@ -4,7 +4,7 @@
         xmlns:scheduleTable="clr-namespace:newUI.Views.SchedulePage.ScheduleTable"
         xmlns:lessonCard="clr-namespace:newUI.Views.SchedulePage.LessonCard"
         x:Class="newUI.Views.SchedulePage.ScheduleWindow.ScheduleWindow"
-        x:DataType="vm:ScheduleViewModel"><!-- Width="1200" Height="800" -->
+        x:DataType="vm:AnotherScheduleViewModel"><!-- Width="1200" Height="800" -->
 
     <DockPanel>
         <!-- Верхняя панель с выбором расписания -->
@@ -15,8 +15,8 @@
             <TextBlock Text="Расписание:" 
                       VerticalAlignment="Center"/>
             <ComboBox ItemsSource="{Binding ScheduleList}"
-                     SelectedItem="{Binding CurrentSchedule, Mode=TwoWay}"
-                     Width="200">
+                      SelectedItem="{Binding SelectedSchedule, Mode=TwoWay}"
+                      Width="200">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}"/>
@@ -24,9 +24,9 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             
-            <Button Content="Загрузить все расписания" 
-                   Command="{Binding LoadSchedulesCommand}"
-                   Margin="10,0,0,0"/>
+            <!-- <Button Content="Загрузить все расписания"  -->
+            <!--        Command="{Binding LoadSchedulesCommand}" -->
+            <!--        Margin="10,0,0,0"/> -->
             <Button Content="Обновить" 
                     Command="{Binding LoadCurrentScheduleCommand}"
                     Margin="5,0,0,0"/>
@@ -52,7 +52,7 @@
                    Margin="10" 
                    BorderBrush="LightGray" 
                    BorderThickness="1">
-                <scheduleTable:LessonTableView DataContext="{Binding Table}"/>
+                <scheduleTable:LessonTableView DataContext="{Binding CurrentScheduleTable}"/>
             </Border>
 
             <!-- Боковая панель с буфером -->

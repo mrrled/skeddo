@@ -17,17 +17,15 @@ public class LessonTableViewModel :
 {
     private readonly IServiceScopeFactory scopeFactory;
     private ScheduleDto schedule;
-    private LessonBufferViewModel buffer;
     private AvaloniaList<LessonNumberDto> lessonNumbers;
     private AvaloniaList<StudyGroupDto> studyGroups;
+    private bool isInitialized;
 
     public LessonTableViewModel(ScheduleDto schedule,
-        IServiceScopeFactory scopeFactory,
-        LessonBufferViewModel buffer)
+        IServiceScopeFactory scopeFactory)
     {
         this.schedule = schedule;
         this.scopeFactory = scopeFactory;
-        this.buffer = buffer;
         _ = InitializeAsync();
     }
     
@@ -36,6 +34,22 @@ public class LessonTableViewModel :
         await LoadStudyGroupsAsync();
         await LoadLessonNumbersAsync();
         LoadDataToGrid();
+        isInitialized = true;
+    }
+    
+    public async Task RefreshAsync(ScheduleDto newSchedule = null)
+    {
+        if (newSchedule != null)
+        {
+            schedule = newSchedule;
+        }
+        
+        if (isInitialized)
+        {
+            await LoadStudyGroupsAsync();
+            await LoadLessonNumbersAsync();
+            LoadDataToGrid();
+        }
     }
 
     public ScheduleDto Schedule
@@ -94,8 +108,6 @@ public class LessonTableViewModel :
         {
             if (lesson.LessonNumber != null && lesson.StudyGroup != null) 
                 lessonDictionary[(lesson.LessonNumber.Number, lesson.StudyGroup.Name)] = lesson;
-            else
-                buffer.AddLessonToBuffer(lesson);
         }
 
         foreach (var lessonNumber in LessonNumbers)

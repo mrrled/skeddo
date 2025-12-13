@@ -76,20 +76,12 @@ public class ScheduleListViewModel : ViewModelBase
 
     private async Task SubscribeItemEvents(ScheduleItemViewModel itemVm)
     {
-        itemVm.RequestSelect += item =>
+        itemVm.RequestSelect += async item =>
         {
-            var scheduleVm = provider.GetRequiredService<ScheduleViewModel>();
-
-            if (scheduleVm != null && scheduleVm.ScheduleList != null)
-            {
-                var scheduleDto = scheduleVm.ScheduleList.FirstOrDefault(s => s.Id == item.Schedule.Id);
-                if (scheduleDto != null)
-                {
-                    scheduleVm.CurrentSchedule = scheduleDto;
-                }
-            }
-
-            navigationService.Navigate<ScheduleViewModel>();
+            var scheduleVm = provider.GetRequiredService<AnotherScheduleViewModel>();
+            await scheduleVm.LoadSchedule(item.Schedule.Id);
+            await Task.Delay(100);
+            navigationService.Navigate<AnotherScheduleViewModel>();
         };
 
         itemVm.RequestDelete += async item =>
