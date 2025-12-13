@@ -12,6 +12,18 @@ public class LessonDraftDto
     public ClassroomDto? Classroom { get; set; }
     public string? Comment { get; set; }
 
+    public LessonDto ToLessonDto()
+    {
+        return new LessonDto
+        {
+            SchoolSubject = this.SchoolSubject,
+            LessonNumber = this.LessonNumber,
+            Teacher = this.Teacher,
+            StudyGroup = this.StudyGroup,
+            Comment = this.Comment
+        };
+    }
+
     public bool Equals(LessonDraftDto? other)
     {
         if (other is null) return false;

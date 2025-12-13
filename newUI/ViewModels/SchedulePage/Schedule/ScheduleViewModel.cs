@@ -111,7 +111,7 @@ public class ScheduleViewModel : ViewModelBase
             }
             else
             {
-                Buffer.AddLessonToBuffer(lesson);
+                // Buffer.AddLesson(lesson);
             }
         };
         vm.Window = windowManager.ShowWindow(vm);
@@ -129,7 +129,7 @@ public class ScheduleViewModel : ViewModelBase
             lessonTables.Remove(CurrentSchedule);
             scheduleList.Remove(CurrentSchedule);
             scheduleList.Add(schedule);
-            lessonTables.Add(schedule, new LessonTableViewModel(schedule, scopeFactory, buffer));
+            lessonTables.Add(schedule, new LessonTableViewModel(schedule, scopeFactory));
             CurrentSchedule = schedule;
         }
         finally
@@ -150,7 +150,7 @@ public class ScheduleViewModel : ViewModelBase
             
             foreach (var schedule in schedules)
             {
-                tables[schedule] = new LessonTableViewModel(schedule, scopeFactory, buffer);
+                tables[schedule] = new LessonTableViewModel(schedule, scopeFactory);
             }
             
             ScheduleList = new AvaloniaList<ScheduleDto>(schedules);

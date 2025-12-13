@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -10,7 +11,7 @@ namespace newUI.ViewModels.SchedulePage.Schedule;
 
 public class LessonBufferViewModel : ViewModelBase
 {
-    private AvaloniaList<LessonDto> lessons = new();
+    private AvaloniaDictionary<int, LessonDraftDto> lessonDictionary = new();
     private readonly IServiceScopeFactory scopeFactory;
 
     public LessonBufferViewModel(IServiceScopeFactory scopeFactory)
@@ -19,18 +20,18 @@ public class LessonBufferViewModel : ViewModelBase
         ClearCommand = new RelayCommandAsync(ClearAsync);
     }
 
-    public AvaloniaList<LessonDto> Lessons
+    public AvaloniaDictionary<int, LessonDraftDto> Lessons
     {
-        get => lessons;
-        set => SetProperty(ref lessons, value);
+        get => lessonDictionary;
+        set => SetProperty(ref lessonDictionary, value);
     }
 
     public AvaloniaList<LessonCardViewModel> LessonCards
     {
-        get => new (lessons
+        get => new (lessonDictionary.Values
             .Select(lesson => new LessonCardViewModel(scopeFactory)
             {
-                Lesson = lesson
+                Lesson = lesson.ToLessonDto()
             }));
     }
     
@@ -44,9 +45,19 @@ public class LessonBufferViewModel : ViewModelBase
         return Task.CompletedTask;
     }
 
-    public void AddLessonToBuffer(LessonDto lesson)
+    public void AddLesson(LessonDraftDto lessonDrafts)
     {
-        Lessons.Add(lesson);
+        Lessons[lessonDrafts.Id] = lessonDrafts;
+        OnPropertyChanged(nameof(Lessons));
+        OnPropertyChanged(nameof(LessonCards));
+    }
+
+    public void AddMany(IEnumerable<LessonDraftDto> lessonDrafts)
+    {
+        foreach (var lesson in lessonDrafts)
+        {
+            Lessons[lesson.Id] = lesson;
+        }
         OnPropertyChanged(nameof(Lessons));
         OnPropertyChanged(nameof(LessonCards));
     }

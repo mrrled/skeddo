@@ -8,7 +8,6 @@ using Application.IServices;
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using newUI.ViewModels.SchedulePage.Schedule;
 
 namespace newUI.ViewModels.SchedulePage.Lessons;
 
@@ -53,11 +52,6 @@ public class LessonCreationViewModel : ViewModelBase
     public ICommand CreateLessonCommand { get; }
     public ICommand CancelCommand { get; }
 
-    public bool CanCreate =>
-        SelectedSubject != null &&
-        SelectedTeacher != null &&
-        SelectedClassroom != null;
-
     public AvaloniaList<TeacherDto> Teachers
     {
         get => teachers;
@@ -96,7 +90,6 @@ public class LessonCreationViewModel : ViewModelBase
             if (SetProperty(ref selectedTeacher, value))
             {
                 lesson.Teacher = value;
-                OnPropertyChanged(nameof(CanCreate));
             }
         }
     }
@@ -109,7 +102,6 @@ public class LessonCreationViewModel : ViewModelBase
             if (SetProperty(ref selectedClassroom, value))
             {
                 lesson.Classroom = value;
-                OnPropertyChanged(nameof(CanCreate));
             }
         }
     }
@@ -122,7 +114,6 @@ public class LessonCreationViewModel : ViewModelBase
             if (SetProperty(ref selectedStudyGroup, value))
             {
                 lesson.StudyGroup = value;
-                OnPropertyChanged(nameof(CanCreate));
             }
         }
     }
@@ -135,7 +126,6 @@ public class LessonCreationViewModel : ViewModelBase
             if (SetProperty(ref selectedSubject, value))
             {
                 lesson.SchoolSubject = value;
-                OnPropertyChanged(nameof(CanCreate));
             }
         }
     }
@@ -148,7 +138,6 @@ public class LessonCreationViewModel : ViewModelBase
             if (SetProperty(ref selectedTimeSlot, value))
             {
                 lesson.LessonNumber = value;
-                OnPropertyChanged(nameof(CanCreate));
             }
         }
     }
@@ -181,10 +170,7 @@ public class LessonCreationViewModel : ViewModelBase
     private async Task CreateLessonAsync()
     {
         using var scope = scopeFactory.CreateScope();
-        if (CanCreate)
-        {
-            LessonCreated?.Invoke(lesson);
-        }
+        LessonCreated?.Invoke(lesson);
         Console.WriteLine(Window);
         Window?.Close();
     }
