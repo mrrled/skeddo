@@ -6,37 +6,36 @@ using Moq;
 using Xunit;
 using Application;
 // ReSharper disable PreferConcreteValueOverDefault
+// ReSharper disable NullableWarningSuppressionIsUsed
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
 namespace Tests.ServicesTests;
 
 public class ClassroomServicesTests
 {
-    private readonly Mock<IClassroomRepository> _mockClassroomRepository;
-    private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly Mock<IClassroomRepository> _classroomRepositoryMock;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly ClassroomServices _classroomServices;
 
     public ClassroomServicesTests()
     {
-        _mockClassroomRepository = new Mock<IClassroomRepository>();
-        _mockUnitOfWork = new Mock<IUnitOfWork>();
-        _classroomServices = new ClassroomServices(
-            _mockClassroomRepository.Object, 
-            _mockUnitOfWork.Object
-        );
+        _classroomRepositoryMock = new Mock<IClassroomRepository>();
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _classroomServices = new ClassroomServices(_classroomRepositoryMock.Object, _unitOfWorkMock.Object);
     }
 
     [Fact]
-    public async Task FetchClassroomsFromBackendAsync_ShouldReturnClassroomList()
+    public async Task FetchClassroomsFromBackendAsync_ShouldReturnClassroomDtos()
     {
         // Arrange
         var classrooms = new List<Classroom>
         {
-            Schedule.CreateClassroom("608", "DM"),
-            Schedule.CreateClassroom("532", "Matan")
+            new Classroom(1, "Room 101", "Math room"),
+            new Classroom(2, "Room 102", "Science lab")
         };
-
-        _mockClassroomRepository
-            .Setup(repo => repo.GetClassroomListAsync())
+        
+        _classroomRepositoryMock
+            .Setup(repo => repo.GetClassroomListAsync(1))
             .ReturnsAsync(classrooms);
 
         // Act
@@ -45,144 +44,319 @@ public class ClassroomServicesTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.Equal("608", result[0].Name);
-        Assert.Equal("DM", result[0].Description);
-        _mockClassroomRepository.Verify(repo => repo.GetClassroomListAsync(), Times.Once);
+        Assert.Equal("Room 101", result[0].Name);
+        Assert.Equal("Math room", result[0].Description);
+        Assert.Equal("Room 102", result[1].Name);
+        Assert.Equal("Science lab", result[1].Description);
+        
+        _classroomRepositoryMock.Verify(repo => repo.GetClassroomListAsync(1), Times.Once);
     }
 
     [Fact]
-    public async Task AddClassroom_ShouldAddClassroomAndSaveChanges()
+    public async Task AddClassroom_ShouldAddClassroom_WhenDtoIsValid()
     {
         // Arrange
-        var classroomDto = new ClassroomDto { Name = "700", Description = "T*rv*r" };
-    
-        _mockClassroomRepository
-            .Setup(repo => repo.AddAsync(It.IsAny<Classroom>()))
+        var classroomDto = new ClassroomDto
+        {
+            Id = 1,
+            Name = "Room 103",
+            Description = "Computer lab"
+        };
+
+        Classroom? capturedClassroom = null;
+        _classroomRepositoryMock
+            .Setup(repo => repo.AddAsync(It.IsAny<Classroom>(), 1))
+            .Callback<Classroom, int>((classroom, _) => capturedClassroom = classroom)
             .Returns(Task.CompletedTask);
-    
-        _mockUnitOfWork
+
+        _unitOfWorkMock
             .Setup(uow => uow.SaveChangesAsync(default))
             .ReturnsAsync(1);
-    
+
         // Act
         await _classroomServices.AddClassroom(classroomDto);
-    
+
         // Assert
-        _mockClassroomRepository.Verify(repo => repo.AddAsync(
-            It.Is<Classroom>(c => c.Name == "700" && c.Description == "T*rv*r")), 
-            Times.Once
-        );
-        _mockUnitOfWork.Verify(uow => uow.SaveChangesAsync(default), Times.Once);
+        _classroomRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<Classroom>(), 1), Times.Once);
+        _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(default), Times.Once);
+        
+        Assert.NotNull(capturedClassroom);
+        Assert.Equal(1, capturedClassroom.Id);
+        Assert.Equal("Room 103", capturedClassroom.Name);
+        Assert.Equal("Computer lab", capturedClassroom.Description);
     }
-    
+
     [Fact]
-    public async Task EditClassroom_ShouldUpdateClassroomAndSaveChanges()
+    public async Task AddClassroom_ShouldThrowArgumentNullException_WhenNameIsNull()
     {
         // Arrange
-        var oldClassroomDto = new ClassroomDto { Name = "A101", Description = "Old Description" };
-        var newClassroomDto = new ClassroomDto { Name = "A101", Description = "New Description" };
-    
-        _mockClassroomRepository
-            .Setup(repo => repo.UpdateAsync(It.IsAny<Classroom>(), It.IsAny<Classroom>()))
+        var classroomDto = new ClassroomDto
+        {
+            Id = 1,
+            Name = null!,
+            Description = "Test"
+        };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() => 
+            _classroomServices.AddClassroom(classroomDto));
+    }
+
+    [Fact]
+    public async Task EditClassroom_ShouldUpdateClassroom_WhenChangesExist()
+    {
+        // Arrange
+        var classroomDto = new ClassroomDto
+        {
+            Id = 1,
+            Name = "Updated Room",
+            Description = "Updated Description"
+        };
+
+        var existingClassroom = new Classroom(1, "Old Room", "Old Description");
+        
+        _classroomRepositoryMock
+            .Setup(repo => repo.GetClassroomByIdAsync(1))
+            .ReturnsAsync(existingClassroom);
+
+        _classroomRepositoryMock
+            .Setup(repo => repo.UpdateAsync(It.IsAny<Classroom>()))
             .Returns(Task.CompletedTask);
-    
-        _mockUnitOfWork
+
+        _unitOfWorkMock
             .Setup(uow => uow.SaveChangesAsync(default))
             .ReturnsAsync(1);
-    
+
         // Act
-        await _classroomServices.EditClassroom(oldClassroomDto, newClassroomDto);
-    
+        await _classroomServices.EditClassroom(classroomDto);
+
         // Assert
-        _mockClassroomRepository.Verify(repo => repo.UpdateAsync(
-            It.Is<Classroom>(old => old.Name == "A101" && old.Description == "Old Description"),
-            It.Is<Classroom>(newClass => newClass.Name == "A101" && newClass.Description == "New Description")),
-            Times.Once
-        );
-        _mockUnitOfWork.Verify(uow => uow.SaveChangesAsync(default), Times.Once);
+        _classroomRepositoryMock.Verify(repo => repo.GetClassroomByIdAsync(1), Times.Once);
+        _classroomRepositoryMock.Verify(repo => repo.UpdateAsync(existingClassroom), Times.Once);
+        _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(default), Times.Once);
+        
+        Assert.Equal("Updated Room", existingClassroom.Name);
+        Assert.Equal("Updated Description", existingClassroom.Description);
     }
-    
+
     [Fact]
-    public async Task DeleteClassroom_ShouldDeleteClassroomAndSaveChanges()
+    public async Task EditClassroom_ShouldNotUpdate_WhenNoChanges()
     {
         // Arrange
-        var classroomDto = new ClassroomDto { Name = "A101", Description = "Lecture Hall" };
-    
-        _mockClassroomRepository
-            .Setup(repo => repo.Delete(It.IsAny<Classroom>()))
+        var classroomDto = new ClassroomDto
+        {
+            Id = 1,
+            Name = "Same Room",
+            Description = "Same Description"
+        };
+
+        var existingClassroom = new Classroom(1, "Same Room", "Same Description");
+        
+        _classroomRepositoryMock
+            .Setup(repo => repo.GetClassroomByIdAsync(1))
+            .ReturnsAsync(existingClassroom);
+
+        _classroomRepositoryMock
+            .Setup(repo => repo.UpdateAsync(It.IsAny<Classroom>()))
             .Returns(Task.CompletedTask);
-    
-        _mockUnitOfWork
+
+        _unitOfWorkMock
             .Setup(uow => uow.SaveChangesAsync(default))
             .ReturnsAsync(1);
-    
+
+        // Act
+        await _classroomServices.EditClassroom(classroomDto);
+
+        // Assert
+        _classroomRepositoryMock.Verify(repo => repo.GetClassroomByIdAsync(1), Times.Once);
+        _classroomRepositoryMock.Verify(repo => repo.UpdateAsync(existingClassroom), Times.Once);
+        _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(default), Times.Once);
+        
+        // Verify that properties remain unchanged
+        Assert.Equal("Same Room", existingClassroom.Name);
+        Assert.Equal("Same Description", existingClassroom.Description);
+    }
+
+    [Fact]
+    public async Task EditClassroom_ShouldThrowArgumentException_WhenClassroomNotFound()
+    {
+        // Arrange
+        var classroomDto = new ClassroomDto { Id = 999 };
+        
+        _classroomRepositoryMock
+            .Setup(repo => repo.GetClassroomByIdAsync(999))
+            .ReturnsAsync((Classroom?)null);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() => 
+            _classroomServices.EditClassroom(classroomDto));
+        
+        Assert.Contains("Classroom with id 999 not found", exception.Message);
+        _classroomRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<Classroom>()), Times.Never);
+        _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(default), Times.Never);
+    }
+
+    [Fact]
+    public async Task EditClassroom_ShouldUpdateOnlyName_WhenDescriptionIsNull()
+    {
+        // Arrange
+        var classroomDto = new ClassroomDto
+        {
+            Id = 1,
+            Name = "New Name",
+            Description = null
+        };
+
+        var existingClassroom = new Classroom(1, "Old Name", "Old Description");
+        
+        _classroomRepositoryMock
+            .Setup(repo => repo.GetClassroomByIdAsync(1))
+            .ReturnsAsync(existingClassroom);
+
+        // Act
+        await _classroomServices.EditClassroom(classroomDto);
+
+        // Assert
+        Assert.Equal("New Name", existingClassroom.Name);
+        Assert.Null(existingClassroom.Description); // Should be set to null
+    }
+
+    [Fact]
+    public async Task EditClassroom_ShouldUpdateOnlyDescription_WhenNameIsSame()
+    {
+        // Arrange
+        var classroomDto = new ClassroomDto
+        {
+            Id = 1,
+            Name = "Same Name",
+            Description = "New Description"
+        };
+
+        var existingClassroom = new Classroom(1, "Same Name", "Old Description");
+        
+        _classroomRepositoryMock
+            .Setup(repo => repo.GetClassroomByIdAsync(1))
+            .ReturnsAsync(existingClassroom);
+
+        // Act
+        await _classroomServices.EditClassroom(classroomDto);
+
+        // Assert
+        Assert.Equal("Same Name", existingClassroom.Name); // Should remain same
+        Assert.Equal("New Description", existingClassroom.Description);
+    }
+
+    [Fact]
+    public async Task DeleteClassroom_ShouldDeleteClassroom_WhenClassroomExists()
+    {
+        // Arrange
+        var classroomDto = new ClassroomDto { Id = 1 };
+        var existingClassroom = new Classroom(1, "Room 101");
+        
+        _classroomRepositoryMock
+            .Setup(repo => repo.GetClassroomByIdAsync(1))
+            .ReturnsAsync(existingClassroom);
+
+        _classroomRepositoryMock
+            .Setup(repo => repo.Delete(existingClassroom))
+            .Returns(Task.CompletedTask);
+
+        _unitOfWorkMock
+            .Setup(uow => uow.SaveChangesAsync(default))
+            .ReturnsAsync(1);
+
         // Act
         await _classroomServices.DeleteClassroom(classroomDto);
-    
+
         // Assert
-        _mockClassroomRepository.Verify(repo => repo.Delete(
-            It.Is<Classroom>(c => c.Name == "A101" && c.Description == "Lecture Hall")),
-            Times.Once
-        );
-        _mockUnitOfWork.Verify(uow => uow.SaveChangesAsync(default), Times.Once);
+        _classroomRepositoryMock.Verify(repo => repo.GetClassroomByIdAsync(1), Times.Once);
+        _classroomRepositoryMock.Verify(repo => repo.Delete(existingClassroom), Times.Once);
+        _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(default), Times.Once);
     }
-    
+
     [Fact]
-    public async Task FetchClassroomsFromBackendAsync_WhenRepositoryThrowsException_ShouldPropagateException()
+    public async Task DeleteClassroom_ShouldThrowArgumentException_WhenClassroomNotFound()
     {
         // Arrange
-        _mockClassroomRepository
-            .Setup(repo => repo.GetClassroomListAsync())
-            .ThrowsAsync(new NullReferenceException("No schedule group found"));
-    
+        var classroomDto = new ClassroomDto { Id = 999 };
+        
+        _classroomRepositoryMock
+            .Setup(repo => repo.GetClassroomByIdAsync(999))
+            .ReturnsAsync((Classroom?)null);
+
         // Act & Assert
-        await Assert.ThrowsAsync<NullReferenceException>(() => 
-            _classroomServices.FetchClassroomsFromBackendAsync()
-        );
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() => 
+            _classroomServices.DeleteClassroom(classroomDto));
+        
+        Assert.Contains("Classroom with id 999 not found", exception.Message);
+        _classroomRepositoryMock.Verify(repo => repo.Delete(It.IsAny<Classroom>()), Times.Never);
+        _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(default), Times.Never);
     }
-    
+
     [Fact]
-    public async Task AddClassroom_WhenRepositoryThrowsException_ShouldNotSaveChanges()
+    public async Task FetchClassroomsFromBackendAsync_ShouldReturnEmptyList_WhenNoClassrooms()
     {
         // Arrange
-        var classroomDto = new ClassroomDto { Name = "C303", Description = "Science Lab" };
-    
-        _mockClassroomRepository
-            .Setup(repo => repo.AddAsync(It.IsAny<Classroom>()))
-            .ThrowsAsync(new NullReferenceException("No schedule group found"));
-    
-        // Act & Assert
-        await Assert.ThrowsAsync<NullReferenceException>(() => 
-            _classroomServices.AddClassroom(classroomDto)
-        );
-    
-        _mockUnitOfWork.Verify(uow => uow.SaveChangesAsync(default), Times.Never);
+        var emptyList = new List<Classroom>();
+        
+        _classroomRepositoryMock
+            .Setup(repo => repo.GetClassroomListAsync(1))
+            .ReturnsAsync(emptyList);
+
+        // Act
+        var result = await _classroomServices.FetchClassroomsFromBackendAsync();
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+        _classroomRepositoryMock.Verify(repo => repo.GetClassroomListAsync(1), Times.Once);
     }
-    
-    [Theory]
-    [InlineData("", "Description")] // Empty name
-    //[InlineData(null, "Description")] // Null name
-    [InlineData("A101", "")] // Empty description
-    //[InlineData("A101", null)] // Null description
-    // TODO: Сделать тест на нулевое имя
-    // TODO: Сделать тест на нулевое описание
-    public async Task AddClassroom_WithInvalidData_ShouldStillCallRepository(string name, string description)
+
+    [Fact]
+    public async Task AddClassroom_ShouldHandleNullDescription()
     {
         // Arrange
-        var classroomDto = new ClassroomDto { Name = name, Description = description };
-    
-        _mockClassroomRepository
-            .Setup(repo => repo.AddAsync(It.IsAny<Classroom>()))
+        var classroomDto = new ClassroomDto
+        {
+            Id = 1,
+            Name = "Room 104",
+            Description = null
+        };
+
+        Classroom? capturedClassroom = null;
+        _classroomRepositoryMock
+            .Setup(repo => repo.AddAsync(It.IsAny<Classroom>(), 1))
+            .Callback<Classroom, int>((classroom, _) => capturedClassroom = classroom)
             .Returns(Task.CompletedTask);
-    
-        _mockUnitOfWork
-            .Setup(uow => uow.SaveChangesAsync(default))
-            .ReturnsAsync(1);
-    
+
         // Act
         await _classroomServices.AddClassroom(classroomDto);
-    
+
         // Assert
-        _mockClassroomRepository.Verify(repo => repo.AddAsync(It.IsAny<Classroom>()), Times.Once);
+        Assert.NotNull(capturedClassroom);
+        Assert.Equal("Room 104", capturedClassroom.Name);
+        Assert.Null(capturedClassroom.Description);
+    }
+
+    [Fact]
+    public async Task EditClassroom_ShouldThrowArgumentNullException_WhenSettingNullName()
+    {
+        // Arrange
+        var classroomDto = new ClassroomDto
+        {
+            Id = 1,
+            Name = null!, // This will cause SetName to throw
+            Description = "Test"
+        };
+
+        var existingClassroom = new Classroom(1, "Room 101", "Description");
+        
+        _classroomRepositoryMock
+            .Setup(repo => repo.GetClassroomByIdAsync(1))
+            .ReturnsAsync(existingClassroom);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() => 
+            _classroomServices.EditClassroom(classroomDto));
     }
 }
