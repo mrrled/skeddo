@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,20 +18,26 @@ public class AnotherScheduleViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
+    private readonly IExportServices exportServices;
     
     private ObservableCollection<ScheduleTabViewModel> tabs = new();
     private ScheduleTabViewModel selectedTab;
     private readonly NavigationService navigationService;
+    private readonly IScheduleServices scheduleServices;
     private ToolbarViewModel toolbar;
 
     public AnotherScheduleViewModel(
         IServiceScopeFactory scopeFactory,
         IWindowManager windowManager,
-        NavigationService navigationService)
+        IExportServices exportServices,
+        NavigationService navigationService,
+        IScheduleServices scheduleServices)
     {
         this.scopeFactory = scopeFactory;
         this.windowManager = windowManager;
+        this.exportServices = exportServices;
         this.navigationService = navigationService;
+        this.scheduleServices = scheduleServices;
         
         AddLessonCommand = new AsyncRelayCommand(AddLessonAsync);
         LoadCurrentScheduleCommand = new AsyncRelayCommand(LoadCurrentScheduleAsync);
@@ -38,10 +45,22 @@ public class AnotherScheduleViewModel : ViewModelBase
         
         Toolbar = new ToolbarViewModel(
             saveCommand: new RelayCommandAsync(SaveScheduleAsync),
-            exportCommand: new RelayCommandAsync(ExportScheduleAsync),
             deleteCommand: new RelayCommandAsync(DeleteScheduleAsync),
             closeCommand: new RelayCommandAsync(CloseWindowAsync)
         );
+
+        Toolbar.RequestPdfExport += async () =>
+        {
+            if (CurrentSchedule != null)
+                await exportServices.GeneratePdfAsync(CurrentSchedule.Id);
+        };
+
+        Toolbar.RequestExcelExport += async () =>
+        {
+            if (CurrentSchedule != null)
+                await exportServices.GenerateExcelAsync(CurrentSchedule.Id);
+        };
+
     }
     
     public bool HasTabs => Tabs?.Count > 0;
@@ -82,6 +101,7 @@ public class AnotherScheduleViewModel : ViewModelBase
                 }
                 OnPropertyChanged(nameof(Buffer));
             }
+            Toolbar.IsEnabled = selectedTab != null;
         }
     }
     
@@ -138,10 +158,10 @@ public class AnotherScheduleViewModel : ViewModelBase
         OnPropertyChanged(nameof(NoTabs));
     }
     
-    public Task AddLessonAsync()
+    public async Task AddLessonAsync()
     {
         var id = CurrentSchedule?.Id;
-        if (id == null) return Task.CompletedTask;
+        if (id == null) return;
         
         var vm = new LessonCreationViewModel(scopeFactory, id.Value);
         vm.LessonCreated += async lesson =>
@@ -154,26 +174,25 @@ public class AnotherScheduleViewModel : ViewModelBase
         };
         
         vm.Window = windowManager.ShowWindow(vm);
-        return Task.CompletedTask;
     }
     
-    private Task SaveScheduleAsync()
+    private async Task SaveScheduleAsync()
     {
-        return Task.CompletedTask;
+        // полный чилл, ниче не делаем
     }
 
-    private Task ExportScheduleAsync()
+    private async Task DeleteScheduleAsync()
     {
-        return Task.CompletedTask;
+        if (CurrentSchedule == null)
+            return;
+        await scheduleServices.DeleteSchedule(CurrentSchedule);
+        CloseTabById(CurrentSchedule.Id);
     }
 
-    private Task DeleteScheduleAsync()
+    private async Task CloseWindowAsync()
     {
-        return Task.CompletedTask;
-    }
-
-    private Task CloseWindowAsync()
-    {
-        return Task.CompletedTask;
+        if (CurrentSchedule == null)
+            return;
+        CloseTabById(CurrentSchedule.Id);
     }
 }

@@ -79,6 +79,9 @@ public partial class App : Avalonia.Application
             options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
         });
         
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IExportServices, ExportServices>();
+        
         RegisterFront(services);
         
         Services = services.BuildServiceProvider();
@@ -132,8 +135,6 @@ public partial class App : Avalonia.Application
 
         services.AddSingleton<NavigationService>();
         services.AddTransient<NavigationBarViewModel>();
-        
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
         
         RegisterViewMappings();
     }
