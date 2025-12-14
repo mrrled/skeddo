@@ -17,7 +17,7 @@ public partial class NavigationBarViewModel(NavigationService nav) : ObservableO
     
     [RelayCommand]
     private void NavigateScheduleTable()
-        => nav.Navigate<AnotherScheduleViewModel>();
+        => nav.Navigate<ScheduleViewModel>();
     
     [RelayCommand]
     private void NavigateTeachers()

@@ -27,7 +27,7 @@
             <scheduleListView:ScheduleListView />
         </DataTemplate>
 
-        <DataTemplate DataType="scheduleViewModel:AnotherScheduleViewModel">
+        <DataTemplate DataType="scheduleViewModel:ScheduleViewModel">
             <scheduleView:ScheduleWindow />
         </DataTemplate>
 

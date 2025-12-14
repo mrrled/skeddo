@@ -5,7 +5,7 @@
         xmlns:lessonCard="clr-namespace:newUI.Views.SchedulePage.LessonCard"
         xmlns:toolbar="clr-namespace:newUI.Views.SchedulePage.Toolbar"
         x:Class="newUI.Views.SchedulePage.ScheduleWindow.ScheduleWindow"
-        x:DataType="vm:AnotherScheduleViewModel">
+        x:DataType="vm:ScheduleViewModel">
 
     <Grid>
         <Grid.RowDefinitions>

@@ -1,13 +1,17 @@
-using System.Collections.Generic;
+using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
-using Avalonia.Collections;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
+using newUI.ViewModels.MainPage.ScheduleList;
 using newUI.ViewModels.SchedulePage.Lessons;
+using newUI.ViewModels.SchedulePage.Toolbar;
+using newUI.ViewModels.Shared;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
@@ -15,160 +19,193 @@ public class ScheduleViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
-    
-    private AvaloniaList<ScheduleDto> scheduleList;
-    private AvaloniaDictionary<ScheduleDto, LessonTableViewModel> lessonTables;
-    private ScheduleDto currentSchedule;
-    private LessonBufferViewModel buffer;
-    private LessonTableViewModel currentTable;
-    private bool isLoading;
+    private readonly IExportServices exportServices;
 
-    public ScheduleViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager)
+    private ObservableCollection<ScheduleTabViewModel> tabs = new();
+    private ScheduleTabViewModel selectedTab;
+    private readonly NavigationService navigationService;
+    private readonly IScheduleServices scheduleServices;
+    private ToolbarViewModel toolbar;
+
+    public ScheduleViewModel(
+        IServiceScopeFactory scopeFactory,
+        IWindowManager windowManager,
+        IExportServices exportServices,
+        NavigationService navigationService,
+        IScheduleServices scheduleServices)
     {
         this.scopeFactory = scopeFactory;
         this.windowManager = windowManager;
+        this.exportServices = exportServices;
+        this.navigationService = navigationService;
+        this.scheduleServices = scheduleServices;
 
-        Buffer = new LessonBufferViewModel(scopeFactory);
-        
-        LoadCurrentScheduleCommand = new RelayCommandAsync(LoadCurrentSchedule);
-        LoadSchedulesCommand = new RelayCommandAsync(LoadSchedulesAsync);
-        AddLessonCommand = new RelayCommandAsync(AddLessonAsync);
-        
-        _ = InitializeAsync();
-    }
-    
-    private async Task InitializeAsync()
-    {
-        IsLoading = true;
-        try
+        AddLessonCommand = new AsyncRelayCommand(AddLessonAsync);
+        LoadCurrentScheduleCommand = new AsyncRelayCommand(LoadCurrentScheduleAsync);
+        OpenScheduleListCommand = new RelayCommand(OpenScheduleList);
+
+        Toolbar = new ToolbarViewModel(
+            saveCommand: new RelayCommandAsync(SaveScheduleAsync),
+            deleteCommand: new RelayCommandAsync(OnDeleteClickedAsync),
+            closeCommand: new RelayCommandAsync(CloseWindowAsync)
+        );
+
+        Toolbar.RequestPdfExport += async () =>
         {
-            await LoadSchedulesAsync();
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-    public ICommand LoadSchedulesCommand { get; }
-    public ICommand LoadCurrentScheduleCommand { get; }
-    public ICommand AddLessonCommand { get; }
-    
-    public bool IsLoading
-    {
-        get => isLoading;
-        set => SetProperty(ref isLoading, value);
-    }
+            if (CurrentSchedule == null) return;
 
-    public AvaloniaList<ScheduleDto> ScheduleList
-    {
-        get => scheduleList;
-        set => SetProperty(ref scheduleList, value);
-    }
+            await exportServices.GeneratePdfAsync(CurrentSchedule.Id);
 
-    public AvaloniaDictionary<ScheduleDto, LessonTableViewModel> LessonTables
-    {
-        get => lessonTables;
-        set => SetProperty(ref lessonTables, value);
-    }
-
-    public ScheduleDto CurrentSchedule // <-- Используем это свойство
-    {
-        get => currentSchedule;
-        set 
-        { 
-            if (SetProperty(ref currentSchedule, value))
-            {
-                if (value != null && LessonTables != null && LessonTables.TryGetValue(value, out var table))
-                {
-                    Table = table;
-                }
-            }
-        }
-    }
-
-    public LessonBufferViewModel Buffer
-    {
-        get => buffer;
-        set => SetProperty(ref buffer, value);
-    }
-
-    public LessonTableViewModel Table
-    {
-        get => currentTable;
-        set => SetProperty(ref currentTable, value);
-    }
-    
-    public Task AddLessonAsync()
-    {
-        var vm = new LessonCreationViewModel(scopeFactory, CurrentSchedule.Id);
-        vm.LessonCreated += lesson =>
-        {
-            if (lesson is { LessonNumber: not null, StudyGroup: not null })
-            {
-                var scope = scopeFactory.CreateScope();
-                var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-                service.AddLesson(lesson, vm.ScheduleId);
-            }
-            else
-            {
-                // Buffer.AddLesson(lesson);
-            }
+            // Показываем уведомление
+            var vm = new NotificationViewModel("Экспорт в PDF успешно завершен!");
+            await windowManager.ShowDialog<NotificationViewModel, object?>(vm);
         };
+
+        Toolbar.RequestExcelExport += async () =>
+        {
+            if (CurrentSchedule == null) return;
+
+            await exportServices.GenerateExcelAsync(CurrentSchedule.Id);
+
+            // Показываем уведомление
+            var vm = new NotificationViewModel("Экспорт в Excel успешно завершен!");
+            await windowManager.ShowDialog<NotificationViewModel, object?>(vm);
+        };
+    }
+
+    public bool HasTabs => Tabs?.Count > 0;
+    public bool HasSelectedTab => SelectedTab != null;
+    public bool NoTabs => !HasTabs;
+
+    public ICommand AddLessonCommand { get; }
+    public ICommand LoadCurrentScheduleCommand { get; }
+    public ICommand OpenScheduleListCommand { get; }
+
+    private void OpenScheduleList() => navigationService.Navigate<ScheduleListViewModel>();
+
+    public ObservableCollection<ScheduleTabViewModel> Tabs
+    {
+        get => tabs;
+        set => SetProperty(ref tabs, value);
+    }
+
+    public ToolbarViewModel Toolbar
+    {
+        get => toolbar;
+        set => SetProperty(ref toolbar, value);
+    }
+
+    public ScheduleTabViewModel SelectedTab
+    {
+        get => selectedTab;
+        set
+        {
+            if (SetProperty(ref selectedTab, value) && value != null)
+            {
+                foreach (var tab in Tabs)
+                    tab.IsSelected = tab == value;
+
+                OnPropertyChanged(nameof(Buffer));
+            }
+
+            Toolbar.IsEnabled = selectedTab != null;
+        }
+    }
+
+    public ScheduleDto CurrentSchedule => SelectedTab?.Schedule;
+    public LessonTableViewModel CurrentScheduleTable => SelectedTab?.TableViewModel;
+    public LessonBufferViewModel Buffer => SelectedTab?.LessonBuffer;
+
+    private async Task LoadCurrentScheduleAsync()
+    {
+        if (SelectedTab?.Schedule?.Id != null)
+            await LoadSchedule(SelectedTab.Schedule.Id);
+    }
+
+    public async Task LoadSchedule(int id)
+    {
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
+        var schedule = await service.GetScheduleByIdAsync(id);
+
+        var existingTab = Tabs.FirstOrDefault(t => t.Id == id);
+
+        if (existingTab != null)
+        {
+            existingTab.Update(schedule);
+            SelectedTab = existingTab;
+        }
+        else
+        {
+            var tableViewModel = new LessonTableViewModel(schedule, scopeFactory);
+            var tab = new ScheduleTabViewModel(
+                schedule,
+                tableViewModel,
+                scopeFactory,
+                CloseTabById,
+                new LessonBufferViewModel(scopeFactory)
+            );
+
+            Tabs.Add(tab);
+            SelectedTab = tab;
+        }
+    }
+
+    private void CloseTabById(int tabId)
+    {
+        var tab = Tabs.FirstOrDefault(t => t.Id == tabId);
+        if (tab == null) return;
+
+        Tabs.Remove(tab);
+        if (SelectedTab == tab)
+            SelectedTab = Tabs.LastOrDefault();
+
+        OnPropertyChanged(nameof(HasTabs));
+        OnPropertyChanged(nameof(HasSelectedTab));
+        OnPropertyChanged(nameof(NoTabs));
+    }
+
+    public async Task AddLessonAsync()
+    {
+        var id = CurrentSchedule?.Id;
+        if (id == null) return;
+
+        var vm = new LessonCreationViewModel(scopeFactory, id.Value);
+        vm.LessonCreated += async lesson =>
+        {
+            using var scope = scopeFactory.CreateScope();
+            var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
+            await service.AddLesson(lesson, id.Value);
+            await LoadSchedule(id.Value);
+        };
+
         vm.Window = windowManager.ShowWindow(vm);
-        return Task.CompletedTask;
     }
 
-    private async Task LoadCurrentSchedule()
+    private async Task SaveScheduleAsync()
     {
-        IsLoading = true;
-        try
-        {
-            using var scope = scopeFactory.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
-            var schedule = await service.GetScheduleByIdAsync(currentSchedule.Id);
-            lessonTables.Remove(CurrentSchedule);
-            scheduleList.Remove(CurrentSchedule);
-            scheduleList.Add(schedule);
-            lessonTables.Add(schedule, new LessonTableViewModel(schedule, scopeFactory));
-            CurrentSchedule = schedule;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        // полный чилл, ничего не делаем
     }
 
-    private async Task LoadSchedulesAsync()
+    private async Task OnDeleteClickedAsync()
     {
-        IsLoading = true;
-        try
-        {
-            using var scope = scopeFactory.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
-            var schedules = await service.FetchSchedulesFromBackendAsync();
-            var tables = new Dictionary<ScheduleDto, LessonTableViewModel>();
-            
-            foreach (var schedule in schedules)
-            {
-                tables[schedule] = new LessonTableViewModel(schedule, scopeFactory);
-            }
-            
-            ScheduleList = new AvaloniaList<ScheduleDto>(schedules);
-            LessonTables = new AvaloniaDictionary<ScheduleDto, LessonTableViewModel>(tables);
-            
-            if (ScheduleList.Count > 0 && CurrentSchedule == null)
-            {
-                CurrentSchedule = ScheduleList.First();
-            }
-            else if (CurrentSchedule != null)
-            {
-                var updatedSchedule = ScheduleList.FirstOrDefault(s => s.Id == CurrentSchedule.Id);
-                CurrentSchedule = updatedSchedule ?? ScheduleList.FirstOrDefault();
-            }
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        if (CurrentSchedule == null) return;
+
+        var confirmVm = new ConfirmDeleteViewModel(
+            $"Вы уверены, что хотите удалить расписание \"{CurrentSchedule.Name}\"?"
+        );
+
+        var result = await windowManager.ShowDialog<ConfirmDeleteViewModel, bool?>(confirmVm);
+        if (result != true) return;
+
+        await scheduleServices.DeleteSchedule(CurrentSchedule);
+        CloseTabById(CurrentSchedule.Id);
+    }
+
+    private async Task CloseWindowAsync()
+    {
+        if (CurrentSchedule == null) return;
+
+        CloseTabById(CurrentSchedule.Id);
     }
 }
