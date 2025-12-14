@@ -1,0 +1,39 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shared="clr-namespace:newUI.ViewModels.Shared"
+        x:Class="newUI.Views.Shared.NotificationWindow"
+        Title=""
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        SizeToContent="WidthAndHeight"
+        MaxWidth="400"
+        x:DataType="shared:NotificationViewModel">
+
+    <Window.Styles>
+        <Style Selector="Button.accent">
+            <Setter Property="Background" Value="#2196F3" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="15,8" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="Button.accent:pointerover">
+            <Setter Property="Background" Value="#1976D2" />
+        </Style>
+    </Window.Styles>
+
+    <StackPanel Margin="20" Spacing="20" HorizontalAlignment="Center">
+        <TextBlock Text="{Binding Message}"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   TextWrapping="Wrap"
+                   MaxWidth="360"
+                   Margin="0,0,0,10"
+                   HorizontalAlignment="Center" />
+
+        <Button Content="OK"
+                Command="{Binding CloseCommand}"
+                Classes="accent"
+                HorizontalAlignment="Center" />
+    </StackPanel>
+</Window>

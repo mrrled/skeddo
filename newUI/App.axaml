@@ -12,23 +12,25 @@
              xmlns:schoolSubjectListView="clr-namespace:newUI.Views.SchoolSubjectsPage.SchoolSubjectList"
              xmlns:teacherListViewModel="clr-namespace:newUI.ViewModels.TeachersPage.TeacherList"
              xmlns:teacherListView="clr-namespace:newUI.Views.TeachersPage.TeacherList"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="newUI.App"
              RequestedThemeVariant="Light">
 
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+        <avalonia:MaterialIconStyles />
     </Application.Styles>
 
     <Application.DataTemplates>
         <DataTemplate DataType="scheduleListViewModel:ScheduleListViewModel">
             <scheduleListView:ScheduleListView />
         </DataTemplate>
-        
+
         <DataTemplate DataType="scheduleViewModel:AnotherScheduleViewModel">
             <scheduleView:ScheduleWindow />
         </DataTemplate>
-        
+
         <DataTemplate DataType="teacherListViewModel:TeacherListViewModel">
             <teacherListView:TeacherListView />
         </DataTemplate>
@@ -45,7 +47,7 @@
     <Application.Resources>
         <sys:Double x:Key="LessonCardWidth">150</sys:Double>
         <sys:Double x:Key="LessonCardHeight">120</sys:Double>
-        
-        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </Application.Resources>
 </Application>
