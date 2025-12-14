@@ -9,7 +9,7 @@ namespace newUI.ViewModels.SchedulePage.Schedule;
 public class ScheduleTabViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory scopeFactory;
-    private readonly Action<int> onCloseTab;
+    private readonly Action<Guid> onCloseTab;
     private LessonBufferViewModel lessonBuffer;
     private string title;
     private bool isSelected;
@@ -18,7 +18,7 @@ public class ScheduleTabViewModel : ViewModelBase
         ScheduleDto schedule,
         LessonTableViewModel tableViewModel,
         IServiceScopeFactory scopeFactory,
-        Action<int> onCloseTab,
+        Action<Guid> onCloseTab,
         LessonBufferViewModel lessonBuffer)
     {
         Schedule = schedule;
@@ -32,7 +32,7 @@ public class ScheduleTabViewModel : ViewModelBase
         CloseCommand = new RelayCommand(() => onCloseTab?.Invoke(Id));
     }
     
-    public int Id => Schedule.Id;
+    public Guid Id => Schedule.Id;
 
     public string Title
     {

@@ -1,12 +1,11 @@
 ﻿using Application.DtoModels;
-using Domain.Models;
 
 namespace Application.IServices;
 
 public interface ILessonServices
 {
-    public Task<List<LessonDto>> GetLessonsByScheduleId(int scheduleId);
-    public Task AddLesson(LessonDto lessonDto, int scheduleId);
-    public Task<EditLessonResult> EditLesson(LessonDto lessonDto, int scheduleId);
-    public Task DeleteLesson(LessonDto lessonDto, int scheduleId);
+    public Task<List<LessonDto>> GetLessonsByScheduleId(Guid scheduleId);
+    public Task<CreateLessonResult> AddLesson(CreateLessonDto lessonDto, Guid scheduleId);
+    public Task<EditLessonResult> EditLesson(LessonDto lessonDto, Guid scheduleId);
+    public Task DeleteLesson(LessonDto lessonDto, Guid scheduleId);
 }

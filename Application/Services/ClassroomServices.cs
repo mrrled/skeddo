@@ -14,11 +14,13 @@ public class ClassroomServices(IClassroomRepository classroomRepository, IUnitOf
         return classroomList.ToClassroomsDto();
     }
 
-    public async Task AddClassroom(ClassroomDto classroomDto)
+    public async Task<ClassroomDto> AddClassroom(CreateClassroomDto classroomDto)
     {
-        var classroom = Classroom.CreateClassroom(classroomDto.Id, classroomDto.Name, classroomDto.Description);
+        var classroomId = Guid.NewGuid();
+        var classroom = Classroom.CreateClassroom(classroomId, classroomDto.Name, classroomDto.Description);
         await classroomRepository.AddAsync(classroom, 1);
         await unitOfWork.SaveChangesAsync();
+        return classroom.ToClassroomDto();
     }
 
     public async Task EditClassroom(ClassroomDto classroomDto)

@@ -51,8 +51,8 @@ public class SchoolSubjectEditorViewModel : ViewModelBase
         if (editingSchoolSubject == null)
         {
             // Создание нового
-            schoolSubject = new SchoolSubjectDto { Id = new Random().Next(1, 1000), Name = SchoolSubjectName };
-            await service.AddSchoolSubject(schoolSubject);
+            var createSchoolSubject = new CreateSchoolSubjectDto { Name = SchoolSubjectName };
+            schoolSubject = await service.AddSchoolSubject(createSchoolSubject);
         }
         else
         {

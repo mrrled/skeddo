@@ -51,8 +51,8 @@ public class ScheduleEditorViewModel : ViewModelBase
         if (editingSchedule == null)
         {
             // Создание нового
-            schedule = new ScheduleDto { Id = new Random().Next(1, 1000), Name = ScheduleName };
-            await service.AddSchedule(schedule);
+            var createSchedule = new CreateScheduleDto { Name = ScheduleName };
+            schedule = await service.AddSchedule(createSchedule);
         }
         else
         {

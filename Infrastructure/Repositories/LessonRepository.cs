@@ -8,7 +8,7 @@ namespace Infrastructure.Repositories;
 
 public class LessonRepository(ScheduleDbContext context) : ILessonRepository
 {
-    public async Task<List<Lesson>> GetLessonsByScheduleIdAsync(int scheduleId)
+    public async Task<List<Lesson>> GetLessonsByScheduleIdAsync(Guid scheduleId)
     {
         var lessons = await context.Lessons.Where(x => x.ScheduleId == scheduleId)
             .Include(x => x.Teacher)
@@ -22,7 +22,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
         return lessons.ToLessons();
     }
 
-    public async Task<Lesson> GetLessonByIdAsync(int id)
+    public async Task<Lesson> GetLessonByIdAsync(Guid id)
     {
         var lessonDbo = await context.Lessons
             .Include(x => x.Teacher)
@@ -38,7 +38,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
         return lessonDbo.ToLesson();
     }
 
-    public async Task<List<Lesson>> GetLessonsByIdsAsync(List<int> lessonIds)
+    public async Task<List<Lesson>> GetLessonsByIdsAsync(List<Guid> lessonIds)
     {
         var lessons = await context.Lessons
             .Include(x => x.Teacher)
@@ -52,7 +52,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
         return lessons.ToLessons();
     }
 
-    public async Task AddAsync(Lesson lesson, int scheduleId)
+    public async Task AddAsync(Lesson lesson, Guid scheduleId)
     {
         var lessonDbo = lesson.ToLessonDbo();
         var lessonNumber =

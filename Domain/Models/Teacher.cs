@@ -3,13 +3,13 @@ using Microsoft.IdentityModel.Tokens;
 namespace Domain.Models;
 
 public class Teacher(
-    int id,
+    Guid id,
     string name,
     string surname,
     string patronymic,
     List<SchoolSubject> schoolSubjects,
     List<StudyGroup> studyGroups,
-    string? description = null) : Entity<int>(id)
+    string? description = null) : Entity<Guid>(id)
 {
     public string Name { get; private set; } = name;
     public string Surname { get; private set; } = surname;
@@ -56,7 +56,7 @@ public class Teacher(
         StudyGroups = studyGroups;
     }
     
-    public static Teacher CreateTeacher(int teacherId,
+    public static Teacher CreateTeacher(Guid teacherId,
         string? name, string? surname, string? patronymic,
         List<SchoolSubject> schoolSubjects, List<StudyGroup> studyGroups)
     {

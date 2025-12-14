@@ -80,7 +80,7 @@ public class AnotherScheduleViewModel : ViewModelBase
             await LoadSchedule(SelectedTab.Schedule.Id);
     }
     
-    public async Task LoadSchedule(int id)
+    public async Task LoadSchedule(Guid id)
     {
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
@@ -108,7 +108,7 @@ public class AnotherScheduleViewModel : ViewModelBase
         }
     }
     
-    private void CloseTabById(int tabId)
+    private void CloseTabById(Guid tabId)
     {
         var tab = Tabs.FirstOrDefault(t => t.Id == tabId);
         if (tab == null) return;

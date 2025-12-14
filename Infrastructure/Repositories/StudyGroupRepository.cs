@@ -17,7 +17,7 @@ public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupReposi
         return studyGroupDbos.ToStudyGroups();
     }
 
-    public async Task<StudyGroup> GetStudyGroupByIdAsync(int studyGroupId)
+    public async Task<StudyGroup> GetStudyGroupByIdAsync(Guid studyGroupId)
     {
         var studyGroupDbo = await context.StudyGroups
             .Include(x => x.StudySubgroups)
@@ -27,7 +27,7 @@ public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupReposi
         return studyGroupDbo.ToStudyGroup();
     }
 
-    public async Task<List<StudyGroup>> GetStudyGroupListByIdsAsync(List<int> studyGroupIds)
+    public async Task<List<StudyGroup>> GetStudyGroupListByIdsAsync(List<Guid> studyGroupIds)
     {
         var studyGroupDbos = await context.StudyGroups
             .Include(x => x.StudySubgroups)

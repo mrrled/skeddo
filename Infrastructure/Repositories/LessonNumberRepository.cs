@@ -8,7 +8,7 @@ namespace Infrastructure.Repositories;
 
 public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRepository
 {
-    public async Task<List<LessonNumber>> GetLessonNumbersByScheduleIdAsync(int scheduleId)
+    public async Task<List<LessonNumber>> GetLessonNumbersByScheduleIdAsync(Guid scheduleId)
     {
         var schedule = await context.Schedules
             .Include(x => x.LessonNumbers)
@@ -18,12 +18,11 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
         return schedule.LessonNumbers.ToLessonNumbers();
     }
 
-    public async Task AddAsync(LessonNumber lessonNumber, int scheduleId)
+    public async Task AddAsync(LessonNumber lessonNumber, Guid scheduleId)
     {
-        var random = new Random();
         var lessonNumberDbo = lessonNumber.ToLessonNumberDbo();
         lessonNumberDbo.ScheduleId = scheduleId;
-        lessonNumberDbo.Id = random.Next(1, 1000);
+        lessonNumberDbo.Id = Guid.NewGuid();
         var schedule = await context.Schedules
             .Where(x => x.Id == scheduleId)
             .FirstOrDefaultAsync();
@@ -32,7 +31,7 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
         await context.LessonNumbers.AddAsync(lessonNumberDbo);
     }
 
-    public async Task UpdateAsync(LessonNumber oldLessonNumber, LessonNumber newLessonNumber, int scheduleId)
+    public async Task UpdateAsync(LessonNumber oldLessonNumber, LessonNumber newLessonNumber, Guid scheduleId)
     {
         var lessonNumberDbo = await context.LessonNumbers
             .FirstOrDefaultAsync(x => x.ScheduleId == scheduleId && x.Number == oldLessonNumber.Number);
@@ -43,7 +42,7 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
         DboMapper.Mapper.Map(newLessonNumberDbo, lessonNumberDbo);
     }
 
-    public async Task Delete(LessonNumber lessonNumber, int scheduleId)
+    public async Task Delete(LessonNumber lessonNumber, Guid scheduleId)
     {
         await context.LessonNumbers
             .Where(x => x.ScheduleId == scheduleId && x.Number == lessonNumber.Number)

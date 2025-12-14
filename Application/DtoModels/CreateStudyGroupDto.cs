@@ -1,9 +1,8 @@
 ﻿namespace Application.DtoModels;
 
-public class SchoolSubjectDto
+public class CreateStudyGroupDto
 {
-    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    
+    public List<StudySubgroupDto> StudySubgroups { get; set; } = new();
     public override string ToString() => Name;
 }

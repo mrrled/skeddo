@@ -1,11 +1,11 @@
 namespace Domain.Models;
 
-public class StudyGroup(int id, string name, List<StudySubgroup> studySubgroups) : Entity<int>(id)
+public class StudyGroup(Guid id, string name, List<StudySubgroup> studySubgroups) : Entity<Guid>(id)
 {
     public string Name { get; private set; } = name;
     public List<StudySubgroup> StudySubgroups => studySubgroups;
 
-    public static StudyGroup CreateStudyGroup(int id, string? name)
+    public static StudyGroup CreateStudyGroup(Guid id, string? name)
     {
         if (name is null)
             throw new ArgumentNullException();

@@ -8,14 +8,14 @@ namespace Infrastructure;
 
 public class ExportDocument : IDocument
 {
-    private readonly Dictionary<(int num, int groupId, string? subgroupName), Lesson> _lessons;
+    private readonly Dictionary<(int num, Guid groupId, string? subgroupName), Lesson> _lessons;
     private readonly List<StudyGroup> _cols;
     private readonly List<LessonNumber> _rows;
     private readonly int _totalColumn;
     private readonly List<ColumnMap> _flatColumns;
 
     public ExportDocument(
-        Dictionary<(int num, int groupId, string? subgroupName), Lesson> lessons,
+        Dictionary<(int num, Guid groupId, string? subgroupName), Lesson> lessons,
         List<StudyGroup> studyGroups,
         List<LessonNumber> lessonNumbers
     )
@@ -310,6 +310,6 @@ public class ExportDocument : IDocument
 
 public class ColumnMap
 {
-    public int GroupId { get; set; }
+    public Guid GroupId { get; set; }
     public string? SubgroupName { get; set; }
 }

@@ -4,14 +4,8 @@ namespace Application.DtoModels;
 
 public class LessonDto : IEquatable<LessonDto>
 {
-    public LessonDto()
-    {
-        var rnd = new Random();
-        Id = rnd.Next();
-    }
-    
+    public Guid Id { get; set; }
     public int ScheduleId { get; set; }
-    public int Id { get; set; }
     public SchoolSubjectDto? SchoolSubject { get; set; }
     public LessonNumberDto? LessonNumber { get; set; }
     public TeacherDto? Teacher { get; set; }
@@ -38,6 +32,6 @@ public class LessonDto : IEquatable<LessonDto>
 
     public override int GetHashCode()
     {
-        return Id;
+        return Id.GetHashCode();
     }
 }

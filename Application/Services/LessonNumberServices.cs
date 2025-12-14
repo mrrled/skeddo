@@ -8,13 +8,13 @@ namespace Application.Services;
 
 public class LessonNumberServices(ILessonNumberRepository lessonNumberRepository, IUnitOfWork unitOfWork) : ILessonNumberServices
 {
-    public async Task<List<LessonNumberDto>> GetLessonNumbersByScheduleId(int scheduleId)
+    public async Task<List<LessonNumberDto>> GetLessonNumbersByScheduleId(Guid scheduleId)
     {
         var lessonNumbers = await lessonNumberRepository.GetLessonNumbersByScheduleIdAsync(scheduleId);
         return lessonNumbers.ToLessonNumbersDto();
     }
 
-    public async Task AddLessonNumber(LessonNumberDto lessonNumberDto, int scheduleId)
+    public async Task AddLessonNumber(LessonNumberDto lessonNumberDto, Guid scheduleId)
     {
         var lessonNumber = LessonNumber.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
         await lessonNumberRepository.AddAsync(lessonNumber, scheduleId);
@@ -22,7 +22,7 @@ public class LessonNumberServices(ILessonNumberRepository lessonNumberRepository
     }
 
     public async Task EditLessonNumber(LessonNumberDto oldLessonNumberDto, LessonNumberDto newLessonNumberDto,
-        int scheduleId)
+        Guid scheduleId)
     {
         var oldLessonNumber = LessonNumber.CreateLessonNumber(oldLessonNumberDto.Number, oldLessonNumberDto.Time);
         var newLessonNumber = LessonNumber.CreateLessonNumber(newLessonNumberDto.Number, newLessonNumberDto.Time);
@@ -30,7 +30,7 @@ public class LessonNumberServices(ILessonNumberRepository lessonNumberRepository
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task DeleteLessonNumber(LessonNumberDto lessonNumberDto, int scheduleId)
+    public async Task DeleteLessonNumber(LessonNumberDto lessonNumberDto, Guid scheduleId)
     {
         var lessonNumber = LessonNumber.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
         await lessonNumberRepository.Delete(lessonNumber, scheduleId);

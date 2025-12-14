@@ -18,13 +18,13 @@ public class TeacherServices(
         return teacherList.ToTeachersDto();
     }
 
-    public async Task<TeacherDto> GetTeacherById(int id)
+    public async Task<TeacherDto> GetTeacherById(Guid id)
     {
         var teacher = await teacherRepository.GetTeacherByIdAsync(id);
         return teacher.ToTeacherDto();
     }
 
-    public async Task AddTeacher(TeacherDto teacherDto)
+    public async Task<TeacherDto> AddTeacher(CreateTeacherDto teacherDto)
     {
         var schoolSubjects =
             await schoolSubjectRepository.GetSchoolSubjectListByIdsAsync(teacherDto.SchoolSubjects.Select(x => x.Id)
@@ -32,10 +32,12 @@ public class TeacherServices(
         var studyGroups =
             await studyGroupRepository.GetStudyGroupListByIdsAsync(teacherDto.StudyGroups.Select(x => x.Id).Distinct()
                 .ToList());
-        var teacher = Teacher.CreateTeacher(teacherDto.Id, teacherDto.Name, teacherDto.Surname,
+        var teacherId = Guid.NewGuid();
+        var teacher = Teacher.CreateTeacher(teacherId, teacherDto.Name, teacherDto.Surname,
             teacherDto.Patronymic, schoolSubjects, studyGroups);
         await teacherRepository.AddAsync(teacher, 1);
         await unitOfWork.SaveChangesAsync();
+        return teacher.ToTeacherDto();
     }
 
     public async Task EditTeacher(TeacherDto teacherDto)

@@ -7,8 +7,8 @@ namespace Infrastructure.DboModels;
 [Table("StudySubgroups")]
 public class StudySubgroupDbo
 {
-    public int Id { get; set; }
-    public int StudyGroupId { get; set; }
+    public Guid Id { get; set; }
+    public Guid StudyGroupId { get; set; }
     public string Name { get; set; } = string.Empty;
     public StudyGroupDbo StudyGroup { get; set; }
 }

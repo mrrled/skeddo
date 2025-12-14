@@ -7,7 +7,7 @@ namespace Infrastructure.DboModels;
 [Table("SchoolSubjects")]
 public class SchoolSubjectDbo
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public int ScheduleGroupId { get; set; }
     public string Name { get; set; } = string.Empty;
     public ScheduleGroupDbo ScheduleGroup { get; set; }

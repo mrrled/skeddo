@@ -2,6 +2,7 @@
 
 public interface IExportServices
 {
-    public Task GeneratePdfAsync(int scheduleId);
-    public Task GenerateExcelAsync(int scheduleId);
+    public Task GeneratePdfAsync(Guid scheduleId);
+
+    public Task GenerateExcelAsync(Guid scheduleId);
 }

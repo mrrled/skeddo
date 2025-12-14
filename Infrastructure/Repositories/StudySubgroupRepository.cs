@@ -8,11 +8,10 @@ namespace Infrastructure.Repositories;
 
 public class StudySubgroupRepository(ScheduleDbContext context) : IStudySubgroupRepository
 {
-    public async Task AddAsync(StudySubgroup studySubgroup, int studyGroupId)
+    public async Task AddAsync(StudySubgroup studySubgroup, Guid studyGroupId)
     {
-        var random = new Random();
         var studySubgroupDbo = studySubgroup.ToStudySubgroupDbo();
-        studySubgroupDbo.Id = random.Next(1, 1000);
+        studySubgroupDbo.Id = Guid.NewGuid();
         studySubgroupDbo.StudyGroupId = studyGroupId;
         var studyGroupDbo = await context.StudyGroups
             .FirstOrDefaultAsync(x => x.Id == studyGroupId);
@@ -21,7 +20,7 @@ public class StudySubgroupRepository(ScheduleDbContext context) : IStudySubgroup
         await context.StudySubgroups.AddAsync(studySubgroupDbo);
     }
 
-    public async Task UpdateAsync(StudySubgroup oldStudySubgroup, StudySubgroup newStudySubgroup, int studyGroupId)
+    public async Task UpdateAsync(StudySubgroup oldStudySubgroup, StudySubgroup newStudySubgroup, Guid studyGroupId)
     {
         var studySubgroupDbo = await context.StudySubgroups
             .FirstOrDefaultAsync(x => x.StudyGroupId == studyGroupId && x.Name == oldStudySubgroup.Name);
@@ -32,7 +31,7 @@ public class StudySubgroupRepository(ScheduleDbContext context) : IStudySubgroup
         DboMapper.Mapper.Map(newStudySubgroupDbo, studySubgroupDbo);
     }
 
-    public async Task Delete(StudySubgroup studySubgroup, int studyGroupId)
+    public async Task Delete(StudySubgroup studySubgroup, Guid studyGroupId)
     {
         await context.StudySubgroups
             .Where(x => x.StudyGroupId == studyGroupId && x.Name == studySubgroup.Name)

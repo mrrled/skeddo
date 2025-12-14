@@ -51,8 +51,8 @@ public class ClassroomEditorViewModel : ViewModelBase
         if (editingClassroom == null)
         {
             // Создание нового
-            classroom = new ClassroomDto { Id = new Random().Next(1, 1000), Name = ClassroomName };
-            await service.AddClassroom(classroom);
+            var createClassroom = new CreateClassroomDto { Name = ClassroomName };
+            classroom = await service.AddClassroom(createClassroom);
         }
         else
         {

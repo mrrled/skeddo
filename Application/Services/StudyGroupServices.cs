@@ -14,11 +14,13 @@ public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUni
         return studyGroupList.ToStudyGroupsDto();
     }
 
-    public async Task AddStudyGroup(StudyGroupDto studyGroupDto)
+    public async Task<StudyGroupDto> AddStudyGroup(CreateStudyGroupDto studyGroupDto)
     {
-        var studyGroup = StudyGroup.CreateStudyGroup(studyGroupDto.Id, studyGroupDto.Name);
+        var studyGroupId = Guid.NewGuid();
+        var studyGroup = StudyGroup.CreateStudyGroup(studyGroupId, studyGroupDto.Name);
         await studyGroupRepository.AddAsync(studyGroup, 1);
         await unitOfWork.SaveChangesAsync();
+        return studyGroup.ToStudyGroupDto();
     }
 
     public async Task EditStudyGroup(StudyGroupDto studyGroupDto)

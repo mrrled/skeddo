@@ -16,7 +16,7 @@ public class SchoolSubjectRepository(ScheduleDbContext context) : ISchoolSubject
         return schoolSubjectDbos.ToSchoolSubjects();
     }
 
-    public async Task<SchoolSubject> GetSchoolSubjectByIdAsync(int schoolSubjectId)
+    public async Task<SchoolSubject> GetSchoolSubjectByIdAsync(Guid schoolSubjectId)
     {
         var schoolSubjectDbo = await context.SchoolSubjects.FirstOrDefaultAsync(s => s.Id == schoolSubjectId);
         if (schoolSubjectDbo is null)
@@ -24,7 +24,7 @@ public class SchoolSubjectRepository(ScheduleDbContext context) : ISchoolSubject
         return schoolSubjectDbo.ToSchoolSubject();
     }
 
-    public async Task<List<SchoolSubject>> GetSchoolSubjectListByIdsAsync(List<int> schoolSubjectIds)
+    public async Task<List<SchoolSubject>> GetSchoolSubjectListByIdsAsync(List<Guid> schoolSubjectIds)
     {
         var schoolSubjectDbos = await context.SchoolSubjects
             .Where(x => schoolSubjectIds.Contains(x.Id))

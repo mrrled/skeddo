@@ -17,19 +17,19 @@ public class LessonDraftServices(ILessonDraftRepository lessonDraftRepository,
     ILessonFactory lessonFactory,
     IUnitOfWork unitOfWork) : ILessonDraftServices
 {
-    public async Task<List<LessonDraftDto>> GetLessonDraftsByScheduleId(int scheduleId)
+    public async Task<List<LessonDraftDto>> GetLessonDraftsByScheduleId(Guid scheduleId)
     {
         var drafts = await lessonDraftRepository.GetLessonDraftsByScheduleId(scheduleId);
         return drafts.ToLessonsDraftDto();
     }
 
-    public async Task<LessonDraftDto> GetLessonDraftById(int id)
+    public async Task<LessonDraftDto> GetLessonDraftById(Guid id)
     {
         var lessonDraft = await lessonDraftRepository.GetLessonDraftById(id);
         return lessonDraft.ToLessonDraftDto();
     }
 
-    public async Task<EditLessonResult> EditDraftLesson(LessonDraftDto lessonDraftDto, int scheduleId)
+    public async Task<EditLessonResult> EditDraftLesson(LessonDraftDto lessonDraftDto, Guid scheduleId)
     {
         var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId);
         var lessonDraft = schedule.LessonDrafts.FirstOrDefault(x => x.Id == lessonDraftDto.Id);
@@ -74,7 +74,7 @@ public class LessonDraftServices(ILessonDraftRepository lessonDraftRepository,
         return EditLessonResult.Success(lesson.ToLessonDto());
     }
 
-    public async Task DeleteLessonDraft(LessonDraftDto lessonDto, int scheduleId)
+    public async Task DeleteLessonDraft(LessonDraftDto lessonDto, Guid scheduleId)
     {
         var lesson = await lessonDraftRepository.GetLessonDraftById(lessonDto.Id);
         await lessonDraftRepository.Delete(lesson);

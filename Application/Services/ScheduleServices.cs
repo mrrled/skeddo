@@ -14,17 +14,13 @@ public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWor
         return scheduleList.ToSchedulesDto();
     }
 
-    public async Task<ScheduleDto> FetchScheduleByIdAsync(int id)
+    public async Task<ScheduleDto> AddSchedule(CreateScheduleDto scheduleDto)
     {
-        var schedule = await scheduleRepository.GetScheduleByIdAsync(id);
-        return schedule.ToScheduleDto();
-    }
-
-    public async Task AddSchedule(ScheduleDto scheduleDto)
-    {
-        var schedule = Schedule.CreateSchedule(scheduleDto.Id, scheduleDto.Name);
+        var id = Guid.NewGuid();
+        var schedule = Schedule.CreateSchedule(id, scheduleDto.Name);
         await scheduleRepository.AddAsync(schedule, 1);
         await unitOfWork.SaveChangesAsync();
+        return schedule.ToScheduleDto();
     }
 
     public async Task EditSchedule(ScheduleDto scheduleDto)
@@ -40,14 +36,14 @@ public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWor
 
     public async Task DeleteSchedule(ScheduleDto scheduleDto)
     {
-        var schedule = await  scheduleRepository.GetScheduleByIdAsync(scheduleDto.Id);
+        var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleDto.Id);
         if (schedule is null)
             throw new ArgumentException($"Schedule with id {scheduleDto.Id} not found");
         await scheduleRepository.Delete(schedule);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<ScheduleDto> GetScheduleByIdAsync(int id)
+    public async Task<ScheduleDto> GetScheduleByIdAsync(Guid id)
     {
         var schedule = await scheduleRepository.GetScheduleByIdAsync(id);
         return schedule.ToScheduleDto();

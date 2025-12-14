@@ -4,9 +4,9 @@ namespace Infrastructure;
 
 public static class Helper
 {
-    public static Dictionary<(int num, int groupId, string? subgroupName), Lesson> ToTable(this List<Lesson> lessons)
+    public static Dictionary<(int num, Guid groupId, string? subgroupName), Lesson> ToTable(this List<Lesson> lessons)
     {
-        var table = new  Dictionary<(int num, int groupId, string? subgroupName), Lesson>();
+        var table = new  Dictionary<(int num, Guid groupId, string? subgroupName), Lesson>();
         foreach (var lesson in lessons)
         {
             if (lesson.StudySubgroup != null)

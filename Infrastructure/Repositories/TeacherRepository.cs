@@ -19,7 +19,7 @@ public class TeacherRepository(ScheduleDbContext context) : ITeacherRepository
         return teachers.ToTeachers();
     }
 
-    public async Task<Teacher> GetTeacherByIdAsync(int id)
+    public async Task<Teacher> GetTeacherByIdAsync(Guid id)
     {
         var teacher = await context.Teachers.FirstOrDefaultAsync(x => x.Id == id);
         if (teacher is null)

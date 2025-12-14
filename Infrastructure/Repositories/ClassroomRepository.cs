@@ -14,7 +14,7 @@ public class ClassroomRepository(ScheduleDbContext context) : IClassroomReposito
         return classrooms.ToClassrooms();
     }
 
-    public async Task<Classroom> GetClassroomByIdAsync(int classroomId)
+    public async Task<Classroom> GetClassroomByIdAsync(Guid classroomId)
     {
         var scheduleGroup = await context.ScheduleGroups.Include(x => x.Classrooms).FirstOrDefaultAsync();
         if (scheduleGroup is null)

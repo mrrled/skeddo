@@ -2,7 +2,7 @@
 
 public class StudyGroupDto : IComparable<StudyGroupDto>
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public List<StudySubgroupDto> StudySubgroups { get; set; } = new();
     
@@ -17,6 +17,6 @@ public class StudyGroupDto : IComparable<StudyGroupDto>
 
     public override int GetHashCode()
     {
-        return Name.GetHashCode();
+        return Id.GetHashCode();
     }
 }

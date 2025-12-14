@@ -7,18 +7,18 @@ namespace Infrastructure.DboModels;
 [Table("LessonDrafts")]
 public class LessonDraftDbo
 {
-    public int Id { get; set; }
-    public int? LessonNumberId { get; set; }
-    public int? StudyGroupId { get; set; }
-    public int? ClassroomId { get; set; }
-    public int? SchoolSubjectId { get; set; }
-    public int? TeacherId { get; set; }
-    public int? ScheduleId { get; set; }
-    public int? StudySubgroupId { get; set; }
+    public Guid Id { get; set; }
+    public Guid? LessonNumberId { get; set; }
+    public Guid? StudyGroupId { get; set; }
+    public Guid? ClassroomId { get; set; }
+    public Guid? SchoolSubjectId { get; set; }
+    public Guid? TeacherId { get; set; }
+    public Guid? ScheduleId { get; set; }
+    public Guid? StudySubgroupId { get; set; }
     public LessonNumberDbo? LessonNumber { get; set; }
     public StudyGroupDbo? StudyGroup { get; set; }
     public ClassroomDbo? Classroom { get; set; }
-    public required SchoolSubjectDbo SchoolSubject { get; set; }
+    public SchoolSubjectDbo SchoolSubject { get; set; }
     public TeacherDbo? Teacher { get; set; }
     public ScheduleDbo? Schedule { get; set; }
     public StudySubgroupDbo? StudySubgroup { get; set; }

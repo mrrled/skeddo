@@ -14,11 +14,13 @@ public class SchoolSubjectServices(ISchoolSubjectRepository schoolSubjectReposit
         return schoolSubjectList.ToSchoolSubjectsDto();
     }
 
-    public async Task AddSchoolSubject(SchoolSubjectDto schoolSubjectDto)
+    public async Task<SchoolSubjectDto> AddSchoolSubject(CreateSchoolSubjectDto schoolSubjectDto)
     {
-        var schoolSubject = SchoolSubject.CreateSchoolSubject(schoolSubjectDto.Id, schoolSubjectDto.Name);
+        var schoolSubjectId = Guid.NewGuid();
+        var schoolSubject = SchoolSubject.CreateSchoolSubject(schoolSubjectId, schoolSubjectDto.Name);
         await schoolSubjectRepository.AddAsync(schoolSubject, 1);
         await unitOfWork.SaveChangesAsync();
+        return schoolSubject.ToSchoolSubjectDto();
     }
 
     public async Task EditSchoolSubject(SchoolSubjectDto schoolSubjectDto)

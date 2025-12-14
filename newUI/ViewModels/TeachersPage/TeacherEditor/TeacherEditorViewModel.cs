@@ -69,14 +69,13 @@ public class TeacherEditorViewModel : ViewModelBase
         if (editingTeacher == null)
         {
             // Создание нового
-            teacher = new TeacherDto
+            var createTeacher = new CreateTeacherDto
             {
-                Id = new Random().Next(1, 1000),
                 Surname = TeacherSurname,
                 Name = TeacherName,
                 Patronymic = TeacherPatronymic
             };
-            await service.AddTeacher(teacher);
+            teacher = await service.AddTeacher(createTeacher);
         }
         else
         {

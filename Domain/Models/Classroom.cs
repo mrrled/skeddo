@@ -1,10 +1,10 @@
 namespace Domain.Models;
 
-public class Classroom(int id, string name, string? description = null) : Entity<int>(id)
+public class Classroom(Guid id, string name, string? description = null) : Entity<Guid>(id)
 {
     public string Name { get; private set; } = name;
     public string? Description { get; private set; } = description;
-    public static Classroom CreateClassroom(int id, string? name, string? description)
+    public static Classroom CreateClassroom(Guid id, string? name, string? description)
     {
         if (name is null)
             throw new ArgumentNullException();

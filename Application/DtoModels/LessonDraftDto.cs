@@ -4,7 +4,7 @@ namespace Application.DtoModels;
 
 public class LessonDraftDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public int ScheduleId { get; set; }
     public SchoolSubjectDto? SchoolSubject { get; set; }
     public LessonNumberDto? LessonNumber { get; set; }
@@ -42,6 +42,6 @@ public class LessonDraftDto
 
     public override int GetHashCode()
     {
-        return Id;
+        return Id.GetHashCode();
     }
 }

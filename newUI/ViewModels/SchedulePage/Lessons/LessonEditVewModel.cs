@@ -12,9 +12,10 @@ namespace newUI.ViewModels.SchedulePage.Lessons;
 public class LessonEditViewModel : ViewModelBase
 {
     public event Action<LessonDto>? LessonUpdated;
-    public event Action<LessonDto>? LessonCreated;
+    public event Action<CreateLessonDto>? LessonCreated;
     
     private readonly LessonDto originalLesson;
+    private readonly CreateLessonDto lesson;
     private readonly IServiceScopeFactory scopeFactory;
 
     private AvaloniaList<TeacherDto> teachers;
@@ -28,17 +29,18 @@ public class LessonEditViewModel : ViewModelBase
     private StudyGroupDto? selectedStudyGroup;
     private SchoolSubjectDto? selectedSubject;
     private LessonNumberDto? selectedTimeSlot;
-
-    public readonly int ScheduleId;
+    
+    public readonly Guid ScheduleId;
 
     public LessonEditViewModel(
         IServiceScopeFactory scopeFactory,
-        int scheduleId)
+        Guid scheduleId)
     {
         IsCreation = true;
         this.scopeFactory = scopeFactory;
         originalLesson = new LessonDto();
         ScheduleId = scheduleId;
+        lesson = new CreateLessonDto();
         
         _ = Initialize();
         

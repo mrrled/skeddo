@@ -6,8 +6,8 @@ namespace Application.IServices;
 public interface ITeacherServices
 {
     public Task<List<TeacherDto>> FetchTeachersFromBackendAsync();
-    public Task<TeacherDto> GetTeacherById(int id);
-    public Task AddTeacher(TeacherDto teacherDto);
+    public Task<TeacherDto> GetTeacherById(Guid id);
+    public Task<TeacherDto> AddTeacher(CreateTeacherDto teacherDto);
     public Task EditTeacher(TeacherDto teacherDto);
     public Task DeleteTeacher(TeacherDto teacherDto);
 }

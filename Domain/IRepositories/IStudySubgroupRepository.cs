@@ -4,7 +4,7 @@ namespace Domain.IRepositories;
 
 public interface IStudySubgroupRepository
 {
-    Task AddAsync(StudySubgroup studySubgroup, int studyGroupId);
-    Task UpdateAsync(StudySubgroup oldStudySubgroup, StudySubgroup newStudySubgroup, int studyGroupId);
-    Task Delete(StudySubgroup studySubgroup, int studyGroupId);
+    Task AddAsync(StudySubgroup studySubgroup, Guid studyGroupId);
+    Task UpdateAsync(StudySubgroup oldStudySubgroup, StudySubgroup newStudySubgroup, Guid studyGroupId);
+    Task Delete(StudySubgroup studySubgroup, Guid studyGroupId);
 }

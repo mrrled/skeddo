@@ -1,9 +1,9 @@
 namespace Domain.Models;
 
 public class Schedule(
-    int id,
+    Guid id,
     string name
-) : Entity<int>(id)
+) : Entity<Guid>(id)
 {
     private HashSet<Lesson> _lessons = new();
     private HashSet<LessonDraft> _lessonDrafts = new();
@@ -22,7 +22,7 @@ public class Schedule(
     {
         _lessonDrafts.Add(lessonDraft);
     }
-    public List<Lesson> EditLesson(int id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher, StudyGroup? studyGroup,
+    public List<Lesson> EditLesson(Guid id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher, StudyGroup? studyGroup,
         Classroom? classroom, string? comment = null)
     {
         var lesson = Lessons.FirstOrDefault(x => x.Id == id);
@@ -38,7 +38,7 @@ public class Schedule(
         return editedLessons;
     }
 
-    public static Schedule CreateSchedule(int id, string? name)
+    public static Schedule CreateSchedule(Guid id, string? name)
     {
         if (name is null)
             throw new ArgumentNullException();

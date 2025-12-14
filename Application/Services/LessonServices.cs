@@ -18,13 +18,13 @@ public class LessonServices(
     ILessonDraftRepository lessonDraftRepository,
     IUnitOfWork unitOfWork) : ILessonServices
 {
-    public async Task<List<LessonDto>> GetLessonsByScheduleId(int scheduleId)
+    public async Task<List<LessonDto>> GetLessonsByScheduleId(Guid scheduleId)
     {
         var lessonList = await lessonRepository.GetLessonsByScheduleIdAsync(scheduleId);
         return lessonList.ToLessonsDto();
     }
 
-    public async Task AddLesson(LessonDto lessonDto, int scheduleId)
+    public async Task<CreateLessonResult> AddLesson(CreateLessonDto lessonDto, Guid scheduleId)
     {
         if (lessonDto.SchoolSubject is null)
             throw new ArgumentException("Cannot create a lesson without a school subject"); //возможно стоит это вынести как-то в домен, больше похоже на бизнес-логику
@@ -46,7 +46,8 @@ public class LessonServices(
         var studySubgroup = lessonDto.StudySubgroup is null
             ? null
             : StudySubgroup.CreateStudySubgroup(studyGroup, lessonDto.StudySubgroup.Name);
-        var draft = new LessonDraft(lessonDto.Id, lessonDto.ScheduleId, schoolSubject, lessonNumber, teacher, studyGroup, classroom,
+        var lessonId = Guid.NewGuid();
+        var draft = new LessonDraft(lessonId, lessonDto.ScheduleId, schoolSubject, lessonNumber, teacher, studyGroup, classroom,
             studySubgroup,
             lessonDto.Comment);
         var result = lessonFactory.CreateFromDraft(draft);
@@ -55,16 +56,20 @@ public class LessonServices(
             var editedLessons = schedule.AddLesson(result.Value);
             await lessonRepository.AddAsync(result.Value, scheduleId);
             await lessonRepository.UpdateRangeAsync(editedLessons);
+            await unitOfWork.SaveChangesAsync();
+            return CreateLessonResult.Success(result.Value.ToLessonDto());
         }
         else
         {
             await lessonDraftRepository.AddAsync(draft, scheduleId);
+            await unitOfWork.SaveChangesAsync();
+            return CreateLessonResult.Downgraded(draft.ToLessonDraftDto());
         }
 
-        await unitOfWork.SaveChangesAsync();
+        
     }
 
-    public async Task<EditLessonResult> EditLesson(LessonDto lessonDto, int scheduleId)
+    public async Task<EditLessonResult> EditLesson(LessonDto lessonDto, Guid scheduleId)
     {
         var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId);
         var lesson = schedule.Lessons.FirstOrDefault(x => x.Id == lessonDto.Id);
@@ -115,7 +120,7 @@ public class LessonServices(
         return EditLessonResult.Success(lesson.ToLessonDto());
     }
 
-    public async Task DeleteLesson(LessonDto lessonDto, int scheduleId)
+    public async Task DeleteLesson(LessonDto lessonDto, Guid scheduleId)
     {
         var lesson = await lessonRepository.GetLessonByIdAsync(lessonDto.Id);
         await lessonRepository.Delete(lesson);

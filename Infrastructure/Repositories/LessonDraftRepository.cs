@@ -8,7 +8,7 @@ namespace Infrastructure.Repositories;
 
 public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepository
 {
-    public async Task AddAsync(LessonDraft lessonDraft, int scheduleId)
+    public async Task AddAsync(LessonDraft lessonDraft, Guid scheduleId)
     {
         var lessonDraftDbo = lessonDraft.ToLessonDraftDbo();
         var schedule = await context.Schedules
@@ -29,7 +29,7 @@ public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepo
         await context.LessonDrafts.AddAsync(lessonDraftDbo);
     }
 
-    public async Task<List<LessonDraft>> GetLessonDraftsByScheduleId(int scheduleId)
+    public async Task<List<LessonDraft>> GetLessonDraftsByScheduleId(Guid scheduleId)
     {
         var lessonDraftDbos = await context.LessonDrafts.Where(x => x.ScheduleId == scheduleId)
             .Include(x => x.Teacher)
@@ -41,7 +41,7 @@ public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepo
         return lessonDraftDbos.ToLessonDrafts();
     }
 
-    public async Task<LessonDraft> GetLessonDraftById(int id)
+    public async Task<LessonDraft> GetLessonDraftById(Guid id)
     {
         var lessonDraftDbo = await context.LessonDrafts
             .Include(x => x.Teacher)

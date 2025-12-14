@@ -1,7 +1,7 @@
 ﻿namespace Domain.Models;
 
 public class LessonDraft(
-    int id,
+    Guid id,
     int scheduleId,
     SchoolSubject schoolSubject,
     LessonNumber? lessonNumber,
@@ -9,7 +9,7 @@ public class LessonDraft(
     StudyGroup? studyGroup,
     Classroom? classroom,
     StudySubgroup? studySubgroup = null,
-    string? comment = null) : Entity<int>(id)
+    string? comment = null) : Entity<Guid>(id)
 {
     public int ScheduleId { get; private set; } = scheduleId;
     public SchoolSubject SchoolSubject { get; private set; } = schoolSubject;
