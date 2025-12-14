@@ -2,6 +2,7 @@
 
 public class LessonDraft(
     int id,
+    int scheduleId,
     SchoolSubject schoolSubject,
     LessonNumber? lessonNumber,
     Teacher? teacher,
@@ -10,6 +11,7 @@ public class LessonDraft(
     StudySubgroup? studySubgroup = null,
     string? comment = null) : Entity<int>(id)
 {
+    public int ScheduleId { get; private set; } = scheduleId;
     public SchoolSubject SchoolSubject { get; private set; } = schoolSubject;
     public LessonNumber? LessonNumber { get; private set; } = lessonNumber;
     public Teacher? Teacher { get; private set; } = teacher;
@@ -21,6 +23,7 @@ public class LessonDraft(
     public static LessonDraft CreateFromLesson(Lesson lesson)
     {
         return new LessonDraft(lesson.Id,
+            lesson.ScheduleId,
             lesson.SchoolSubject,
             lesson.LessonNumber,
             lesson.Teacher,

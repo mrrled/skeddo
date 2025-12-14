@@ -2,6 +2,7 @@ namespace Domain.Models;
 
 public class Lesson(
     int id,
+    int scheduleId,
     SchoolSubject schoolSubject,
     LessonNumber lessonNumber,
     Teacher teacher,
@@ -12,6 +13,7 @@ public class Lesson(
     WarningType warningType = WarningType.Normal
 ) : Entity<int>(id)
 {
+    public int ScheduleId { get; private set; } = scheduleId;
     public SchoolSubject SchoolSubject { get; private set; } = schoolSubject;
     public LessonNumber LessonNumber { get; private set; } = lessonNumber;
     public Teacher Teacher { get; private set; } = teacher;
@@ -63,8 +65,6 @@ public class Lesson(
 
     public void SetComment(string? comment)
     {
-        if (comment is null)
-            throw new ArgumentNullException(nameof(comment));
         Comment = comment;
     }
 }

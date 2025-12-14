@@ -43,8 +43,8 @@
     </Application.DataTemplates>
 
     <Application.Resources>
-        <sys:Double x:Key="LessonCardWidth">150</sys:Double>
-        <sys:Double x:Key="LessonCardHeight">120</sys:Double>
+        <x:Double x:Key="LessonCardWidth">150</x:Double>
+        <x:Double x:Key="LessonCardHeight">120</x:Double>
         
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Application.Resources>

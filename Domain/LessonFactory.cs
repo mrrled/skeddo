@@ -15,6 +15,7 @@ public class LessonFactory : ILessonFactory
         if (lessonDraft.Classroom is null)
             return Result<Lesson>.Failure("Classroom cannot be null");
         var lesson = new Lesson(lessonDraft.Id,
+            lessonDraft.ScheduleId,
             lessonDraft.SchoolSubject,
             lessonDraft.LessonNumber,
             lessonDraft.Teacher,

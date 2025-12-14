@@ -95,13 +95,13 @@ public class AnotherScheduleViewModel : ViewModelBase
         }
         else
         {
-            var tableViewModel = new LessonTableViewModel(schedule, scopeFactory);
+            var tableViewModel = new LessonTableViewModel(schedule, scopeFactory, windowManager);
             var tab = new ScheduleTabViewModel(
                 schedule, 
                 tableViewModel, 
                 scopeFactory,
                 CloseTabById,
-                new LessonBufferViewModel(scopeFactory));
+                new LessonBufferViewModel(scopeFactory, windowManager));
             
             Tabs.Add(tab);
             SelectedTab = tab;
@@ -128,7 +128,7 @@ public class AnotherScheduleViewModel : ViewModelBase
         var id = CurrentSchedule?.Id;
         if (id == null) return Task.CompletedTask;
         
-        var vm = new LessonCreationViewModel(scopeFactory, id.Value);
+        var vm = new LessonEditViewModel(scopeFactory, id.Value);
         vm.LessonCreated += async lesson =>
         {
             using var scope = scopeFactory.CreateScope();

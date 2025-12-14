@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Avalonia.Collections;
 using Microsoft.Extensions.DependencyInjection;
+using newUI.Services;
 using newUI.ViewModels.SchedulePage.Lessons;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
@@ -13,10 +14,14 @@ public class LessonBufferViewModel : ViewModelBase
 {
     private AvaloniaDictionary<int, LessonDraftDto> lessonDictionary = new();
     private readonly IServiceScopeFactory scopeFactory;
+    private readonly IWindowManager windowManager;
 
-    public LessonBufferViewModel(IServiceScopeFactory scopeFactory)
+    public LessonBufferViewModel(
+        IServiceScopeFactory scopeFactory,
+        IWindowManager windowManager)
     {
         this.scopeFactory = scopeFactory;
+        this.windowManager = windowManager;
         ClearCommand = new RelayCommandAsync(ClearAsync);
     }
 
@@ -29,7 +34,7 @@ public class LessonBufferViewModel : ViewModelBase
     public AvaloniaList<LessonCardViewModel> LessonCards
     {
         get => new (lessonDictionary.Values
-            .Select(lesson => new LessonCardViewModel(scopeFactory)
+            .Select(lesson => new LessonCardViewModel(scopeFactory, windowManager)
             {
                 Lesson = lesson.ToLessonDto()
             }));

@@ -9,10 +9,10 @@
         Title=""
         Width="500" Height="650"
         MinWidth="450" MinHeight="550"
-        x:DataType="vm:LessonCreationViewModel">
+        x:DataType="vm:LessonEditViewModel">
     
     <Design.DataContext>
-        <vm:LessonCreationViewModel />
+        <vm:LessonEditViewModel />
     </Design.DataContext>
     
     <Window.Styles>
@@ -196,8 +196,14 @@
                     Background="Transparent"
                     BorderBrush="Gray"/>
             
+            <Button Content="Удалить урок" 
+                    Command="{Binding DeleteCommand}"
+                    Background="Transparent"
+                    IsVisible="{Binding !IsCreation}"
+                    BorderBrush="Gray"/>
+            
             <Button Content="Создать" 
-                    Command="{Binding CreateLessonCommand}"
+                    Command="{Binding SaveCommand}"
                     Classes="accent"/>
             
         </StackPanel>

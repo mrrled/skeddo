@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
              xmlns:lessonCard="clr-namespace:newUI.Views.SchedulePage.LessonCard"
+
              x:Class="newUI.Views.SchedulePage.ScheduleTable.LessonTableView"
              x:DataType="vm:LessonTableViewModel">
     
@@ -76,7 +77,6 @@
                 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <!-- Используем Cells (ObservableCollection) вместо CellDictionary -->
                         <ItemsControl ItemsSource="{Binding Cells}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -85,9 +85,42 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="Gray" BorderThickness="1" 
-                                            Width="{DynamicResource LessonCardWidth}"
-                                            Height="{DynamicResource LessonCardHeight}">
+                                    <Border x:Name="LessonBorder"
+                                           BorderBrush="Gray" 
+                                           BorderThickness="1" 
+                                           Width="{DynamicResource LessonCardWidth}"
+                                           Height="{DynamicResource LessonCardHeight}">
+                                        
+                                        <!-- Обработчики событий мыши для DnD -->
+                                        <Border.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Редактировать"
+                                                         Command="{Binding ClickCommand}"/>
+                                                <!-- <MenuItem Header="Удалить" -->
+                                                <!--          Command="{Binding DeleteCommand}"/> -->
+                                            </ContextMenu>
+                                        </Border.ContextMenu>
+                                        
+                                        <Border.Styles>
+                                            <Style Selector="Border:empty">
+                                                <Setter Property="Background" Value="#f8f8f8"/>
+                                                <Setter Property="ToolTip.Tip" Value="Пустая ячейка"/>
+                                            </Style>
+                                        </Border.Styles>
+                                        
+                                        <Interaction.Behaviors>
+                                            <!-- Клик для редактирования -->
+                                            <EventTriggerBehavior EventName="PointerPressed">
+                                                <InvokeCommandAction Command="{Binding ClickCommand}"/>
+                                            </EventTriggerBehavior>
+        
+                                            <!-- Двойной клик -->
+                                            <!-- <EventTriggerBehavior EventName="DoubleTapped"> -->
+                                            <!--     <InvokeCommandAction Command="{Binding DoubleClickCommand}"/> -->
+                                            <!-- </EventTriggerBehavior> -->
+                                        </Interaction.Behaviors>
+                                        
+                                        <!-- Контент карточки -->
                                         <lessonCard:LessonCard IsVisible="{Binding IsVisible}"/>
                                     </Border>
                                 </DataTemplate>
