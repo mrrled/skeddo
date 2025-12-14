@@ -23,6 +23,7 @@ using newUI.ViewModels.MainPage.ScheduleEditor;
 using newUI.ViewModels.MainPage.ScheduleList;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchedulePage.Lessons;
+using newUI.ViewModels.SchedulePage.Toolbar;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectEditor;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectList;
 using newUI.ViewModels.TeachersPage.TeacherEditor;
@@ -36,6 +37,7 @@ using newUI.Views.MainPage.ScheduleList;
 using newUI.Views.SchedulePage.LessonCreationWindow;
 using newUI.Views.SchedulePage.ScheduleTable;
 using newUI.Views.SchedulePage.ScheduleWindow;
+using newUI.Views.SchedulePage.Toolbar;
 using newUI.Views.SchoolSubjectsPage.SchoolSubjectEditor;
 using newUI.Views.SchoolSubjectsPage.SchoolSubjectList;
 using newUI.Views.TeachersPage.TeacherList;
@@ -167,6 +169,7 @@ public partial class App : Avalonia.Application
         ViewMappingService.RegisterWindow<MainViewModel, MainWindow>();
         ViewMappingService.RegisterUserControl<AnotherScheduleViewModel, ScheduleWindow>();
         
+        ViewMappingService.RegisterUserControl<ToolbarViewModel, ToolbarView>();
         ViewMappingService.RegisterWindow<ConfirmDeleteViewModel, ConfirmDeleteWindow>();
         
         ViewMappingService.RegisterWindow<ScheduleEditorViewModel, ScheduleEditorWindow>();

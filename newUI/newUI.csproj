@@ -21,6 +21,7 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="3.0.0-preview3.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
       <PrivateAssets>all</PrivateAssets>
@@ -62,10 +63,12 @@
       <DependentUpon>ScheduleListViewView.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\SchedulePage\Toolbar\ToolbarView.cs">
+      <DependentUpon>ToolbarView.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\SchedulePage\" />
     <Folder Include="Views\SchedulePage\BufferWindow\" />
   </ItemGroup>
 </Project>

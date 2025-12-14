@@ -3,15 +3,18 @@
         xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
         xmlns:scheduleTable="clr-namespace:newUI.Views.SchedulePage.ScheduleTable"
         xmlns:lessonCard="clr-namespace:newUI.Views.SchedulePage.LessonCard"
+        xmlns:toolbar="clr-namespace:newUI.Views.SchedulePage.Toolbar"
         x:Class="newUI.Views.SchedulePage.ScheduleWindow.ScheduleWindow"
         x:DataType="vm:AnotherScheduleViewModel">
 
     <Grid>
         <Grid.RowDefinitions>
-            <!-- Первая строка: Вкладки (самый верх) -->
+            <!-- Первая строка: Вкладки -->
             <RowDefinition Height="Auto"/>
-            <!-- Вторая строка: Кнопки и расписание -->
+            <!-- Вторая строка: Основной контент (лево/право) -->
             <RowDefinition Height="*"/>
+            <!-- Третья строка: Нижний тулбар -->
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
         <!-- ВКЛАДКИ (самый верх всей страницы) -->
@@ -237,5 +240,9 @@
                 </Border>
             </Grid>
         </Grid>
+        
+        <!-- НИЖНИЙ ТУЛБАР  -->
+        <toolbar:ToolbarView Grid.Row="2"
+                                     DataContext="{Binding Toolbar}"/>
     </Grid>
 </UserControl>

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
 using newUI.ViewModels.MainPage.ScheduleList;
 using newUI.ViewModels.SchedulePage.Lessons;
+using newUI.ViewModels.SchedulePage.Toolbar;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
@@ -20,6 +21,7 @@ public class AnotherScheduleViewModel : ViewModelBase
     private ObservableCollection<ScheduleTabViewModel> tabs = new();
     private ScheduleTabViewModel selectedTab;
     private readonly NavigationService navigationService;
+    private ToolbarViewModel toolbar;
 
     public AnotherScheduleViewModel(
         IServiceScopeFactory scopeFactory,
@@ -33,6 +35,13 @@ public class AnotherScheduleViewModel : ViewModelBase
         AddLessonCommand = new AsyncRelayCommand(AddLessonAsync);
         LoadCurrentScheduleCommand = new AsyncRelayCommand(LoadCurrentScheduleAsync);
         OpenScheduleListCommand = new RelayCommand(OpenScheduleList);
+        
+        Toolbar = new ToolbarViewModel(
+            saveCommand: new RelayCommandAsync(SaveScheduleAsync),
+            exportCommand: new RelayCommandAsync(ExportScheduleAsync),
+            deleteCommand: new RelayCommandAsync(DeleteScheduleAsync),
+            closeCommand: new RelayCommandAsync(CloseWindowAsync)
+        );
     }
     
     public bool HasTabs => Tabs?.Count > 0;
@@ -52,6 +61,12 @@ public class AnotherScheduleViewModel : ViewModelBase
     {
         get => tabs;
         set => SetProperty(ref tabs, value);
+    }
+    
+    public ToolbarViewModel Toolbar
+    {
+        get => toolbar;
+        set => SetProperty(ref toolbar, value);
     }
     
     public ScheduleTabViewModel SelectedTab
@@ -139,6 +154,26 @@ public class AnotherScheduleViewModel : ViewModelBase
         };
         
         vm.Window = windowManager.ShowWindow(vm);
+        return Task.CompletedTask;
+    }
+    
+    private Task SaveScheduleAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task ExportScheduleAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteScheduleAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task CloseWindowAsync()
+    {
         return Task.CompletedTask;
     }
 }
