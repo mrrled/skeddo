@@ -16,6 +16,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
+            .Include(x => x.StudySubgroup)
             .ToListAsync();
         return lessons.ToLessons();
     }
@@ -28,6 +29,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
+            .Include(x => x.StudySubgroup)
             .FirstOrDefaultAsync(x => x.Id == id);
         if (lessonDbo is null)
             throw new InvalidOperationException();
@@ -42,6 +44,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
+            .Include(x => x.StudySubgroup)
             .Where(x => lessonIds.Contains(x.Id))
             .ToListAsync();
         return lessons.ToLessons();
@@ -78,6 +81,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
+            .Include(x => x.StudySubgroup)
             .FirstOrDefaultAsync(x => x.Id == lesson.Id);
         if (lessonDbo is null)
             throw new InvalidOperationException();
