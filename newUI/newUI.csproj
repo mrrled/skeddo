@@ -66,6 +66,9 @@
     <Compile Update="Views\SchedulePage\Toolbar\ToolbarView.cs">
       <DependentUpon>ToolbarView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\Shared\NotificationWindow.axaml.cs">
+      <DependentUpon>NotificationView.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

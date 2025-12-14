@@ -172,6 +172,7 @@ public partial class App : Avalonia.Application
         
         ViewMappingService.RegisterUserControl<ToolbarViewModel, ToolbarView>();
         ViewMappingService.RegisterWindow<ConfirmDeleteViewModel, ConfirmDeleteWindow>();
+        ViewMappingService.RegisterWindow<NotificationViewModel, NotificationWindow>();
         
         ViewMappingService.RegisterWindow<ScheduleEditorViewModel, ScheduleEditorWindow>();
         ViewMappingService.RegisterUserControl<ScheduleListViewModel, ScheduleListView>();
