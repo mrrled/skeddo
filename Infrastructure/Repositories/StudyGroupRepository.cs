@@ -58,6 +58,9 @@ public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupReposi
 
     public async Task Delete(StudyGroup studyGroup)
     {
-        await context.StudyGroups.Where(x => x.Id == studyGroup.Id).ExecuteDeleteAsync();
+        var studyGroupDbo = await context.StudyGroups
+            .Include(s => s.StudySubgroups)
+            .FirstAsync(x => x.Id == studyGroup.Id);
+        context.StudyGroups.Remove(studyGroupDbo);
     }
 }
