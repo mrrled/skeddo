@@ -78,10 +78,10 @@ public class ScheduleListViewModel : ViewModelBase
     {
         itemVm.RequestSelect += async item =>
         {
-            var scheduleVm = provider.GetRequiredService<AnotherScheduleViewModel>();
+            var scheduleVm = provider.GetRequiredService<ScheduleViewModel>();
             await scheduleVm.LoadSchedule(item.Schedule.Id);
             await Task.Delay(100);
-            navigationService.Navigate<AnotherScheduleViewModel>();
+            navigationService.Navigate<ScheduleViewModel>();
         };
 
         itemVm.RequestDelete += async item =>
