@@ -66,6 +66,8 @@ public partial class App : Avalonia.Application
             configure.SetMinimumLevel(LogLevel.Information);
         });
         
+        services.AddSingleton<ExportGenerator>();
+        
         RegisterServices(services);
         RegisterRepositories(services);
         services.AddScoped<ILessonFactory, LessonFactory>();
