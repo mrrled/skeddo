@@ -51,12 +51,15 @@ public class DboMappingProfile : Profile
                 ctx.Mapper.Map<LessonNumber>(src.LessonNumber),
                 ctx.Mapper.Map<Teacher>(src.Teacher),
                 ctx.Mapper.Map<StudyGroup>(src.StudyGroup),
-                ctx.Mapper.Map<Classroom>(src.Classroom)
+                ctx.Mapper.Map<Classroom>(src.Classroom),
+                ctx.Mapper.Map<StudySubgroup>(src.StudySubgroup)
             ))
             .ForAllMembers(opt => opt.Ignore());
         CreateMap<Lesson, LessonDbo>()
             .ForMember(dest => dest.LessonNumberId, opt => opt.Ignore())
             .ForMember(dest => dest.LessonNumber, opt => opt.Ignore())
+            .ForMember(dest => dest.StudySubgroupId, opt => opt.Ignore())
+            .ForMember(dest => dest.StudySubgroup, opt => opt.Ignore())
             .ForMember(dest => dest.ScheduleId, opt => opt.Ignore())
             .ForMember(dest => dest.SchoolSubject, opt => opt.Ignore())
             .ForMember(dest => dest.StudyGroup, opt => opt.Ignore())
