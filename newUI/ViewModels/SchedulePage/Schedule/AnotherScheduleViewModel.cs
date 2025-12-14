@@ -17,7 +17,6 @@ public class AnotherScheduleViewModel : ViewModelBase
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
     
-    private LessonBufferViewModel buffer;
     private ObservableCollection<ScheduleTabViewModel> tabs = new();
     private ScheduleTabViewModel selectedTab;
     private readonly NavigationService navigationService;
@@ -30,8 +29,6 @@ public class AnotherScheduleViewModel : ViewModelBase
         this.scopeFactory = scopeFactory;
         this.windowManager = windowManager;
         this.navigationService = navigationService;
-        
-        buffer = new LessonBufferViewModel(scopeFactory);
         
         AddLessonCommand = new AsyncRelayCommand(AddLessonAsync);
         LoadCurrentScheduleCommand = new AsyncRelayCommand(LoadCurrentScheduleAsync);
@@ -68,18 +65,14 @@ public class AnotherScheduleViewModel : ViewModelBase
                 {
                     tab.IsSelected = tab == value;
                 }
+                OnPropertyChanged(nameof(Buffer));
             }
         }
     }
     
     public ScheduleDto CurrentSchedule => SelectedTab?.Schedule;
     public LessonTableViewModel CurrentScheduleTable => SelectedTab?.TableViewModel;
-    
-    public LessonBufferViewModel Buffer
-    {
-        get => buffer;
-        set => SetProperty(ref buffer, value);
-    }
+    public LessonBufferViewModel Buffer => SelectedTab?.LessonBuffer;
     
     private async Task LoadCurrentScheduleAsync()
     {
@@ -92,7 +85,6 @@ public class AnotherScheduleViewModel : ViewModelBase
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
         var schedule = await service.GetScheduleByIdAsync(id);
-        buffer.AddMany(schedule.LessonDrafts);
         
         var existingTab = Tabs.FirstOrDefault(t => t.Id == id);
         
@@ -107,8 +99,9 @@ public class AnotherScheduleViewModel : ViewModelBase
             var tab = new ScheduleTabViewModel(
                 schedule, 
                 tableViewModel, 
-                scopeFactory, 
-                CloseTabById);
+                scopeFactory,
+                CloseTabById,
+                new LessonBufferViewModel(scopeFactory));
             
             Tabs.Add(tab);
             SelectedTab = tab;
@@ -125,28 +118,9 @@ public class AnotherScheduleViewModel : ViewModelBase
         {
             SelectedTab = Tabs.LastOrDefault();
         }
-    }
-    
-    public void OpenSchedule(ScheduleDto schedule)
-    {
-        var existingTab = Tabs.FirstOrDefault(t => t.Id == schedule.Id);
-        
-        if (existingTab != null)
-        {
-            SelectedTab = existingTab;
-        }
-        else
-        {
-            var tableViewModel = new LessonTableViewModel(schedule, scopeFactory);
-            var tab = new ScheduleTabViewModel(
-                schedule, 
-                tableViewModel, 
-                scopeFactory, 
-                CloseTabById);
-            
-            Tabs.Add(tab);
-            SelectedTab = tab;
-        }
+        OnPropertyChanged(nameof(HasTabs));
+        OnPropertyChanged(nameof(HasSelectedTab));
+        OnPropertyChanged(nameof(NoTabs));
     }
     
     public Task AddLessonAsync()

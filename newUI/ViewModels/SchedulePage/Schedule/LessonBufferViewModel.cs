@@ -39,10 +39,15 @@ public class LessonBufferViewModel : ViewModelBase
 
     private Task ClearAsync()
     {
+        Clear();
+        return Task.CompletedTask;
+    }
+
+    public void Clear()
+    {
         Lessons.Clear();
         OnPropertyChanged(nameof(Lessons));
         OnPropertyChanged(nameof(LessonCards));
-        return Task.CompletedTask;
     }
 
     public void AddLesson(LessonDraftDto lessonDrafts)
