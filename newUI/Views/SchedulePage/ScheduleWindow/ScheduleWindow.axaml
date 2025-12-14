@@ -7,176 +7,193 @@
         x:DataType="vm:AnotherScheduleViewModel">
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <!-- Левая колонка для буфера (фиксированная ширина) -->
-            <ColumnDefinition Width="200"/>
-            <!-- Правая колонка для расписания (вся оставшаяся ширина) -->
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <!-- Первая строка: Вкладки (самый верх) -->
+            <RowDefinition Height="Auto"/>
+            <!-- Вторая строка: Кнопки и расписание -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         
-        <!-- Боковая панель с буфером на всю высоту -->
-        <Border Grid.Column="0" 
+        <!-- ВКЛАДКИ (самый верх всей страницы) -->
+        <Border Grid.Row="0"
                BorderBrush="LightGray" 
-               BorderThickness="0,0,1,0"
-               Background="WhiteSmoke">
-            <DockPanel>
-                <!-- Заголовок буфера -->
-                <Border DockPanel.Dock="Top" 
-                       Background="#f0f0f0" 
-                       BorderBrush="LightGray" 
-                       BorderThickness="0,0,0,1">
-                    <StackPanel Margin="10">
-                        <TextBlock Text="Буфер уроков" 
-                                  FontWeight="Bold" 
-                                  FontSize="16" 
-                                  HorizontalAlignment="Center"/>
+               BorderThickness="0,0,0,1"
+               Background="White">
+            <StackPanel>
+                <!-- Вкладки (показываются только если есть открытые расписания) -->
+                <Border BorderBrush="LightGray" 
+                       BorderThickness="0,0,0,1"
+                       Background="#f8f8f8"
+                       Padding="10,10,10,0"
+                       IsVisible="{Binding HasTabs}">
+                    <TabControl ItemsSource="{Binding Tabs}"
+                               SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
+                               BorderThickness="0">
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="{Binding Title}" 
+                                              VerticalAlignment="Center"
+                                              Margin="5"
+                                              FontSize="16"
+                                              FontWeight="Normal"/>
+                                    
+                                    <Button Grid.Column="1"
+                                           Command="{Binding CloseCommand}"
+                                           Content="✕"
+                                           FontSize="10"
+                                           Width="20"
+                                           Height="20"
+                                           Padding="0"
+                                           Margin="0,0,4,0"
+                                           Background="Transparent"
+                                           BorderThickness="0"
+                                           Cursor="Hand"
+                                           HorizontalContentAlignment="Center"
+                                           VerticalContentAlignment="Center">
+                                        <Button.Styles>
+                                            <Style Selector="Button">
+                                                <Setter Property="Foreground" Value="Gray" />
+                                            </Style>
+                                            <Style Selector="Button:pointerover">
+                                                <Setter Property="Foreground" Value="Red" />
+                                                <Setter Property="Background" Value="#e0e0e0" />
+                                            </Style>
+                                        </Button.Styles>
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
                         
-                        <Button Content="Очистить буфер" 
-                                Margin="0,10,0,0" 
-                                HorizontalAlignment="Stretch"
-                                Command="{Binding Buffer.ClearCommand}"
-                                Padding="8,4"/>
-                    </StackPanel>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <!-- Пусто, контент показываем отдельно -->
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
+                    </TabControl>
                 </Border>
                 
-                <!-- Список уроков в буфере -->
-                <ScrollViewer>
-                    <ItemsControl ItemsSource="{Binding Buffer.LessonCards}"
-                                 Margin="10">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border BorderBrush="#ddd" 
-                                       BorderThickness="1" 
-                                       Margin="0,0,0,5" 
-                                       Background="White"
-                                       CornerRadius="3">
-                                    <lessonCard:LessonCard />
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                        
-                        <!-- Сообщение при пустом буфере -->
-                        <ItemsControl.Styles>
-                            <Style Selector="ItemsControl:empty">
-                                <Setter Property="Template">
-                                    <ControlTemplate>
-                                        <StackPanel HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"
-                                                   Margin="20">
-                                            <TextBlock Text="Буфер пуст" 
-                                                      FontSize="14"
-                                                      HorizontalAlignment="Center"/>
-                                            <TextBlock Text="Добавьте уроки из расписания"
-                                                      FontSize="11"
-                                                      HorizontalAlignment="Center"
-                                                      Margin="0,5,0,0"
-                                                      TextWrapping="Wrap"
-                                                      TextAlignment="Center"/>
-                                        </StackPanel>
-                                    </ControlTemplate>
-                                </Setter>
-                            </Style>
-                        </ItemsControl.Styles>
-                    </ItemsControl>
-                </ScrollViewer>
-            </DockPanel>
+                <!-- Сообщение если нет вкладок -->
+                <Border IsVisible="{Binding NoTabs}"
+                       Background="#f8f9fa"
+                       Padding="20"
+                       BorderBrush="LightGray" 
+                       BorderThickness="0,0,0,1">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="Нет открытых расписаний" 
+                                  FontSize="16"
+                                  FontWeight="Bold"
+                                  Margin="0,0,0,10"/>
+                        <TextBlock Text="Выберите расписание из списка"
+                                  HorizontalAlignment="Center"/>
+                        <Button Content="Открыть список расписаний"
+                               Command="{Binding OpenScheduleListCommand}"
+                               Margin="0,20,0,0"
+                               Padding="10,5"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
         </Border>
 
-        <!-- Правая часть с вкладками и расписанием -->
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <!-- Верхняя строка для вкладок и кнопок -->
-                <RowDefinition Height="Auto"/>
-                <!-- Основная строка для содержимого -->
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+        <!-- ОСНОВНАЯ ОБЛАСТЬ (под вкладками) -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <!-- Левая колонка для буфера -->
+                <ColumnDefinition Width="200"/>
+                <!-- Правая колонка для кнопок и расписания -->
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             
-            <!-- Панель с вкладками и инструментами -->
-            <Border Grid.Row="0" 
+            <!-- БОКОВАЯ ПАНЕЛЬ С БУФЕРОМ -->
+            <Border Grid.Column="0" 
                    BorderBrush="LightGray" 
-                   BorderThickness="0,0,0,1"
-                   Background="White"
-                   Padding="10">
-                <StackPanel>
-                    <!-- Вкладки (показываются только если есть открытые расписания) -->
-                    <Border BorderBrush="LightGray" 
-                           BorderThickness="1" 
-                           CornerRadius="3"
-                           IsVisible="{Binding HasTabs}">
-                        <TabControl ItemsSource="{Binding Tabs}"
-                                   SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
-                                   BorderThickness="0">
-                            <TabControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        
-                                        <TextBlock Text="{Binding Title}" 
-                                                  VerticalAlignment="Center"
-                                                  Margin="8,4"
-                                                  FontSize="18"/>
-                                        
-                                        <Button Grid.Column="1"
-                                               Command="{Binding CloseCommand}"
-                                               Content="✕"
-                                               FontSize="10"
-                                               Width="20"
-                                               Height="20"
-                                               Padding="0"
-                                               Margin="0,0,4,0"
-                                               Background="Transparent"
-                                               BorderThickness="0"
-                                               Cursor="Hand">
-                                            <Button.Styles>
-                                                <Style Selector="Button">
-                                                    <Setter Property="Foreground" Value="Gray" />
-                                                </Style>
-                                                <Style Selector="Button:pointerover">
-                                                    <Setter Property="Foreground" Value="Red" />
-                                                    <Setter Property="Background" Value="#f0f0f0" />
-                                                </Style>
-                                            </Button.Styles>
-                                        </Button>
-                                    </Grid>
-                                </DataTemplate>
-                            </TabControl.ItemTemplate>
-                            
-                            <TabControl.ContentTemplate>
-                                <DataTemplate>
-                                    <!-- Пусто, контент показываем отдельно -->
-                                </DataTemplate>
-                            </TabControl.ContentTemplate>
-                        </TabControl>
-                    </Border>
-                    
-                    <!-- Сообщение если нет вкладок -->
-                    <Border IsVisible="{Binding NoTabs}"
-                           Background="#f8f9fa"
-                           Padding="20"
-                           CornerRadius="3"
-                           Margin="0,10,0,0">
-                        <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="📋 Нет открытых расписаний" 
-                                      FontSize="16"
-                                      FontWeight="Bold"
-                                      Margin="0,0,0,10"/>
-                            <TextBlock Text="Выберите расписание из списка"
+                   BorderThickness="0,0,1,0"
+                   Background="WhiteSmoke">
+                <DockPanel>
+                    <!-- Заголовок буфера -->
+                    <Border DockPanel.Dock="Top" 
+                           Background="#f0f0f0" 
+                           BorderBrush="LightGray" 
+                           BorderThickness="0,0,0,1">
+                        <StackPanel Margin="10">
+                            <TextBlock Text="Буфер уроков" 
+                                      FontWeight="Bold" 
+                                      FontSize="16" 
                                       HorizontalAlignment="Center"/>
-                            <Button Content="Открыть список расписаний"
-                                   Command="{Binding OpenScheduleListCommand}"
-                                   Margin="0,20,0,0"
-                                   Padding="10,5"/>
+                            
+                            <Button Content="Очистить буфер" 
+                                    Margin="0,10,0,0" 
+                                    HorizontalAlignment="Stretch"
+                                    Command="{Binding Buffer.ClearCommand}"
+                                    Padding="8,4"/>
                         </StackPanel>
                     </Border>
                     
-                    <!-- Панель инструментов (только если есть выбранная вкладка) -->
-                    <StackPanel Orientation="Horizontal" 
-                               Spacing="10" 
-                               Margin="0,10,0,0"
-                               IsVisible="{Binding HasSelectedTab}">
+                    <!-- Список уроков в буфере -->
+                    <ScrollViewer>
+                        <ItemsControl ItemsSource="{Binding Buffer.LessonCards}"
+                                     Margin="10">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="#ddd" 
+                                           BorderThickness="1" 
+                                           Margin="0,0,0,5" 
+                                           Background="White"
+                                           CornerRadius="3">
+                                        <lessonCard:LessonCard />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            
+                            <!-- Сообщение при пустом буфере -->
+                            <ItemsControl.Styles>
+                                <Style Selector="ItemsControl:empty">
+                                    <Setter Property="Template">
+                                        <ControlTemplate>
+                                            <StackPanel HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Margin="20">
+                                                <TextBlock Text="Буфер пуст" 
+                                                          FontSize="14"
+                                                          HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Добавьте уроки из расписания"
+                                                          FontSize="11"
+                                                          HorizontalAlignment="Center"
+                                                          Margin="0,5,0,0"
+                                                          TextWrapping="Wrap"
+                                                          TextAlignment="Center"/>
+                                            </StackPanel>
+                                        </ControlTemplate>
+                                    </Setter>
+                                </Style>
+                            </ItemsControl.Styles>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- ПРАВАЯ ЧАСТЬ (Кнопки и расписание) -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <!-- Верхняя строка: Панель инструментов с кнопками -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Основная строка: Расписание -->
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- ПАНЕЛЬ ИНСТРУМЕНТОВ С КНОПКАМИ -->
+                <Border Grid.Row="0"
+                       BorderBrush="LightGray" 
+                       BorderThickness="0,0,0,1"
+                       Background="White"
+                       Padding="10"
+                       IsVisible="{Binding HasSelectedTab}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
                         <Button Content="Обновить" 
                                Command="{Binding LoadCurrentScheduleCommand}"
                                Padding="10,5"/>
@@ -184,22 +201,41 @@
                         <Button Content="Создать урок" 
                                Command="{Binding AddLessonCommand}"
                                Padding="10,5"/>
+                        
+                        <!-- Дополнительное место для других кнопок -->
+                        <Border Width="5"/>
+                        
+                        <!-- Информация о текущем расписании -->
+                        <Border Background="AliceBlue" 
+                               Padding="8,4"
+                               CornerRadius="3">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="Текущее:" 
+                                          FontWeight="SemiBold"
+                                          VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedTab.Title}" 
+                                          FontWeight="Bold"
+                                          MaxWidth="200"
+                                          TextTrimming="CharacterEllipsis"
+                                          VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
-                </StackPanel>
-            </Border>
-            
-            <!-- Область расписания (показывается только если есть выбранная вкладка) -->
-            <Border Grid.Row="1"
-                   Margin="10"
-                   BorderBrush="LightGray" 
-                   BorderThickness="1"
-                   Background="White"
-                   IsVisible="{Binding HasSelectedTab}">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                             VerticalScrollBarVisibility="Auto">
-                    <scheduleTable:LessonTableView DataContext="{Binding SelectedTab.TableViewModel}"/>
-                </ScrollViewer>
-            </Border>
+                </Border>
+                
+                <!-- ОБЛАСТЬ РАСПИСАНИЯ -->
+                <Border Grid.Row="1"
+                       Margin="10"
+                       BorderBrush="LightGray" 
+                       BorderThickness="1"
+                       Background="White"
+                       IsVisible="{Binding HasSelectedTab}">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                 VerticalScrollBarVisibility="Auto">
+                        <scheduleTable:LessonTableView DataContext="{Binding SelectedTab.TableViewModel}"/>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>
