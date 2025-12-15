@@ -27,7 +27,7 @@ public class Entity<TId>(TId id)
         return $"{GetType().Name}({nameof(Id)}: {Id})";
     }
 
-    public static bool operator ==(Entity<TId> left, Entity<TId> right)
+    public static bool operator ==(Entity<TId>? left, Entity<TId>? right)
     {
         return Equals(left, right);
     }
