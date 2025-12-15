@@ -113,6 +113,11 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
 
     public async Task Delete(Schedule schedule)
     {
-        await context.Schedules.Where(x => x.Id == schedule.Id).ExecuteDeleteAsync();
+        var sched = await context.Schedules
+            .Include(s => s.Lessons)
+            .Include(s => s.LessonDrafts)
+            .Include(s => s.LessonNumbers)
+            .FirstAsync(s => s.Id == schedule.Id);
+        context.Schedules.Remove(sched);
     }
 }

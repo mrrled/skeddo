@@ -1,10 +1,9 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:newUI.ViewModels"
         xmlns:viewModels="clr-namespace:newUI.ViewModels"
         xmlns:navigation="clr-namespace:newUI.Views.Navigation"
         x:Class="newUI.Views.MainWindow.MainWindow"
-        Title="Avalonia List App"
+        Title=""
         x:DataType="viewModels:MainViewModel">
 
     <DockPanel>

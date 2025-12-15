@@ -19,10 +19,13 @@ public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepo
         var lessonNumber = lessonDraft.LessonNumber is null ? null :
             await context.LessonNumbers.FirstOrDefaultAsync(x =>
                 x.ScheduleId == scheduleId && x.Number == lessonDraft.LessonNumber.Number);
-        if (lessonNumber is null)
-            throw new InvalidOperationException();
+        var studySubgroup = lessonDraft.StudySubgroup is null
+            ? null
+            : await context.StudySubgroups.FirstOrDefaultAsync(x =>
+                x.StudyGroup.Id == lessonDraft.StudyGroup.Id && x.Name == lessonDraft.StudySubgroup.Name);
+        lessonDraftDbo.StudySubgroupId = studySubgroup?.Id;
         lessonDraftDbo.ScheduleId = scheduleId;
-        lessonDraftDbo.LessonNumberId = lessonNumber.Id;
+        lessonDraftDbo.LessonNumberId = lessonNumber?.Id;
         await context.LessonDrafts.AddAsync(lessonDraftDbo);
     }
 

@@ -43,14 +43,18 @@ public class LessonServices(
         var studyGroup = lessonDto.StudyGroup is null
             ? null
             : await studyGroupRepository.GetStudyGroupByIdAsync(lessonDto.StudyGroup.Id);
+        var studySubgroup = lessonDto.StudySubgroup is null
+            ? null
+            : StudySubgroup.CreateStudySubgroup(studyGroup, lessonDto.StudySubgroup.Name);
         var draft = new LessonDraft(lessonDto.Id, schoolSubject, lessonNumber, teacher, studyGroup, classroom,
+            studySubgroup,
             lessonDto.Comment);
         var result = lessonFactory.CreateFromDraft(draft);
         if (result.IsSuccess)
         {
             var editedLessons = schedule.AddLesson(result.Value);
             await lessonRepository.AddAsync(result.Value, scheduleId);
-            await lessonRepository.UpdateRangeAsync(editedLessons.ToList());
+            await lessonRepository.UpdateRangeAsync(editedLessons);
         }
         else
         {
@@ -106,7 +110,7 @@ public class LessonServices(
             classroom,
             lessonDto.Comment
         );
-        await lessonRepository.UpdateRangeAsync(editedLesson.ToList());
+        await lessonRepository.UpdateRangeAsync(editedLesson);
         await unitOfWork.SaveChangesAsync();
         return EditLessonResult.Success(lesson.ToLessonDto());
     }

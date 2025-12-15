@@ -1,52 +1,53 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:teachers="clr-namespace:newUI.ViewModels.TeachersPage.Teachers"
-             xmlns:teacherList="clr-namespace:newUI.Views.TeachersPage.TeacherList"
-             xmlns:schoolSubjects="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects"
-             xmlns:schoolSubjectList="clr-namespace:newUI.Views.SchoolSubjectsPage.SchoolSubjectList"
-             xmlns:classroomList="clr-namespace:newUI.Views.ClassroomsPage.ClassroomList"
-             xmlns:schedule="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
-             xmlns:schedulePage="clr-namespace:newUI.Views.SchedulePage.ScheduleWindow"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:mainPage="clr-namespace:newUI.ViewModels.MainPage"
-             xmlns:mainPage1="clr-namespace:newUI.Views.MainPage"
              xmlns:converters="clr-namespace:newUI.Converters"
-             xmlns:classroomList1="clr-namespace:newUI.ViewModels.ClassroomsPage.ClassroomList"
-             xmlns:scheduleList="clr-namespace:newUI.Views.MainPage.ScheduleList"
+             xmlns:classroomListViewModel="clr-namespace:newUI.ViewModels.ClassroomsPage.ClassroomList"
+             xmlns:classroomListView="clr-namespace:newUI.Views.ClassroomsPage.ClassroomList"
+             xmlns:scheduleListViewModel="clr-namespace:newUI.ViewModels.MainPage.ScheduleList"
+             xmlns:scheduleListView="clr-namespace:newUI.Views.MainPage.ScheduleList"
+             xmlns:scheduleViewModel="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
+             xmlns:scheduleView="clr-namespace:newUI.Views.SchedulePage.ScheduleWindow"
+             xmlns:schoolSubjectListViewModel="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectList"
+             xmlns:schoolSubjectListView="clr-namespace:newUI.Views.SchoolSubjectsPage.SchoolSubjectList"
+             xmlns:teacherListViewModel="clr-namespace:newUI.ViewModels.TeachersPage.TeacherList"
+             xmlns:teacherListView="clr-namespace:newUI.Views.TeachersPage.TeacherList"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="newUI.App"
              RequestedThemeVariant="Light">
 
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+        <avalonia:MaterialIconStyles />
     </Application.Styles>
 
     <Application.DataTemplates>
-        <DataTemplate DataType="mainPage:ScheduleListViewModel">
-            <scheduleList:ScheduleListView />
-        </DataTemplate>
-        
-        <DataTemplate DataType="schedule:ScheduleViewModel">
-            <schedulePage:ScheduleWindow />
-        </DataTemplate>
-        
-        <DataTemplate DataType="teachers:TeacherListViewModel">
-            <teacherList:TeacherListView />
+        <DataTemplate DataType="scheduleListViewModel:ScheduleListViewModel">
+            <scheduleListView:ScheduleListView />
         </DataTemplate>
 
-        <DataTemplate DataType="schoolSubjects:SchoolSubjectListViewModel">
-            <schoolSubjectList:SchoolSubjectListView />
+        <DataTemplate DataType="scheduleViewModel:ScheduleViewModel">
+            <scheduleView:ScheduleWindow />
         </DataTemplate>
 
-        <DataTemplate DataType="classroomList1:ClassroomListViewModel">
-            <classroomList:ClassroomListView />
+        <DataTemplate DataType="teacherListViewModel:TeacherListViewModel">
+            <teacherListView:TeacherListView />
+        </DataTemplate>
+
+        <DataTemplate DataType="schoolSubjectListViewModel:SchoolSubjectListViewModel">
+            <schoolSubjectListView:SchoolSubjectListView />
+        </DataTemplate>
+
+        <DataTemplate DataType="classroomListViewModel:ClassroomListViewModel">
+            <classroomListView:ClassroomListView />
         </DataTemplate>
     </Application.DataTemplates>
 
     <Application.Resources>
         <sys:Double x:Key="LessonCardWidth">150</sys:Double>
         <sys:Double x:Key="LessonCardHeight">120</sys:Double>
-        
-        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </Application.Resources>
 </Application>

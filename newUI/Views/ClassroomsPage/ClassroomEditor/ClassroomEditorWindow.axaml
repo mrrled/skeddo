@@ -1,0 +1,58 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:scheduleEditor="clr-namespace:newUI.ViewModels.ClassroomsPage.ClassroomEditor"
+        x:Class="newUI.Views.ClassroomsPage.ClassroomEditor.ClassroomEditorWindow"
+        Title=""
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        SizeToContent="WidthAndHeight"
+        MaxWidth="500"
+        x:DataType="scheduleEditor:ClassroomEditorViewModel">
+
+    <Window.Styles>
+        <Style Selector="Button.accent">
+            <Setter Property="Background" Value="#2196F3" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="8" /> <Setter Property="Padding" Value="15, 8" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="Button.accent:pointerover">
+            <Setter Property="Background" Value="#1976D2" />
+        </Style>
+    </Window.Styles>
+
+    <StackPanel Margin="20" Spacing="10">
+
+        <TextBlock Text="{Binding HeaderText}"
+                   FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"
+                   Margin="0,0,0,10" />
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="Номер/Название:"
+                       Width="150"
+                       VerticalAlignment="Center"
+                       FontSize="16" />
+
+            <Border CornerRadius="8"
+                    BorderBrush="#BDBDBD"
+                    BorderThickness="1"
+                    Background="White"
+                    Width="220"
+                    Height="36"
+                    Padding="5, 0">
+                <TextBox Watermark="Введите номер/название"
+                         Text="{Binding ClassroomName, Mode=TwoWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         VerticalAlignment="Center" />
+            </Border>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+            <Button Content="Сохранить"
+                    Command="{Binding SaveCommand}"
+                    Classes="accent" />
+        </StackPanel>
+    </StackPanel>
+</Window>

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.DtoModels;
@@ -15,15 +17,15 @@ public class LessonTableViewModel :
 {
     private readonly IServiceScopeFactory scopeFactory;
     private ScheduleDto schedule;
-    private LessonBufferViewModel buffer;
     private AvaloniaList<LessonNumberDto> lessonNumbers;
     private AvaloniaList<StudyGroupDto> studyGroups;
+    private bool isInitialized;
 
-    public LessonTableViewModel(ScheduleDto schedule, IServiceScopeFactory scopeFactory, LessonBufferViewModel buffer)
+    public LessonTableViewModel(ScheduleDto schedule,
+        IServiceScopeFactory scopeFactory)
     {
         this.schedule = schedule;
         this.scopeFactory = scopeFactory;
-        this.buffer = buffer;
         _ = InitializeAsync();
     }
     
@@ -32,6 +34,22 @@ public class LessonTableViewModel :
         await LoadStudyGroupsAsync();
         await LoadLessonNumbersAsync();
         LoadDataToGrid();
+        isInitialized = true;
+    }
+    
+    public async Task RefreshAsync(ScheduleDto newSchedule = null)
+    {
+        if (newSchedule != null)
+        {
+            schedule = newSchedule;
+        }
+        
+        if (isInitialized)
+        {
+            await LoadStudyGroupsAsync();
+            await LoadLessonNumbersAsync();
+            LoadDataToGrid();
+        }
     }
 
     public ScheduleDto Schedule
@@ -70,7 +88,7 @@ public class LessonTableViewModel :
 
     private void LoadDataToGrid()
     {
-        LoadDataFromBackend(() => LoadData().Result);
+        LoadDataFromBackend(LoadData().Result);
     }
 
     private async Task<List<(LessonNumberDto RowHeader, Dictionary<StudyGroupDto, LessonCardViewModel?> CellData)>> LoadData()
@@ -90,8 +108,6 @@ public class LessonTableViewModel :
         {
             if (lesson.LessonNumber != null && lesson.StudyGroup != null) 
                 lessonDictionary[(lesson.LessonNumber.Number, lesson.StudyGroup.Name)] = lesson;
-            else
-                buffer.AddLessonToBuffer(new LessonCardViewModel(scopeFactory){ Lesson = lesson });
         }
 
         foreach (var lessonNumber in LessonNumbers)
@@ -110,5 +126,10 @@ public class LessonTableViewModel :
         }
         
         return result;
+    }
+
+    protected override LessonCardViewModel CreateEmptyCell()
+    {
+        throw new System.NotImplementedException();
     }
 }

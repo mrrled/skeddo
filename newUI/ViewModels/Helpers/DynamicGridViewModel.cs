@@ -6,74 +6,75 @@ using System.Linq;
 
 namespace newUI.ViewModels.Helpers;
 
-public class DynamicGridViewModel<TCell, TColumn, TRow> : ViewModelBase
+public abstract class DynamicGridViewModel<TCell, TColumn, TRow> : ViewModelBase
     where TRow : notnull
     where TColumn : notnull
     where TCell : ViewModelBase
 {
+    private ObservableCollection<TColumn> columns = [];
     private ObservableCollection<TableDataRow<TCell, TColumn, TRow>> rows = [];
+    
+    public ObservableCollection<TColumn> Columns
+    {
+        get => columns;
+        set => SetProperty(ref columns, value);
+    }
 
     public ObservableCollection<TableDataRow<TCell, TColumn, TRow>> Rows
     {
         get => rows;
         set => SetProperty(ref rows, value);
     }
-    public ObservableCollection<TColumn> Columns { get; } = [];
 
-    public DynamicGridViewModel()
+    public void LoadDataFromBackend(List<(TRow RowHeader, Dictionary<TColumn, TCell?> CellData)> data)
     {
-
+        var newColumns = ExtractColumns(data);
+        var newRows = CreateRows(data, newColumns);
+        
+        Columns = new ObservableCollection<TColumn>(newColumns);
+        Rows = new ObservableCollection<TableDataRow<TCell, TColumn, TRow>>(newRows);
     }
-
-    public void LoadDataFromBackend(Func<List<(TRow RowHeader, Dictionary<TColumn, TCell> CellData)>> dataLoader)
+    
+    private List<TColumn> ExtractColumns(List<(TRow RowHeader, Dictionary<TColumn, TCell?> CellData)> data)
     {
-        var rawRows = dataLoader();
-        
-        Rows.Clear();
-        Columns.Clear();
-        
-        if (rawRows == null || rawRows.Count == 0) return;
-
-        foreach (var rowData in rawRows)
+        var newcColumns = new HashSet<TColumn>();
+        foreach (var (_, cellData) in data)
         {
-            var newRow = new TableDataRow<TCell, TColumn, TRow>(rowData.RowHeader);
-            
-            foreach (var cellKvp in rowData.CellData)
+            foreach (var column in cellData.Keys)
             {
-                newRow.SetCell(cellKvp.Key, cellKvp.Value);
+                newcColumns.Add(column);
             }
-            Rows.Add(newRow);
         }
-
-        var allColumns = rawRows
-            .SelectMany(r => r.CellData.Keys)
-            .Distinct()
-            .OrderBy(c => c)
-            .ToList();
-
-        if (allColumns.First() is IComparable)
-        {
-            allColumns = allColumns.OrderBy(c => c).ToList();
-        }
-
-        foreach (var column in allColumns)
-        {
-            Columns.Add(column);
-        }
+        return newcColumns.ToList();
     }
     
-    public void AddRow(TRow rowHeader)
+    private List<TableDataRow<TCell, TColumn, TRow>> CreateRows(
+        List<(TRow RowHeader, Dictionary<TColumn, TCell?> CellData)> data,
+        List<TColumn> newColumns)
     {
-        var newRow = new TableDataRow<TCell, TColumn, TRow>(rowHeader);
-        Rows.Add(newRow);
+        var newRows = new List<TableDataRow<TCell, TColumn, TRow>>();
+        
+        foreach (var (rowHeader, cellData) in data)
+        {
+            var row = new TableDataRow<TCell, TColumn, TRow>(rowHeader, newColumns);
+            
+            foreach (var column in newColumns)
+            {
+                if (cellData.TryGetValue(column, out var cell) && cell != null)
+                {
+                    row.SetCell(column, cell);
+                }
+                else
+                {
+                    row.SetCell(column, CreateEmptyCell());
+                }
+            }
+            
+            newRows.Add(row);
+        }
+        
+        return newRows;
     }
     
-    public void UpdateCell(TRow rowHeader, TColumn columnHeader, TCell value)
-    {
-        var row = Rows.FirstOrDefault(r => r.RowHeader.Equals(rowHeader));
-        if (row != null)
-        {
-            row[columnHeader] = value;
-        }
-    }
+    protected abstract TCell CreateEmptyCell();
 }

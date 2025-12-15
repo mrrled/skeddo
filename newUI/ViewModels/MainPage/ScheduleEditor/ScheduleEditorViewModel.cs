@@ -3,16 +3,17 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
-using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace newUI.ViewModels.MainPage.ScheduleEditor;
 
 public class ScheduleEditorViewModel : ViewModelBase
 {
+    public string HeaderText { get; }
     public event Action<ScheduleDto>? ScheduleSaved;
 
     private string scheduleName = string.Empty;
+
     public string ScheduleName
     {
         get => scheduleName;
@@ -29,6 +30,7 @@ public class ScheduleEditorViewModel : ViewModelBase
     {
         this.scopeFactory = scopeFactory;
         SaveCommand = new RelayCommandAsync(SaveAsync);
+        HeaderText = "Создание расписания";
     }
 
     // Для редактирования существующего
@@ -37,6 +39,7 @@ public class ScheduleEditorViewModel : ViewModelBase
     {
         editingSchedule = scheduleToEdit;
         ScheduleName = scheduleToEdit.Name;
+        HeaderText = "Редактирование названия расписания";
     }
 
     private async Task SaveAsync()

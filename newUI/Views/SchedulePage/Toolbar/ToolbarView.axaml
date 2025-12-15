@@ -1,0 +1,101 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Toolbar"
+             x:Class="newUI.Views.SchedulePage.Toolbar.ToolbarView"
+             x:DataType="vm:ToolbarViewModel">
+
+    <UserControl.Styles>
+        <!-- Стиль кнопок тулбара -->
+        <Style Selector="Button.ToolbarButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+
+        <Style Selector="Button.ToolbarButton:pointerover">
+            <Setter Property="Background" Value="#E0E0E0" />
+        </Style>
+
+        <!-- Стиль для MenuItem -->
+        <Style Selector="MenuItem">
+            <Setter Property="Padding" Value="8,6"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="#FAFAFA"
+            BorderBrush="#E0E0E0"
+            BorderThickness="0,1,0,0"
+            Padding="12">
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+
+            <!-- Сохранить -->
+            <Button Classes="ToolbarButton"
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsEnabled}">
+                <Viewbox Width="24" Height="24">
+                    <icons:MaterialIcon Kind="ContentSave" />
+                </Viewbox>
+            </Button>
+
+            <!-- Экспорт -->
+            <Button Classes="ToolbarButton"
+                    IsEnabled="{Binding IsEnabled}">
+                <Viewbox Width="24" Height="24">
+                    <icons:MaterialIcon Kind="FileExportOutline" />
+                </Viewbox>
+
+                <Button.Flyout>
+                    <MenuFlyout Placement="Bottom">
+
+                        <!-- PDF -->
+                        <MenuItem Header="Экспорт в PDF"
+                                  Command="{Binding PdfExportCommand}">
+                            <MenuItem.Icon>
+                                <Viewbox Width="16" Height="16">
+                                    <icons:MaterialIcon Kind="FilePdfBox" />
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
+
+                        <!-- Excel -->
+                        <MenuItem Header="Экспорт в Excel"
+                                  Command="{Binding ExcelExportCommand}">
+                            <MenuItem.Icon>
+                                <Viewbox Width="16" Height="16">
+                                    <icons:MaterialIcon Kind="FileExcelBox" />
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
+
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+
+            <!-- Удалить -->
+            <Button Classes="ToolbarButton"
+                    Command="{Binding DeleteCommand}"
+                    IsEnabled="{Binding IsEnabled}">
+                <Viewbox Width="24" Height="24">
+                    <icons:MaterialIcon Kind="DeleteOutline" />
+                </Viewbox>
+            </Button>
+
+            <!-- Закрыть -->
+            <Button Classes="ToolbarButton"
+                    Command="{Binding CloseCommand}"
+                    IsEnabled="{Binding IsEnabled}">
+                <Viewbox Width="24" Height="24">
+                    <icons:MaterialIcon Kind="Close" />
+                </Viewbox>
+            </Button>
+
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -15,29 +15,33 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using newUI.Services;
 using newUI.ViewModels;
-using newUI.ViewModels.ClassroomsPage.ClassroomCreation;
-using newUI.ViewModels.ClassroomsPage.ClassroomList;
-using newUI.ViewModels.MainPage;
-using newUI.ViewModels.MainPage.ScheduleEditor;
 using newUI.ViewModels.Navigation;
+using newUI.ViewModels.Shared;
+using newUI.ViewModels.ClassroomsPage.ClassroomEditor;
+using newUI.ViewModels.ClassroomsPage.ClassroomList;
+using newUI.ViewModels.MainPage.ScheduleEditor;
+using newUI.ViewModels.MainPage.ScheduleList;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchedulePage.Lessons;
-using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectCreation;
-using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjects;
-using newUI.ViewModels.TeachersPage.TeacherCreation;
-using newUI.ViewModels.TeachersPage.Teachers;
+using newUI.ViewModels.SchedulePage.Toolbar;
+using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectEditor;
+using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectList;
+using newUI.ViewModels.TeachersPage.TeacherEditor;
+using newUI.ViewModels.TeachersPage.TeacherList;
 using newUI.Views.MainWindow;
-using newUI.Views.SchedulePage.ScheduleTable;
-using newUI.Views.SchedulePage.ScheduleWindow;
-using newUI.Views.TeachersPage.TeacherCreationWindow;
-using newUI.Views.TeachersPage.TeacherList;
-using newUI.Views.SchoolSubjectsPage.SchoolSubjectCreation;
-using newUI.Views.SchoolSubjectsPage.SchoolSubjectList;
-using newUI.Views.ClassroomsPage.ClassroomCreation;
+using newUI.Views.Shared;
+using newUI.Views.ClassroomsPage.ClassroomEditor;
 using newUI.Views.ClassroomsPage.ClassroomList;
-using newUI.Views.MainPage;
 using newUI.Views.MainPage.ScheduleEditor;
 using newUI.Views.MainPage.ScheduleList;
+using newUI.Views.SchedulePage.LessonCreationWindow;
+using newUI.Views.SchedulePage.ScheduleTable;
+using newUI.Views.SchedulePage.ScheduleWindow;
+using newUI.Views.SchedulePage.Toolbar;
+using newUI.Views.SchoolSubjectsPage.SchoolSubjectEditor;
+using newUI.Views.SchoolSubjectsPage.SchoolSubjectList;
+using newUI.Views.TeachersPage.TeacherList;
+using newUI.Views.TeachersPage.TeacherEditor;
 
 namespace newUI;
 
@@ -64,6 +68,8 @@ public partial class App : Avalonia.Application
             configure.SetMinimumLevel(LogLevel.Information);
         });
         
+        services.AddSingleton<ExportGenerator>();
+        
         RegisterServices(services);
         RegisterRepositories(services);
         services.AddScoped<ILessonFactory, LessonFactory>();
@@ -72,6 +78,9 @@ public partial class App : Avalonia.Application
         {
             options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
         });
+        
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IExportServices, ExportServices>();
         
         RegisterFront(services);
         
@@ -86,19 +95,6 @@ public partial class App : Avalonia.Application
         {
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }
-
-        ExportGenerator.GeneratePdf(
-            Services.GetService<ILessonRepository>(),
-            Services.GetService<ILessonNumberRepository>(),
-            Services.GetService<IStudyGroupRepository>(),
-            1
-        );
-        ExportGenerator.GenerateExcel(
-            Services.GetService<ILessonRepository>(),
-            Services.GetService<ILessonNumberRepository>(),
-            Services.GetService<IStudyGroupRepository>(),
-            1
-        );
         base.OnFrameworkInitializationCompleted();
     }
 
@@ -113,7 +109,11 @@ public partial class App : Avalonia.Application
         services.AddTransient<ScheduleListViewModel>();
         services.AddTransient<ScheduleEditorViewModel>();
         
-        services.AddTransient<ScheduleViewModel>();
+        services.AddTransient<LessonCreationViewModel>();
+        services.AddTransient<LessonCreationWindow>();
+        
+        services.AddSingleton<ScheduleViewModel>();
+        // services.AddTransient<ScheduleViewModel>();
         services.AddTransient<ScheduleWindow>();
         
         services.AddTransient<LessonTableView>();
@@ -121,22 +121,20 @@ public partial class App : Avalonia.Application
         
         services.AddTransient<TeacherListView>();
         services.AddTransient<TeacherListViewModel>();
-        services.AddTransient<TeacherCreationViewModel>();
+        services.AddTransient<TeacherEditorViewModel>();
         
         services.AddTransient<SchoolSubjectListView>();
         services.AddTransient<SchoolSubjectListViewModel>();
-        services.AddTransient<SchoolSubjectCreationViewModel>();
+        services.AddTransient<SchoolSubjectEditorViewModel>();
         
         services.AddTransient<ClassroomListView>();
         services.AddTransient<ClassroomListViewModel>();
-        services.AddTransient<ClassroomCreationViewModel>();
+        services.AddTransient<ClassroomEditorViewModel>();
         
         services.AddTransient<LessonCardViewModel>();
 
         services.AddSingleton<NavigationService>();
         services.AddTransient<NavigationBarViewModel>();
-        
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
         
         RegisterViewMappings();
     }
@@ -151,6 +149,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IStudyGroupServices, StudyGroupServices>();
         services.AddScoped<ITeacherServices, TeacherServices>();
         services.AddScoped<ILessonDraftServices, LessonDraftServices>();
+        services.AddScoped<IStudySubgroupService, StudySubgroupService>();
     }
 
     private void RegisterRepositories(ServiceCollection services)
@@ -163,24 +162,31 @@ public partial class App : Avalonia.Application
         services.AddScoped<IStudyGroupRepository, StudyGroupRepository>();
         services.AddScoped<ITeacherRepository, TeacherRepository>();
         services.AddScoped<ILessonDraftRepository, LessonDraftRepository>();
+        services.AddScoped<IStudySubgroupRepository, StudySubgroupRepository>();
     }
     
     private static void RegisterViewMappings()
     {
         ViewMappingService.RegisterWindow<MainViewModel, MainWindow>();
+        ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
+        
+        ViewMappingService.RegisterUserControl<ToolbarViewModel, ToolbarView>();
+        ViewMappingService.RegisterWindow<ConfirmDeleteViewModel, ConfirmDeleteWindow>();
+        ViewMappingService.RegisterWindow<NotificationViewModel, NotificationWindow>();
         
         ViewMappingService.RegisterWindow<ScheduleEditorViewModel, ScheduleEditorWindow>();
         ViewMappingService.RegisterUserControl<ScheduleListViewModel, ScheduleListView>();
         
-        ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
+        ViewMappingService.RegisterWindow<LessonCreationViewModel, LessonCreationWindow>();
+        // ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
         
-        ViewMappingService.RegisterWindow<TeacherCreationViewModel, TeacherCreationWindow>();
+        ViewMappingService.RegisterWindow<TeacherEditorViewModel, TeacherEditorWindow>();
         ViewMappingService.RegisterUserControl<TeacherListViewModel, TeacherListView>();
         
-        ViewMappingService.RegisterWindow<SchoolSubjectCreationViewModel, SchoolSubjectCreationWindow>();
+        ViewMappingService.RegisterWindow<SchoolSubjectEditorViewModel, SchoolSubjectEditorWindow>();
         ViewMappingService.RegisterUserControl<SchoolSubjectListViewModel, SchoolSubjectListView>();
         
-        ViewMappingService.RegisterWindow<ClassroomCreationViewModel, ClassroomCreationWindow>();
+        ViewMappingService.RegisterWindow<ClassroomEditorViewModel, ClassroomEditorWindow>();
         ViewMappingService.RegisterUserControl<ClassroomListViewModel, ClassroomListView>();
     }
 }

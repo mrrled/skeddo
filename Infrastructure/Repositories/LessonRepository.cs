@@ -14,8 +14,10 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.Teacher)
             .Include(x => x.Classroom)
             .Include(x => x.StudyGroup)
+            .ThenInclude(x => x.StudySubgroups)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
+            .Include(x => x.StudySubgroup)
             .ToListAsync();
         return lessons.ToLessons();
     }
@@ -26,8 +28,10 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.Teacher)
             .Include(x => x.Classroom)
             .Include(x => x.StudyGroup)
+            .ThenInclude(x => x.StudySubgroups)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
+            .Include(x => x.StudySubgroup)
             .FirstOrDefaultAsync(x => x.Id == id);
         if (lessonDbo is null)
             throw new InvalidOperationException();
@@ -42,6 +46,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
+            .Include(x => x.StudySubgroup)
             .Where(x => lessonIds.Contains(x.Id))
             .ToListAsync();
         return lessons.ToLessons();
@@ -60,6 +65,11 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .FirstOrDefaultAsync();
         if (schedule is null)
             throw new InvalidOperationException();
+        var studySubgroup = lesson.StudySubgroup is null
+            ? null
+            : await context.StudySubgroups.FirstOrDefaultAsync(x =>
+                x.StudyGroup.Id == lesson.StudyGroup.Id && x.Name == lesson.StudySubgroup.Name);
+        lessonDbo.StudySubgroupId = studySubgroup?.Id;
         lessonDbo.ScheduleId = scheduleId;
         lessonDbo.LessonNumberId = lessonNumber.Id;
         await context.Lessons.AddAsync(lessonDbo);
@@ -73,6 +83,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
+            .Include(x => x.StudySubgroup)
             .FirstOrDefaultAsync(x => x.Id == lesson.Id);
         if (lessonDbo is null)
             throw new InvalidOperationException();

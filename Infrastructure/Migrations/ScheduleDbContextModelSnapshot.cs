@@ -57,6 +57,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("StudyGroupId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("StudySubgroupId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("TeacherId")
                         .HasColumnType("INTEGER");
 
@@ -74,6 +77,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("SchoolSubjectId");
 
                     b.HasIndex("StudyGroupId");
+
+                    b.HasIndex("StudySubgroupId");
 
                     b.HasIndex("TeacherId");
 
@@ -101,6 +106,9 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("StudyGroupId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("StudySubgroupId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("TeacherId")
                         .HasColumnType("INTEGER");
 
@@ -115,6 +123,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("SchoolSubjectId");
 
                     b.HasIndex("StudyGroupId");
+
+                    b.HasIndex("StudySubgroupId");
 
                     b.HasIndex("TeacherId");
 
@@ -213,6 +223,26 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ScheduleGroupId");
 
                     b.ToTable("StudyGroups");
+                });
+
+            modelBuilder.Entity("Infrastructure.DboModels.StudySubgroupDbo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("StudyGroupId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudyGroupId");
+
+                    b.ToTable("StudySubgroups");
                 });
 
             modelBuilder.Entity("Infrastructure.DboModels.TeacherDbo", b =>
@@ -319,6 +349,10 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Infrastructure.DboModels.StudySubgroupDbo", "StudySubgroup")
+                        .WithMany()
+                        .HasForeignKey("StudySubgroupId");
+
                     b.HasOne("Infrastructure.DboModels.TeacherDbo", "Teacher")
                         .WithMany("Lessons")
                         .HasForeignKey("TeacherId")
@@ -334,6 +368,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("SchoolSubject");
 
                     b.Navigation("StudyGroup");
+
+                    b.Navigation("StudySubgroup");
 
                     b.Navigation("Teacher");
                 });
@@ -360,6 +396,10 @@ namespace Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("StudyGroupId");
 
+                    b.HasOne("Infrastructure.DboModels.StudySubgroupDbo", "StudySubgroup")
+                        .WithMany()
+                        .HasForeignKey("StudySubgroupId");
+
                     b.HasOne("Infrastructure.DboModels.TeacherDbo", "Teacher")
                         .WithMany()
                         .HasForeignKey("TeacherId");
@@ -373,6 +413,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("SchoolSubject");
 
                     b.Navigation("StudyGroup");
+
+                    b.Navigation("StudySubgroup");
 
                     b.Navigation("Teacher");
                 });
@@ -419,6 +461,17 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("ScheduleGroup");
+                });
+
+            modelBuilder.Entity("Infrastructure.DboModels.StudySubgroupDbo", b =>
+                {
+                    b.HasOne("Infrastructure.DboModels.StudyGroupDbo", "StudyGroup")
+                        .WithMany("StudySubgroups")
+                        .HasForeignKey("StudyGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StudyGroup");
                 });
 
             modelBuilder.Entity("Infrastructure.DboModels.TeacherDbo", b =>
@@ -482,6 +535,11 @@ namespace Infrastructure.Migrations
                     b.Navigation("StudyGroups");
 
                     b.Navigation("Teachers");
+                });
+
+            modelBuilder.Entity("Infrastructure.DboModels.StudyGroupDbo", b =>
+                {
+                    b.Navigation("StudySubgroups");
                 });
 
             modelBuilder.Entity("Infrastructure.DboModels.TeacherDbo", b =>

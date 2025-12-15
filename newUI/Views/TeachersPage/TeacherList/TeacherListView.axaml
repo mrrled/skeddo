@@ -1,46 +1,131 @@
-﻿<UserControl
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="using:newUI.ViewModels.TeachersPage.Teachers"
-    x:Class="newUI.Views.TeachersPage.TeacherList.TeacherListView"
-    x:DataType="vm:TeacherListViewModel">
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:teacherList="clr-namespace:newUI.ViewModels.TeachersPage.TeacherList"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="newUI.Views.TeachersPage.TeacherList.TeacherListView"
+             mc:Ignorable="d"
+             x:DataType="teacherList:TeacherListViewModel">
 
-    <Design.DataContext>
-        <vm:TeacherListViewModel/>
-    </Design.DataContext>
+    <UserControl.Styles>
+        <!-- Общий стиль для всех кнопок -->
+        <Style Selector="Button.ToolbarButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="8" />
+        </Style>
 
-    <ScrollViewer>
-        <StackPanel Margin="20">
-            <TextBlock Text="Список учителей" FontWeight="Bold" Margin="0 0 0 5"/>
+        <Style Selector="Button.ToolbarButton:pointerover">
+            <Setter Property="Background" Value="#E0E0E0" />
+        </Style>
+    </UserControl.Styles>
 
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Content="Загрузить учителей"
-                        Command="{Binding LoadTeachersCommand}"
-                        HorizontalAlignment="Left"
-                        Margin="0 0 0 15"/>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-                <Button Content="Скрыть учителей"
-                        Command="{Binding HideTeachersCommand}"
-                        HorizontalAlignment="Left"
-                        Margin="0 0 0 15"/>
+        <!-- Заголовок -->
+        <TextBlock Text="Страница преподавателей"
+                   Grid.Row="0"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,16" />
 
-                <Button Content="Добавить учителя"
-                        Command="{Binding CreateTeacherCommand}"
-                        HorizontalAlignment="Left"
-                        Margin="0 0 0 15"/>
+        <Border Grid.Row="1"
+                CornerRadius="16"
+                BorderBrush="#BDBDBD"
+                BorderThickness="1"
+                Background="#F5F5F5"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,16"
+                Padding="10,6">
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+
+                <!-- Уменьшенная иконка поиска -->
+                <Viewbox MaxWidth="20" MaxHeight="20" Stretch="Uniform">
+                    <icons:MaterialIcon Kind="Magnify" />
+                </Viewbox>
+
+                <!-- Поле ввода -->
+                <TextBox Watermark="Введите ФИО преподавателя"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Stretch"
+                         TextWrapping="NoWrap"
+                         ClipToBounds="True"
+                         HorizontalContentAlignment="Left"
+                         MaxWidth="400" />
             </StackPanel>
+        </Border>
 
-            <ListBox ItemsSource="{Binding Teachers}" Height="200" BorderBrush="#CCCCCC" BorderThickness="1" Margin="0 0 0 20">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Spacing="10">
-                            <TextBlock Text="{Binding Surname}" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Name}"/>
-                            <TextBlock Text="{Binding Patronymic}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </StackPanel>
-    </ScrollViewer>
+        <Border Grid.Row="2"
+                BorderBrush="#BDBDBD"
+                BorderThickness="1"
+                CornerRadius="16"
+                Background="#F5F5F5">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding TeacherItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="teacherList:TeacherItemViewModel">
+
+                            <Border Margin="8" Padding="8" Background="White" CornerRadius="12" BorderBrush="#CCC"
+                                    BorderThickness="0.5">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Название -->
+                                    <TextBlock Text="{Binding FullName}" FontSize="16" VerticalAlignment="Center"
+                                               Margin="0,0,10,0" />
+
+                                    <!-- Редактировать -->
+                                    <Button Grid.Column="1"
+                                            Command="{Binding EditCommand}"
+                                            Classes="ToolbarButton"
+                                            CommandParameter="{x:Null}">
+                                        <Viewbox Width="24" Height="24">
+                                            <icons:MaterialIcon Kind="Pencil" />
+                                        </Viewbox>
+                                    </Button>
+
+                                    <!-- Удалить -->
+                                    <Button Grid.Column="2"
+                                            Command="{Binding DeleteCommand}"
+                                            Classes="ToolbarButton"
+                                            CommandParameter="{x:Null}">
+                                        <Viewbox Width="24" Height="24">
+                                            <icons:MaterialIcon Kind="DeleteOutline" />
+                                        </Viewbox>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Кнопка добавить -->
+        <Button Grid.Row="3"
+                Command="{Binding AddTeacherCommand}"
+                Classes="ToolbarButton"
+                HorizontalAlignment="Right"
+                Margin="0,12,0,0">
+            <Viewbox Width="24" Height="24">
+                <icons:MaterialIcon Kind="Plus" />
+            </Viewbox>
+        </Button>
+    </Grid>
 </UserControl>

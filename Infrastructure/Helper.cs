@@ -4,32 +4,31 @@ namespace Infrastructure;
 
 public static class Helper
 {
-    public static Dictionary<LessonNumber, Dictionary<StudyGroup, List<Lesson>>> ToTable(this List<Lesson> lessons)
+    public static Dictionary<(int num, int groupId, string? subgroupName), Lesson> ToTable(this List<Lesson> lessons)
     {
-        var table = new Dictionary<LessonNumber, Dictionary<StudyGroup, List<Lesson>>>();
+        var table = new  Dictionary<(int num, int groupId, string? subgroupName), Lesson>();
         foreach (var lesson in lessons)
         {
-            if (lesson.LessonNumber is null || lesson.StudyGroup is null)
-                continue;
-            if (table.TryGetValue(lesson.LessonNumber, out Dictionary<StudyGroup, List<Lesson>>? value))
+            if (lesson.StudySubgroup != null)
             {
-                if (value.TryGetValue(lesson.StudyGroup, out List<Lesson>? lessonsList))
+                var key = (lesson.LessonNumber.Number, lesson.StudyGroup.Id, lesson.StudySubgroup.Name);
+                table[key] = lesson;
+            }
+            else if (lesson.StudyGroup.StudySubgroups.Any())
+            {
+                foreach (var sub in lesson.StudyGroup.StudySubgroups)
                 {
-                    lessonsList.Add(lesson);
-                }
-                else
-                {
-                    value[lesson.StudyGroup] = [lesson];
+                    var key = (lesson.LessonNumber.Number, lesson.StudyGroup.Id, sub.Name);
+                    table[key] = lesson;
                 }
             }
-            else
+            else 
             {
-                table[lesson.LessonNumber] = new Dictionary<StudyGroup, List<Lesson>>
-                {
-                    [lesson.StudyGroup] = [lesson]
-                };
+                var key = (lesson.LessonNumber.Number, lesson.StudyGroup.Id, (string?)null);
+                table[key] = lesson;
             }
         }
+
         return table;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using newUI.ViewModels.MainPage;
+using newUI.ViewModels.MainPage.ScheduleList;
 
 namespace newUI.Views.MainPage.ScheduleList;
 

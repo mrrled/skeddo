@@ -1,19 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Avalonia.Collections;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.DependencyInjection;
 using Application.DtoModels;
 using Application.IServices;
+using Avalonia.Collections;
+using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
 using newUI.ViewModels.MainPage.ScheduleEditor;
-using newUI.ViewModels.MainPage.ScheduleList;
 using newUI.ViewModels.SchedulePage.Schedule;
+using newUI.ViewModels.Shared;
 
-namespace newUI.ViewModels.MainPage;
+namespace newUI.ViewModels.MainPage.ScheduleList;
 
 public class ScheduleListViewModel : ViewModelBase
 {
@@ -77,24 +76,24 @@ public class ScheduleListViewModel : ViewModelBase
 
     private async Task SubscribeItemEvents(ScheduleItemViewModel itemVm)
     {
-        itemVm.RequestSelect += item =>
+        itemVm.RequestSelect += async item =>
         {
             var scheduleVm = provider.GetRequiredService<ScheduleViewModel>();
-
-            if (scheduleVm != null && scheduleVm.ScheduleList != null)
-            {
-                var scheduleDto = scheduleVm.ScheduleList.FirstOrDefault(s => s.Id == item.Schedule.Id);
-                if (scheduleDto != null)
-                {
-                    scheduleVm.CurrentSchedule = scheduleDto;
-                }
-            }
-
+            await scheduleVm.LoadSchedule(item.Schedule.Id);
+            await Task.Delay(100);
             navigationService.Navigate<ScheduleViewModel>();
         };
 
         itemVm.RequestDelete += async item =>
         {
+            var confirmVm = new ConfirmDeleteViewModel(
+                message: $"Вы уверены, что хотите удалить \"{item.Name}\"?"
+            );
+
+            var result = await windowManager.ShowDialog<ConfirmDeleteViewModel, bool?>(confirmVm);
+
+            if (result != true) return;
+            
             using var scope = scopeFactory.CreateScope();
             var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
             await service.DeleteSchedule(item.Schedule);
@@ -146,8 +145,13 @@ public class ScheduleListViewModel : ViewModelBase
                 allItems.Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
             );
 
+        UpdateScheduleItems(filtered);
+    }
+
+    private void UpdateScheduleItems(IEnumerable<ScheduleItemViewModel> items)
+    {
         ScheduleItems.Clear();
-        foreach (var item in filtered)
+        foreach (var item in items)
             ScheduleItems.Add(item);
     }
 }

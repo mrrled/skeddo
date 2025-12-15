@@ -1,16 +1,37 @@
-﻿using Application.DtoModels;
-using Application.IServices;
+﻿using System;
+using System.Windows.Input;
+using Application.DtoModels;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace newUI.ViewModels.ClassroomsPage.ClassroomList;
 
-public class ClassroomItemViewModel : ViewModelBase
+public class ClassroomItemViewModel : ObservableObject
 {
-    private ClassroomDto classroom;
-    private IClassroomServices service;
+    public event Action<ClassroomItemViewModel>? RequestDelete;
+    public event Action<ClassroomItemViewModel>? RequestEdit;
 
-    public ClassroomDto Classroom
+    public ClassroomDto Classroom { get; }
+
+    public string Name
     {
-        get => classroom;
-        set => SetProperty(ref classroom, value);
+        get => Classroom.Name;
+        set
+        {
+            if (Classroom.Name == value)
+                return;
+            Classroom.Name = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ICommand EditCommand { get; }
+    public ICommand DeleteCommand { get; }
+
+    public ClassroomItemViewModel(ClassroomDto classroom)
+    {
+        Classroom = classroom;
+        EditCommand = new RelayCommand(() => RequestEdit?.Invoke(this));
+        DeleteCommand = new RelayCommand(() => RequestDelete?.Invoke(this));
     }
 }
