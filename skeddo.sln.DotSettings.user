@@ -24,5 +24,6 @@
     &lt;TestId&gt;xUnit::9CF47860-2CEA-F379-09D8-9AEF27965D12::net9.0::Tests.ServicesTests.LessonServicesTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::9CF47860-2CEA-F379-09D8-9AEF27965D12::net9.0::Tests.ServicesTests.ScheduleServicesTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::9CF47860-2CEA-F379-09D8-9AEF27965D12::net9.0::Tests.ServicesTests.SchoolSubjectServicesTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::9CF47860-2CEA-F379-09D8-9AEF27965D12::net9.0::Tests.ServicesTests.StudyGroupServicesTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
