@@ -23,5 +23,8 @@ public class ScheduleDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<ScheduleGroupDbo>().HasData(
+            new ScheduleGroupDbo {Id = 1}
+        );
     }
 }
