@@ -231,7 +231,7 @@ namespace Tests.ServicesTests
             var classroom = Classroom.CreateClassroom(1, "Room 101", null);
             var lessonNumber = LessonNumber.CreateLessonNumber(1, "09:00");
             
-            var lesson = new Lesson(1, subject, lessonNumber, teacher, group, classroom, "Comment");
+            var lesson = new Lesson(1, subject, lessonNumber, teacher, group, classroom, null, "Comment");
             var lessonDraft = LessonDraft.CreateFromLesson(lesson);
             
             // Use reflection to add to private collections

@@ -64,6 +64,7 @@ public class LessonDraftServicesTests
             teacher,
             studyGroup,
             classroom,
+            null,
             comment
         );
     }
@@ -104,7 +105,7 @@ public class LessonDraftServicesTests
         var mathSubject = new SchoolSubject(1, "Math");
         var lessonNumber = LessonNumber.CreateLessonNumber(1, "8:00-8:45");
         var teacher = Teacher.CreateTeacher(1, "John", "Doe", "DJ", [], []);
-        var studyGroup = new StudyGroup(1, "Group A");
+        var studyGroup = new StudyGroup(1, "Group A", []);
         var classroom = new Classroom(1, "Room 101", "Description");
         
         var lessonDraft = CreateLessonDraft(
@@ -161,7 +162,7 @@ public class LessonDraftServicesTests
         var physicsSubject = new SchoolSubject(2, "Physics");
         LessonNumber.CreateLessonNumber(1, "8:00-8:45");
         var teacher = Teacher.CreateTeacher(1, "John", "Doe", "DJ", [], []);
-        var studyGroup = new StudyGroup(1, "Group A");
+        var studyGroup = new StudyGroup(1, "Group A", []);
 
         _scheduleRepositoryMock
             .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
@@ -219,7 +220,7 @@ public class LessonDraftServicesTests
 
         var lessonNumber = LessonNumber.CreateLessonNumber(1, "8:00-8:45");
         var teacher = Teacher.CreateTeacher(1, "John", "Doe", "DJ", [], []);
-        var studyGroup = new StudyGroup(1, "Group A");
+        var studyGroup = new StudyGroup(1, "Group A", []);
         var classroom = new Classroom(1, "Room 101", "Description");
 
         _scheduleRepositoryMock
@@ -249,6 +250,7 @@ public class LessonDraftServicesTests
             teacher,
             studyGroup,
             classroom,
+            null,
             "Complete lesson"
         );
 
@@ -304,7 +306,7 @@ public class LessonDraftServicesTests
 
         _studyGroupRepositoryMock
             .Setup(repo => repo.GetStudyGroupByIdAsync(1))
-            .ReturnsAsync(new StudyGroup(1, "Group A"));
+            .ReturnsAsync(new StudyGroup(1, "Group A", []));
 
         _classroomRepositoryMock
             .Setup(repo => repo.GetClassroomByIdAsync(1))
@@ -471,7 +473,7 @@ public class LessonDraftServicesTests
 
         LessonNumber.CreateLessonNumber(1, "8:00-8:45");
         var classroom = new Classroom(1, "Room 101", "Description");
-        var studyGroup = new StudyGroup(1, "Group A");
+        var studyGroup = new StudyGroup(1, "Group A", []);
 
         _scheduleRepositoryMock
             .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))

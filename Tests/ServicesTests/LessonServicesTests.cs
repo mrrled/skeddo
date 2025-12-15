@@ -213,7 +213,7 @@ public class LessonServicesTests
         
         _studyGroupRepositoryMock
             .Setup(r => r.GetStudyGroupByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync(new StudyGroup(1, "Group A"));
+            .ReturnsAsync(new StudyGroup(1, "Group A", []));
         
         // Factory returns success even though teacher is null (mocked behavior)
         _lessonFactoryMock
@@ -254,7 +254,7 @@ public class LessonServicesTests
         
         _studyGroupRepositoryMock
             .Setup(r => r.GetStudyGroupByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync(new StudyGroup(1, "Group A"));
+            .ReturnsAsync(new StudyGroup(1, "Group A", []));
         
         // Factory returns failure because teacher is null (as per LessonFactory implementation)
         _lessonFactoryMock
@@ -463,7 +463,7 @@ public class LessonServicesTests
         var teacher = new Teacher(
             1, "John", "Doe", "Smith",
             [new(2, "Physics")], // Учитель не специализируется на Math
-            [new StudyGroup(1, "Group A")]
+            [new StudyGroup(1, "Group A", [])]
         );
         var lesson = CreateTestLesson(1);
         
@@ -555,6 +555,7 @@ public class LessonServicesTests
                     draft.Teacher!,
                     draft.StudyGroup!,
                     draft.Classroom!,
+                    null,
                     draft.Comment
                 ));
             });
@@ -606,6 +607,7 @@ public class LessonServicesTests
                     draft.Teacher,
                     draft.StudyGroup,
                     draft.Classroom,
+                    null,
                     draft.Comment
                 ));
             });
@@ -626,8 +628,9 @@ public class LessonServicesTests
             new SchoolSubject(1, "Math"),
             LessonNumber.CreateLessonNumber(1, "09:00"),
             new Teacher(1, "John", "Doe", "Smith", new List<SchoolSubject>(), new List<StudyGroup>()),
-            new StudyGroup(1, "Group A"),
+            new StudyGroup(1, "Group A", []),
             new Classroom(1, "101"),
+            null,
             "Test comment",
             WarningType.Normal
         );
@@ -675,7 +678,7 @@ public class LessonServicesTests
         
         _studyGroupRepositoryMock
             .Setup(r => r.GetStudyGroupByIdAsync(lessonDto.StudyGroup.Id))
-            .ReturnsAsync(new StudyGroup(1, "Group A"));
+            .ReturnsAsync(new StudyGroup(1, "Group A", []));
     }
 
     private void SetupRepositoryMocksForEditLesson(LessonDto lessonDto)
@@ -704,7 +707,7 @@ public class LessonServicesTests
         {
             _studyGroupRepositoryMock
                 .Setup(r => r.GetStudyGroupByIdAsync(lessonDto.StudyGroup.Id))
-                .ReturnsAsync(new StudyGroup(lessonDto.StudyGroup.Id, lessonDto.StudyGroup.Name));
+                .ReturnsAsync(new StudyGroup(lessonDto.StudyGroup.Id, lessonDto.StudyGroup.Name, []));
         }
         
         if (lessonDto.Classroom != null)
