@@ -119,7 +119,11 @@ public class LessonEditViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedTeacher, value))
             {
-                lesson.Teacher = value;
+                if (IsCreation)
+                {
+                    lesson.Teacher = value;
+                }
+                originalLesson.Teacher = value;
             }
         }
     }
@@ -131,7 +135,11 @@ public class LessonEditViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedClassroom, value))
             {
-                lesson.Classroom = value;
+                if (IsCreation)
+                {
+                    lesson.Classroom = value;
+                }
+                originalLesson.Classroom = value;
             }
         }
     }
@@ -143,7 +151,11 @@ public class LessonEditViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedStudyGroup, value))
             {
-                lesson.StudyGroup = value;
+                if (IsCreation)
+                {
+                    lesson.StudyGroup = value;
+                }
+                originalLesson.StudyGroup = value;
             }
         }
     }
@@ -155,7 +167,11 @@ public class LessonEditViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedSubject, value))
             {
-                lesson.SchoolSubject = value;
+                if (IsCreation)
+                {
+                    lesson.SchoolSubject = value;
+                }
+                originalLesson.SchoolSubject = value;
             }
         }
     }
@@ -167,7 +183,11 @@ public class LessonEditViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedTimeSlot, value))
             {
-                lesson.LessonNumber = value;
+                if (IsCreation)
+                {
+                    lesson.LessonNumber = value;
+                }
+                originalLesson.LessonNumber = value;
             }
         }
     }
