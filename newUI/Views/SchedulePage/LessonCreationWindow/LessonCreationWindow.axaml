@@ -9,10 +9,10 @@
         Title=""
         Width="500" Height="650"
         MinWidth="450" MinHeight="550"
-        x:DataType="vm:LessonCreationViewModel">
+        x:DataType="vm:LessonEditViewModel">
     
     <Design.DataContext>
-        <vm:LessonCreationViewModel />
+        <vm:LessonEditViewModel />
     </Design.DataContext>
     
     <Window.Styles>
@@ -60,7 +60,6 @@
                     <ComboBox HorizontalAlignment="Right" ItemsSource="{Binding Subjects}"
                               SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
                               PlaceholderText="Выберите предмет...">
-                              <!-- IsTextSearchEnabled="True"> -->
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}"/>
@@ -115,9 +114,6 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="5">
                                     <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                                    <TextBlock Text="{Binding Description, StringFormat='({0})'}"
-                                               Foreground="Gray"
-                                               FontSize="11"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
@@ -196,8 +192,14 @@
                     Background="Transparent"
                     BorderBrush="Gray"/>
             
+            <Button Content="Удалить урок" 
+                    Command="{Binding DeleteCommand}"
+                    Background="Transparent"
+                    IsVisible="{Binding !IsCreation}"
+                    BorderBrush="Gray"/>
+            
             <Button Content="Создать" 
-                    Command="{Binding CreateLessonCommand}"
+                    Command="{Binding SaveCommand}"
                     Classes="accent"/>
             
         </StackPanel>

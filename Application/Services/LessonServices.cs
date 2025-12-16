@@ -46,7 +46,7 @@ public class LessonServices(
         var studySubgroup = lessonDto.StudySubgroup is null
             ? null
             : StudySubgroup.CreateStudySubgroup(studyGroup, lessonDto.StudySubgroup.Name);
-        var draft = new LessonDraft(lessonDto.Id, schoolSubject, lessonNumber, teacher, studyGroup, classroom,
+        var draft = new LessonDraft(lessonDto.Id, lessonDto.ScheduleId, schoolSubject, lessonNumber, teacher, studyGroup, classroom,
             studySubgroup,
             lessonDto.Comment);
         var result = lessonFactory.CreateFromDraft(draft);

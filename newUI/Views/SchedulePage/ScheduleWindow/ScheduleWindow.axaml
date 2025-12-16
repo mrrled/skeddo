@@ -144,10 +144,23 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border BorderBrush="#ddd" 
-                                           BorderThickness="1" 
-                                           Margin="0,0,0,5" 
-                                           Background="White"
-                                           CornerRadius="3">
+                                            BorderThickness="1" 
+                                            Margin="0,0,0,5" 
+                                            Background="White"
+                                            CornerRadius="3">
+                                        
+                                        <!-- <Interaction.Behaviors> -->
+                                        <!--     ~1~ Клик для редактирования @1@ -->
+                                        <!--     <EventTriggerBehavior EventName="PointerPressed"> -->
+                                        <!--         <InvokeCommandAction Command="{Binding ClickCommand}"/> -->
+                                        <!--     </EventTriggerBehavior> -->
+                                        <!-- -->
+                                        <!--     ~1~ Двойной клик @1@ -->
+                                        <!--     ~1~ <EventTriggerBehavior EventName="DoubleTapped"> @1@ -->
+                                        <!--     ~1~     <InvokeCommandAction Command="{Binding DoubleClickCommand}"/> @1@ -->
+                                        <!--     ~1~ </EventTriggerBehavior> @1@ -->
+                                        <!-- </Interaction.Behaviors> -->
+                                        
                                         <lessonCard:LessonCard />
                                     </Border>
                                 </DataTemplate>

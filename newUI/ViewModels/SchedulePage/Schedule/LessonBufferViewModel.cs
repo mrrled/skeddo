@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Avalonia.Collections;
 using Microsoft.Extensions.DependencyInjection;
+using newUI.Services;
 using newUI.ViewModels.SchedulePage.Lessons;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
@@ -12,11 +14,16 @@ namespace newUI.ViewModels.SchedulePage.Schedule;
 public class LessonBufferViewModel : ViewModelBase
 {
     private AvaloniaDictionary<int, LessonDraftDto> lessonDictionary = new();
+    private AvaloniaDictionary<int, LessonCardViewModel> lessonCardViewModels = new();
     private readonly IServiceScopeFactory scopeFactory;
+    private readonly IWindowManager windowManager;
 
-    public LessonBufferViewModel(IServiceScopeFactory scopeFactory)
+    public LessonBufferViewModel(
+        IServiceScopeFactory scopeFactory,
+        IWindowManager windowManager)
     {
         this.scopeFactory = scopeFactory;
+        this.windowManager = windowManager;
         ClearCommand = new RelayCommandAsync(ClearAsync);
     }
 
@@ -28,11 +35,7 @@ public class LessonBufferViewModel : ViewModelBase
 
     public AvaloniaList<LessonCardViewModel> LessonCards
     {
-        get => new (lessonDictionary.Values
-            .Select(lesson => new LessonCardViewModel(scopeFactory)
-            {
-                Lesson = lesson.ToLessonDto()
-            }));
+        get => new (lessonCardViewModels.Select(x => x.Value));
     }
     
     public ICommand ClearCommand { get; }
@@ -50,20 +53,25 @@ public class LessonBufferViewModel : ViewModelBase
         OnPropertyChanged(nameof(LessonCards));
     }
 
-    public void AddLesson(LessonDraftDto lessonDrafts)
-    {
-        Lessons[lessonDrafts.Id] = lessonDrafts;
-        OnPropertyChanged(nameof(Lessons));
-        OnPropertyChanged(nameof(LessonCards));
-    }
-
     public void AddMany(IEnumerable<LessonDraftDto> lessonDrafts)
     {
         foreach (var lesson in lessonDrafts)
         {
             Lessons[lesson.Id] = lesson;
+            var card = new LessonCardViewModel(
+                scopeFactory, windowManager, () => OnPropertyChanged())
+            {
+                Lesson = lesson.ToLessonDto()
+            };
+            card.LessonClicked += OnLessonClicked;
+            lessonCardViewModels[lesson.Id] = card;
         }
         OnPropertyChanged(nameof(Lessons));
         OnPropertyChanged(nameof(LessonCards));
+    }
+    
+    private void OnLessonClicked(LessonDto lesson)
+    {
+        Console.WriteLine($"Lesson clicked: {lesson.Id}");
     }
 }

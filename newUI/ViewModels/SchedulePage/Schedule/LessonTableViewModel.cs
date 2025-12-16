@@ -7,6 +7,7 @@ using Application.DtoModels;
 using Application.IServices;
 using Avalonia.Collections;
 using Microsoft.Extensions.DependencyInjection;
+using newUI.Services;
 using newUI.ViewModels.Helpers;
 using newUI.ViewModels.SchedulePage.Lessons;
 
@@ -15,17 +16,26 @@ namespace newUI.ViewModels.SchedulePage.Schedule;
 public class LessonTableViewModel : 
     DynamicGridViewModel<LessonCardViewModel, StudyGroupDto, LessonNumberDto>
 {
+    public event Action? TableUpdated;
+    
     private readonly IServiceScopeFactory scopeFactory;
+    private readonly IWindowManager windowManager;
+    
+    
     private ScheduleDto schedule;
     private AvaloniaList<LessonNumberDto> lessonNumbers;
     private AvaloniaList<StudyGroupDto> studyGroups;
     private bool isInitialized;
+    
+    private bool isLoading;
 
     public LessonTableViewModel(ScheduleDto schedule,
-        IServiceScopeFactory scopeFactory)
+        IServiceScopeFactory scopeFactory, 
+        IWindowManager windowManager)
     {
         this.schedule = schedule;
         this.scopeFactory = scopeFactory;
+        this.windowManager = windowManager;
         _ = InitializeAsync();
     }
     
@@ -39,16 +49,30 @@ public class LessonTableViewModel :
     
     public async Task RefreshAsync(ScheduleDto newSchedule = null)
     {
-        if (newSchedule != null)
+        try
         {
-            schedule = newSchedule;
+            IsLoading = true;
+            
+            if (newSchedule != null)
+            {
+                schedule = newSchedule;
+            }
+            
+            if (isInitialized)
+            {
+                await LoadStudyGroupsAsync();
+                await LoadLessonNumbersAsync();
+                LoadDataToGrid();
+                
+                // Уведомляем об обновлении
+                TableUpdated?.Invoke();
+                OnPropertyChanged(nameof(Rows));
+                OnPropertyChanged(nameof(Columns));
+            }
         }
-        
-        if (isInitialized)
+        finally
         {
-            await LoadStudyGroupsAsync();
-            await LoadLessonNumbersAsync();
-            LoadDataToGrid();
+            IsLoading = false;
         }
     }
 
@@ -56,6 +80,12 @@ public class LessonTableViewModel :
     {
         get => schedule;
         set => SetProperty(ref schedule, value);
+    }
+    
+    public bool IsLoading
+    {
+        get => isLoading;
+        private set => SetProperty(ref isLoading, value);
     }
 
     public AvaloniaList<LessonNumberDto> LessonNumbers
@@ -88,14 +118,24 @@ public class LessonTableViewModel :
 
     private void LoadDataToGrid()
     {
-        LoadDataFromBackend(LoadData().Result);
+        var data = LoadData().Result; // Или await, если сделаете метод async
+        LoadDataFromBackend(data);
+        
+        // Явно обновляем UI-свойства
+        OnPropertyChanged(nameof(Rows));
+        OnPropertyChanged(nameof(Columns));
     }
 
-    private async Task<List<(LessonNumberDto RowHeader, Dictionary<StudyGroupDto, LessonCardViewModel?> CellData)>> LoadData()
+    private async Task<
+        List<
+            (LessonNumberDto RowHeader,
+            Dictionary<StudyGroupDto,
+                LessonCardViewModel?> CellData)
+        >> LoadData()
     {
         var result = new List<(LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel?>)>();
-        
         using var scope = scopeFactory.CreateScope();
+        
         var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
         var schedules = await scheduleService.FetchSchedulesFromBackendAsync();
         var currentSchedule = schedules.FirstOrDefault(s => s.Id == Schedule.Id);
@@ -117,15 +157,47 @@ public class LessonTableViewModel :
             foreach (var studyGroup in StudyGroups)
             {
                 if (lessonDictionary.TryGetValue((lessonNumber.Number, studyGroup.Name), out var lesson))
-                    rowData[studyGroup] = new LessonCardViewModel(scopeFactory) { Lesson = lesson };
+                {
+                    var card = new LessonCardViewModel(scopeFactory, windowManager, Refresh)
+                    {
+                        Lesson = lesson
+                    };
+                    card.LessonClicked += OnLessonClicked;
+                    rowData[studyGroup] = card;
+                }
                 else
-                    rowData[studyGroup] = new LessonCardViewModel(scopeFactory, false);
+                {
+                    var card = new LessonCardViewModel(
+                        scopeFactory, windowManager,
+                        Refresh, isVisible: false)
+                    {
+                        Lesson = new LessonDto()
+                        {
+                            StudyGroup = studyGroup,
+                            LessonNumber = lessonNumber,
+                        }
+                    };
+                    card.LessonClicked += OnLessonClicked;
+                    rowData[studyGroup] = card;
+                }
             }
             
             result.Add((lessonNumber, rowData));
         }
         
         return result;
+    }
+
+    private void Refresh()
+    {
+        RefreshAsync().Wait();
+    }
+    
+    private void OnLessonClicked(LessonDto lesson)
+    {
+        // Можно вызвать событие для родительского ViewModel
+        // или обработать здесь
+        Console.WriteLine($"Lesson clicked: {lesson.Id}");
     }
 
     protected override LessonCardViewModel CreateEmptyCell()

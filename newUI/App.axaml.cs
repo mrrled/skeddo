@@ -109,7 +109,7 @@ public partial class App : Avalonia.Application
         services.AddTransient<ScheduleListViewModel>();
         services.AddTransient<ScheduleEditorViewModel>();
         
-        services.AddTransient<LessonCreationViewModel>();
+        // services.AddTransient<LessonCreationViewModel>();
         services.AddTransient<LessonCreationWindow>();
         
         services.AddSingleton<ScheduleViewModel>();
@@ -135,6 +135,8 @@ public partial class App : Avalonia.Application
 
         services.AddSingleton<NavigationService>();
         services.AddTransient<NavigationBarViewModel>();
+        
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         
         RegisterViewMappings();
     }
@@ -168,16 +170,14 @@ public partial class App : Avalonia.Application
     private static void RegisterViewMappings()
     {
         ViewMappingService.RegisterWindow<MainViewModel, MainWindow>();
-        ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
+        ViewMappingService.RegisterUserControl<AnotherScheduleViewModel, ScheduleWindow>();
         
-        ViewMappingService.RegisterUserControl<ToolbarViewModel, ToolbarView>();
         ViewMappingService.RegisterWindow<ConfirmDeleteViewModel, ConfirmDeleteWindow>();
-        ViewMappingService.RegisterWindow<NotificationViewModel, NotificationWindow>();
         
         ViewMappingService.RegisterWindow<ScheduleEditorViewModel, ScheduleEditorWindow>();
         ViewMappingService.RegisterUserControl<ScheduleListViewModel, ScheduleListView>();
         
-        ViewMappingService.RegisterWindow<LessonCreationViewModel, LessonCreationWindow>();
+        ViewMappingService.RegisterWindow<LessonEditViewModel, LessonCreationWindow>();
         // ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
         
         ViewMappingService.RegisterWindow<TeacherEditorViewModel, TeacherEditorWindow>();

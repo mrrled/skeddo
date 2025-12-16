@@ -9,6 +9,8 @@ public class LessonDto : IEquatable<LessonDto>
         var rnd = new Random();
         Id = rnd.Next();
     }
+    
+    public int ScheduleId { get; set; }
     public int Id { get; set; }
     public SchoolSubjectDto? SchoolSubject { get; set; }
     public LessonNumberDto? LessonNumber { get; set; }

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
@@ -11,11 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace newUI.ViewModels.SchedulePage.Lessons;
 
-public class LessonCreationViewModel : ViewModelBase
+public class LessonEditViewModel : ViewModelBase
 {
+    public event Action<LessonDto>? LessonUpdated;
     public event Action<LessonDto>? LessonCreated;
     
-    private readonly LessonDto lesson;
+    private readonly LessonDto originalLesson;
     private readonly IServiceScopeFactory scopeFactory;
 
     private AvaloniaList<TeacherDto> teachers;
@@ -29,18 +28,45 @@ public class LessonCreationViewModel : ViewModelBase
     private StudyGroupDto? selectedStudyGroup;
     private SchoolSubjectDto? selectedSubject;
     private LessonNumberDto? selectedTimeSlot;
-    
+
     public readonly int ScheduleId;
-    
-    public LessonCreationViewModel(IServiceScopeFactory scopeFactory,
+
+    public LessonEditViewModel(
+        IServiceScopeFactory scopeFactory,
         int scheduleId)
     {
+        IsCreation = true;
         this.scopeFactory = scopeFactory;
+        originalLesson = new LessonDto();
         ScheduleId = scheduleId;
-        lesson = new LessonDto();
+        
         _ = Initialize();
         
-        CreateLessonCommand = new AsyncRelayCommand(CreateLessonAsync);
+        SaveCommand = new AsyncRelayCommand(CreateLessonAsync);
+        DeleteCommand = new AsyncRelayCommand(DeleteLessonAsync);
+        CancelCommand = new RelayCommand(() => Window?.Close());
+    }
+    
+    public LessonEditViewModel(
+        IServiceScopeFactory scopeFactory,
+        LessonDto lesson)
+    {
+        IsCreation = false;
+        this.scopeFactory = scopeFactory;
+        originalLesson = lesson;
+        ScheduleId = lesson.ScheduleId;
+        
+        selectedTeacher = lesson.Teacher;
+        selectedClassroom = lesson.Classroom;
+        selectedStudyGroup = lesson.StudyGroup;
+        selectedSubject = lesson.SchoolSubject;
+        selectedTimeSlot = lesson.LessonNumber;
+        
+        _ = Initialize();
+        
+        SaveCommand = new AsyncRelayCommand(SaveLessonAsync);
+        DeleteCommand = new AsyncRelayCommand(DeleteLessonAsync);
+        CancelCommand = new RelayCommand(() => Window?.Close());
     }
 
     private async Task Initialize()
@@ -48,9 +74,11 @@ public class LessonCreationViewModel : ViewModelBase
         await LoadDataAsync();
     }
     
-    public ICommand LoadDataCommand { get; }
-    public ICommand CreateLessonCommand { get; }
+    public ICommand SaveCommand { get; }
+    public ICommand DeleteCommand { get; }
     public ICommand CancelCommand { get; }
+    
+    public bool IsCreation { get; }
 
     public AvaloniaList<TeacherDto> Teachers
     {
@@ -89,7 +117,7 @@ public class LessonCreationViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedTeacher, value))
             {
-                lesson.Teacher = value;
+                originalLesson.Teacher = value;
             }
         }
     }
@@ -101,7 +129,7 @@ public class LessonCreationViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedClassroom, value))
             {
-                lesson.Classroom = value;
+                originalLesson.Classroom = value;
             }
         }
     }
@@ -113,7 +141,7 @@ public class LessonCreationViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedStudyGroup, value))
             {
-                lesson.StudyGroup = value;
+                originalLesson.StudyGroup = value;
             }
         }
     }
@@ -125,7 +153,7 @@ public class LessonCreationViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedSubject, value))
             {
-                lesson.SchoolSubject = value;
+                originalLesson.SchoolSubject = value;
             }
         }
     }
@@ -137,7 +165,7 @@ public class LessonCreationViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedTimeSlot, value))
             {
-                lesson.LessonNumber = value;
+                originalLesson.LessonNumber = value;
             }
         }
     }
@@ -170,29 +198,33 @@ public class LessonCreationViewModel : ViewModelBase
     private async Task CreateLessonAsync()
     {
         using var scope = scopeFactory.CreateScope();
-        LessonCreated?.Invoke(lesson);
+        LessonCreated?.Invoke(originalLesson);
         Console.WriteLine(Window);
         Window?.Close();
     }
     
-    public IEnumerable<TeacherDto> FilterTeachers(string searchText)
+    private async Task SaveLessonAsync()
     {
-        if (string.IsNullOrWhiteSpace(searchText))
-            return Teachers;
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
         
-        return Teachers.Where(t => 
-            t.Name.Contains(searchText, System.StringComparison.OrdinalIgnoreCase) ||
-            t.Surname.Contains(searchText, System.StringComparison.OrdinalIgnoreCase) ||
-            t.Patronymic.Contains(searchText, System.StringComparison.OrdinalIgnoreCase));
+        originalLesson.Teacher = selectedTeacher;
+        originalLesson.Classroom = selectedClassroom;
+        originalLesson.StudyGroup = selectedStudyGroup;
+        originalLesson.SchoolSubject = selectedSubject;
+        originalLesson.LessonNumber = selectedTimeSlot;
+        
+        await service.EditLesson(originalLesson, ScheduleId);
+        LessonUpdated?.Invoke(originalLesson);
+        Window?.Close();
     }
     
-    public IEnumerable<ClassroomDto> FilterClassrooms(string searchText)
+    private async Task DeleteLessonAsync()
     {
-        if (string.IsNullOrWhiteSpace(searchText))
-            return Classrooms;
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
         
-        return Classrooms.Where(c => 
-            c.Name.Contains(searchText, System.StringComparison.OrdinalIgnoreCase) ||
-            c.Description?.Contains(searchText, System.StringComparison.OrdinalIgnoreCase) == true);
+        await service.DeleteLesson(originalLesson, ScheduleId);
+        Window?.Close();
     }
 }
