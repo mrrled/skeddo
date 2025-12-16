@@ -104,8 +104,24 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
         var dboDict = lessonDbos.ToDictionary(x => x.Id);
         foreach (var lesson in lessons)
         {
-            if (dboDict.TryGetValue(lesson.Id, out var lessonDbo))
-                DboMapper.Mapper.Map(lesson, lessonDbo);
+            if (!dboDict.TryGetValue(lesson.Id, out var lessonDbo))
+                continue;
+            DboMapper.Mapper.Map(lesson, lessonDbo);
+            var lessonNumber =
+                await context.LessonNumbers
+                    .FirstOrDefaultAsync(x => x.Number == lesson.LessonNumber.Number
+                                              && x.ScheduleId == lesson.ScheduleId);
+            if (lessonNumber is null)
+                throw new InvalidOperationException();
+            lessonDbo.LessonNumberId = lessonNumber.Id;
+            if (lesson.StudySubgroup is null)
+                continue;
+            var studySubgroup = await context.StudySubgroups
+                .FirstOrDefaultAsync(x => x.Name == lesson.StudySubgroup.Name
+                                          && x.StudyGroup.Id == lesson.StudyGroup.Id);
+            if (studySubgroup is null)
+                throw new InvalidOperationException();
+            lessonDbo.StudySubgroupId = studySubgroup.Id;
         }
     }
 }
