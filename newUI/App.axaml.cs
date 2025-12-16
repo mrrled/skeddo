@@ -170,7 +170,6 @@ public partial class App : Avalonia.Application
     private static void RegisterViewMappings()
     {
         ViewMappingService.RegisterWindow<MainViewModel, MainWindow>();
-        ViewMappingService.RegisterUserControl<AnotherScheduleViewModel, ScheduleWindow>();
         
         ViewMappingService.RegisterWindow<ConfirmDeleteViewModel, ConfirmDeleteWindow>();
         
@@ -188,5 +187,7 @@ public partial class App : Avalonia.Application
         
         ViewMappingService.RegisterWindow<ClassroomEditorViewModel, ClassroomEditorWindow>();
         ViewMappingService.RegisterUserControl<ClassroomListViewModel, ClassroomListView>();
+        
+        ViewMappingService.RegisterWindow<NotificationViewModel, NotificationWindow>();
     }
 }

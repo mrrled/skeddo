@@ -1,6 +1,4 @@
-// LessonTableView.axaml.cs
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Xaml.Interactions.Core;
 using Avalonia.Xaml.Interactivity;
 

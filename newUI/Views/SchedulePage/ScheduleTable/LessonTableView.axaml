@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
              xmlns:lessonCard="clr-namespace:newUI.Views.SchedulePage.LessonCard"
-
              x:Class="newUI.Views.SchedulePage.ScheduleTable.LessonTableView"
              x:DataType="vm:LessonTableViewModel">
     

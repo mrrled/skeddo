@@ -166,8 +166,6 @@
                         <StackPanel Orientation="Horizontal" Spacing="5">
                             <TextBlock Text="Кабинет:" Foreground="Gray"/>
                             <TextBlock Text="{Binding SelectedClassroom.Name}"/>
-                            <TextBlock Text="{Binding SelectedClassroom.Description, StringFormat='({0})'}"
-                                       Foreground="Gray"/>
                         </StackPanel>
                         
                         <StackPanel Orientation="Horizontal" Spacing="5">

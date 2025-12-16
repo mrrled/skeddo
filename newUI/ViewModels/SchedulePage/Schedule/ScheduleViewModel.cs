@@ -137,13 +137,13 @@ public class ScheduleViewModel : ViewModelBase
         }
         else
         {
-            var tableViewModel = new LessonTableViewModel(schedule, scopeFactory);
+            var tableViewModel = new LessonTableViewModel(schedule, scopeFactory, windowManager);
             var tab = new ScheduleTabViewModel(
                 schedule,
                 tableViewModel,
                 scopeFactory,
                 CloseTabById,
-                new LessonBufferViewModel(scopeFactory)
+                new LessonBufferViewModel(scopeFactory, windowManager)
             );
 
             Tabs.Add(tab);
