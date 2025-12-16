@@ -19,14 +19,17 @@ public class LessonCardViewModel : ViewModelBase
     
     private bool isDragging;
     private bool isDragOver;
+    
+    private readonly Action? refreshCallback;
 
     public LessonCardViewModel(
         IServiceScopeFactory scopeFactory,
-        IWindowManager windowManager,
-        bool isVisible = true)
+        IWindowManager windowManager, Action? refreshCallback = null, bool isVisible = true)
     {
         this.scopeFactory = scopeFactory;
-        this.windowManager = windowManager;;
+        this.windowManager = windowManager;
+        this.refreshCallback = refreshCallback;
+        ;
         IsVisible = isVisible;
         
         ClickCommand = new AsyncRelayCommand(OnClick);
@@ -73,7 +76,7 @@ public class LessonCardViewModel : ViewModelBase
         {
             Lesson = updatedLesson;
             OnPropertyChanged(nameof(Lesson));
-            
+            refreshCallback.Invoke();
             // Можно вызвать событие для обновления таблицы
             // TableUpdated?.Invoke();
         };
@@ -113,6 +116,7 @@ public class LessonCardViewModel : ViewModelBase
         
         if (Lesson != null && target.Lesson != null)
         {
+            // Сохраняем оба урока с новыми позициями
             await service.EditLesson(Lesson, Lesson.ScheduleId);
             await service.EditLesson(target.Lesson, Lesson.ScheduleId);
         }

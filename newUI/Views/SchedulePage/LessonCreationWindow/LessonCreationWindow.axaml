@@ -60,7 +60,6 @@
                     <ComboBox HorizontalAlignment="Right" ItemsSource="{Binding Subjects}"
                               SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
                               PlaceholderText="Выберите предмет...">
-                              <!-- IsTextSearchEnabled="True"> -->
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}"/>
@@ -115,9 +114,6 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="5">
                                     <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                                    <TextBlock Text="{Binding Description, StringFormat='({0})'}"
-                                               Foreground="Gray"
-                                               FontSize="11"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>

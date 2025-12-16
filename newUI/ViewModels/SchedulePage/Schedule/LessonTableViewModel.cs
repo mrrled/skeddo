@@ -118,9 +118,10 @@ public class LessonTableViewModel :
 
     private void LoadDataToGrid()
     {
-        var data = LoadData().Result;
+        var data = LoadData().Result; // Или await, если сделаете метод async
         LoadDataFromBackend(data);
         
+        // Явно обновляем UI-свойства
         OnPropertyChanged(nameof(Rows));
         OnPropertyChanged(nameof(Columns));
     }
@@ -157,7 +158,7 @@ public class LessonTableViewModel :
             {
                 if (lessonDictionary.TryGetValue((lessonNumber.Number, studyGroup.Name), out var lesson))
                 {
-                    var card = new LessonCardViewModel(scopeFactory, windowManager)
+                    var card = new LessonCardViewModel(scopeFactory, windowManager, Refresh)
                     {
                         Lesson = lesson
                     };
@@ -166,7 +167,18 @@ public class LessonTableViewModel :
                 }
                 else
                 {
-                    rowData[studyGroup] = new LessonCardViewModel(scopeFactory, windowManager, isVisible: false);
+                    var card = new LessonCardViewModel(
+                        scopeFactory, windowManager,
+                        Refresh, isVisible: false)
+                    {
+                        Lesson = new LessonDto()
+                        {
+                            StudyGroup = studyGroup,
+                            LessonNumber = lessonNumber,
+                        }
+                    };
+                    card.LessonClicked += OnLessonClicked;
+                    rowData[studyGroup] = card;
                 }
             }
             
@@ -174,6 +186,11 @@ public class LessonTableViewModel :
         }
         
         return result;
+    }
+
+    private void Refresh()
+    {
+        RefreshAsync().Wait();
     }
     
     private void OnLessonClicked(LessonDto lesson)

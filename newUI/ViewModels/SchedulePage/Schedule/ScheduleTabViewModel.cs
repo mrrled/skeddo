@@ -60,8 +60,11 @@ public class ScheduleTabViewModel : ViewModelBase
         Schedule = newSchedule;
         Title = newSchedule.Name;
         TableViewModel.RefreshAsync(newSchedule).Wait();
+        
         LessonBuffer.Clear();
         LessonBuffer.AddMany(newSchedule.LessonDrafts);
+        
         OnPropertyChanged(nameof(LessonBuffer));
+        OnPropertyChanged(nameof(Title));
     }
 }
