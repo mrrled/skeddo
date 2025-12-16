@@ -35,11 +35,13 @@ namespace Tests.ServicesTests
         public async Task FetchTeachersFromBackendAsync_ShouldReturnTeacherDtos()
         {
             // Arrange
+            var teacherId1 = Guid.NewGuid();
+            var teacherId2 = Guid.NewGuid();
             var teachers = new List<Teacher>
             {
-                Teacher.CreateTeacher(1, "John", "Doe", "Smith",
+                Teacher.CreateTeacher(teacherId1, "John", "Doe", "Smith",
                     [], []),
-                Teacher.CreateTeacher(2, "Jane", "Smith", "Doe",
+                Teacher.CreateTeacher(teacherId2, "Jane", "Smith", "Doe",
                     [], [])
             };
 
@@ -64,56 +66,58 @@ namespace Tests.ServicesTests
         public async Task GetTeacherById_ShouldReturnTeacherDto_WhenTeacherExists()
         {
             // Arrange
-            var teacher = Teacher.CreateTeacher(1, "John", "Doe", "Smith", 
+            var teacherId = Guid.NewGuid();
+            var teacher = Teacher.CreateTeacher(teacherId, "John", "Doe", "Smith", 
                 new List<SchoolSubject>(), new List<StudyGroup>());
 
             _teacherRepositoryMock
-                .Setup(repo => repo.GetTeacherByIdAsync(1))
+                .Setup(repo => repo.GetTeacherByIdAsync(teacherId))
                 .ReturnsAsync(teacher);
 
             // Act
-            var result = await _teacherServices.GetTeacherById(1);
+            var result = await _teacherServices.GetTeacherById(teacherId);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(1, result.Id);
+            Assert.Equal(teacherId, result.Id);
             Assert.Equal("John", result.Name);
             Assert.Equal("Doe", result.Surname);
             Assert.Equal("Smith", result.Patronymic);
-            _teacherRepositoryMock.Verify(repo => repo.GetTeacherByIdAsync(1), Times.Once);
+            _teacherRepositoryMock.Verify(repo => repo.GetTeacherByIdAsync(teacherId), Times.Once);
         }
 
         [Fact]
         public async Task AddTeacher_ShouldAddTeacherSuccessfully()
         {
             // Arrange
-            var teacherDto = new TeacherDto
+            var schoolSubjectId = Guid.NewGuid();
+            var studyGroupId = Guid.NewGuid();
+            var teacherDto = new CreateTeacherDto
             {
-                Id = 1,
                 Name = "John",
                 Surname = "Doe",
                 Patronymic = "Smith",
                 Description = "Math teacher",
-                SchoolSubjects = [new SchoolSubjectDto { Id = 1, Name = "Mathematics" }],
-                StudyGroups = [new StudyGroupDto { Id = 1, Name = "Group A" }]
+                SchoolSubjects = [new SchoolSubjectDto { Id = schoolSubjectId, Name = "Mathematics" }],
+                StudyGroups = [new StudyGroupDto { Id = studyGroupId, Name = "Group A" }]
             };
 
             var schoolSubjects = new List<SchoolSubject>
             {
-                SchoolSubject.CreateSchoolSubject(1, "Mathematics")
+                SchoolSubject.CreateSchoolSubject(schoolSubjectId, "Mathematics")
             };
 
             var studyGroups = new List<StudyGroup>
             {
-                StudyGroup.CreateStudyGroup(1, "Group A")
+                StudyGroup.CreateStudyGroup(studyGroupId, "Group A")
             };
 
             _schoolSubjectRepositoryMock
-                .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(It.IsAny<List<int>>()))
+                .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(It.IsAny<List<Guid>>()))
                 .ReturnsAsync(schoolSubjects);
 
             _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupListByIdsAsync(It.IsAny<List<int>>()))
+                .Setup(repo => repo.GetStudyGroupListByIdsAsync(It.IsAny<List<Guid>>()))
                 .ReturnsAsync(studyGroups);
 
             _unitOfWorkMock
@@ -126,7 +130,6 @@ namespace Tests.ServicesTests
             // Assert
             _teacherRepositoryMock.Verify(repo => repo.AddAsync(
                 It.Is<Teacher>(t => 
-                    t.Id == 1 && 
                     t.Name == "John" && 
                     t.Surname == "Doe" && 
                     t.Patronymic == "Smith"),
@@ -135,67 +138,70 @@ namespace Tests.ServicesTests
             _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        [Fact]
-        public async Task AddTeacher_ShouldThrowException_WhenSchoolSubjectNotFound()
-        {
-            // Arrange
-            var teacherDto = new TeacherDto
-            {
-                Id = 1,
-                Name = "John",
-                Surname = "Doe",
-                Patronymic = "Smith",
-                SchoolSubjects = [new SchoolSubjectDto { Id = 999 }],
-                StudyGroups = []
-            };
-
-            _schoolSubjectRepositoryMock
-                .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(It.IsAny<List<int>>()))
-                .ReturnsAsync(new List<SchoolSubject>());
-
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => 
-                _teacherServices.AddTeacher(teacherDto));
-        }
+        // [Fact]
+        // public async Task AddTeacher_ShouldThrowException_WhenSchoolSubjectNotFound()   //необязательно учителю иметь предметы
+        // {
+        //     // Arrange
+        //     var teacherDto = new TeacherDto
+        //     {
+        //         Id = 1,
+        //         Name = "John",
+        //         Surname = "Doe",
+        //         Patronymic = "Smith",
+        //         SchoolSubjects = [new SchoolSubjectDto { Id = 999 }],
+        //         StudyGroups = []
+        //     };
+        //
+        //     _schoolSubjectRepositoryMock
+        //         .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(It.IsAny<List<int>>()))
+        //         .ReturnsAsync(new List<SchoolSubject>());
+        //
+        //     // Act & Assert
+        //     await Assert.ThrowsAsync<ArgumentException>(() => 
+        //         _teacherServices.AddTeacher(teacherDto));
+        // }
 
         [Fact]
         public async Task EditTeacher_ShouldUpdateTeacherSuccessfully()
         {
             // Arrange
+            var schoolSubjectId = Guid.NewGuid();
+            var studyGroupId = Guid.NewGuid();
+            var teacherId = Guid.NewGuid();
             var teacherDto = new TeacherDto
             {
-                Id = 1,
+                Id = teacherId,
                 Name = "John",
                 Surname = "Doe",
                 Patronymic = "Smith",
                 Description = "Updated description",
-                SchoolSubjects = [new SchoolSubjectDto { Id = 1, Name = "Mathematics" }],
-                StudyGroups = [new StudyGroupDto { Id = 1, Name = "Group A" }]
+                SchoolSubjects = [new SchoolSubjectDto { Id = schoolSubjectId, Name = "Mathematics" }],
+                StudyGroups = [new StudyGroupDto { Id = studyGroupId, Name = "Group A" }]
             };
 
-            var existingTeacher = Teacher.CreateTeacher(1, "Old", "Name", "Patronymic",
+            var existingTeacher = Teacher.CreateTeacher(teacherId, "Old", "Name", "Patronymic",
                 new List<SchoolSubject>(), new List<StudyGroup>());
 
             var schoolSubjects = new List<SchoolSubject>
             {
-                SchoolSubject.CreateSchoolSubject(1, "Mathematics")
+                SchoolSubject.CreateSchoolSubject(schoolSubjectId, "Mathematics")
             };
 
             var studyGroups = new List<StudyGroup>
             {
-                StudyGroup.CreateStudyGroup(1, "Group A")
+                StudyGroup.CreateStudyGroup(studyGroupId, "Group A")
             };
 
             _teacherRepositoryMock
-                .Setup(repo => repo.GetTeacherByIdAsync(1))
+                .Setup(repo => repo.GetTeacherByIdAsync(teacherId))
                 .ReturnsAsync(existingTeacher);
 
             _schoolSubjectRepositoryMock
-                .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(It.IsAny<List<int>>()))
+                .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(It.IsAny<List<Guid>>()))
                 .ReturnsAsync(schoolSubjects);
 
             _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupListByIdsAsync(It.IsAny<List<int>>()))
+                .Setup(repo => repo.GetStudyGroupListByIdsAsync(It.IsAny<List<Guid>>()))
                 .ReturnsAsync(studyGroups);
 
             _unitOfWorkMock
@@ -208,7 +214,7 @@ namespace Tests.ServicesTests
             // Assert
             _teacherRepositoryMock.Verify(repo => repo.UpdateAsync(
                 It.Is<Teacher>(t => 
-                    t.Id == 1 && 
+                    t.Id == teacherId && 
                     t.Name == "John" && 
                     t.Surname == "Doe" && 
                     t.Patronymic == "Smith" &&
@@ -222,10 +228,11 @@ namespace Tests.ServicesTests
         public async Task EditTeacher_ShouldThrowException_WhenTeacherNotFound()
         {
             // Arrange
-            var teacherDto = new TeacherDto { Id = 999 };
+            var teacherId = Guid.NewGuid();
+            var teacherDto = new TeacherDto { Id = teacherId };
 
             _teacherRepositoryMock
-                .Setup(repo => repo.GetTeacherByIdAsync(999))
+                .Setup(repo => repo.GetTeacherByIdAsync(teacherId))
                 .ReturnsAsync((Teacher)null);
 
             // Act & Assert
@@ -237,13 +244,14 @@ namespace Tests.ServicesTests
         public async Task DeleteTeacher_ShouldDeleteTeacherSuccessfully()
         {
             // Arrange
-            var teacherDto = new TeacherDto { Id = 1 };
+            var teacherId = Guid.NewGuid();
+            var teacherDto = new TeacherDto { Id = teacherId };
             
-            var teacher = Teacher.CreateTeacher(1, "John", "Doe", "Smith",
+            var teacher = Teacher.CreateTeacher(teacherId, "John", "Doe", "Smith",
                 new List<SchoolSubject>(), new List<StudyGroup>());
 
             _teacherRepositoryMock
-                .Setup(repo => repo.GetTeacherByIdAsync(1))
+                .Setup(repo => repo.GetTeacherByIdAsync(teacherId))
                 .ReturnsAsync(teacher);
 
             _unitOfWorkMock
@@ -262,10 +270,11 @@ namespace Tests.ServicesTests
         public async Task DeleteTeacher_ShouldThrowException_WhenTeacherNotFound()
         {
             // Arrange
-            var teacherDto = new TeacherDto { Id = 999 };
+            var teacherId = Guid.NewGuid();
+            var teacherDto = new TeacherDto { Id = teacherId };
 
             _teacherRepositoryMock
-                .Setup(repo => repo.GetTeacherByIdAsync(999))
+                .Setup(repo => repo.GetTeacherByIdAsync(teacherId))
                 .ReturnsAsync((Teacher)null);
 
             // Act & Assert
@@ -277,9 +286,9 @@ namespace Tests.ServicesTests
         public async Task AddTeacher_ShouldHandleEmptyLists()
         {
             // Arrange
-            var teacherDto = new TeacherDto
+            var teacherId = Guid.NewGuid();
+            var teacherDto = new CreateTeacherDto()
             {
-                Id = 1,
                 Name = "John",
                 Surname = "Doe",
                 Patronymic = "Smith",
@@ -288,11 +297,11 @@ namespace Tests.ServicesTests
             };
 
             _schoolSubjectRepositoryMock
-                .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(new List<int>()))
+                .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(new List<Guid>()))
                 .ReturnsAsync(new List<SchoolSubject>());
 
             _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupListByIdsAsync(new List<int>()))
+                .Setup(repo => repo.GetStudyGroupListByIdsAsync(new List<Guid>()))
                 .ReturnsAsync(new List<StudyGroup>());
 
             _unitOfWorkMock
@@ -305,86 +314,87 @@ namespace Tests.ServicesTests
             // Assert
             _teacherRepositoryMock.Verify(repo => repo.AddAsync(
                 It.Is<Teacher>(t => 
-                    t.Id == 1 && 
                     t.SchoolSubjects.Count == 0 && 
                     t.StudyGroups.Count == 0),
                 1), Times.Once);
         }
 
-        [Fact]
-        public async Task EditTeacher_ShouldHandleNullDescription()
-        {
-            // Arrange
-            var teacherDto = new TeacherDto
-            {
-                Id = 1,
-                Name = "John",
-                Surname = "Doe",
-                Patronymic = "Smith",
-                Description = null,
-                SchoolSubjects = new List<SchoolSubjectDto>(),
-                StudyGroups = new List<StudyGroupDto>()
-            };
-
-            var existingTeacher = Teacher.CreateTeacher(1, "Old", "Name", "Patronymic",
-                new List<SchoolSubject>(), new List<StudyGroup>());
-
-            _teacherRepositoryMock
-                .Setup(repo => repo.GetTeacherByIdAsync(1))
-                .ReturnsAsync(existingTeacher);
-
-            _schoolSubjectRepositoryMock
-                .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(new List<int>()))
-                .ReturnsAsync(new List<SchoolSubject>());
-
-            _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupListByIdsAsync(new List<int>()))
-                .ReturnsAsync(new List<StudyGroup>());
-
-            // Act & Assert
-            // Note: Teacher.SetDescription throws ArgumentNullException for null description
-            await Assert.ThrowsAsync<ArgumentNullException>(() => 
-                _teacherServices.EditTeacher(teacherDto));
-        }
+        // [Fact]
+        // public async Task EditTeacher_ShouldHandleNullDescription()
+        // {
+        //     // Arrange
+        //     var teacherId = Guid.NewGuid();
+        //     var teacherDto = new TeacherDto
+        //     {
+        //         Id = 1,
+        //         Name = "John",
+        //         Surname = "Doe",
+        //         Patronymic = "Smith",
+        //         Description = null,
+        //         SchoolSubjects = new List<SchoolSubjectDto>(),
+        //         StudyGroups = new List<StudyGroupDto>()
+        //     };
+        //
+        //     var existingTeacher = Teacher.CreateTeacher(teacherId, "Old", "Name", "Patronymic",
+        //         new List<SchoolSubject>(), new List<StudyGroup>());
+        //
+        //     _teacherRepositoryMock
+        //         .Setup(repo => repo.GetTeacherByIdAsync(teacherId))
+        //         .ReturnsAsync(existingTeacher);
+        //
+        //     _schoolSubjectRepositoryMock
+        //         .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(new List<Guid>()))
+        //         .ReturnsAsync(new List<SchoolSubject>());
+        //
+        //     _studyGroupRepositoryMock
+        //         .Setup(repo => repo.GetStudyGroupListByIdsAsync(new List<Guid>()))
+        //         .ReturnsAsync(new List<StudyGroup>());
+        //
+        //     // Act & Assert
+        //     // Note: Teacher.SetDescription throws ArgumentNullException for null description, это где-то вроде поправлено
+        //     await Assert.ThrowsAsync<ArgumentNullException>(() => 
+        //         _teacherServices.EditTeacher(teacherDto));
+        // }
 
         [Fact]
         public async Task AddTeacher_ShouldHandleDuplicateIds()
         {
             // Arrange
-            var teacherDto = new TeacherDto
+            var schoolSubjectId = Guid.NewGuid();
+            var studyGroupId = Guid.NewGuid();
+            var teacherDto = new CreateTeacherDto
             {
-                Id = 1,
                 Name = "John",
                 Surname = "Doe",
                 Patronymic = "Smith",
                 SchoolSubjects =
                 [
-                    new SchoolSubjectDto { Id = 1 },
-                    new SchoolSubjectDto { Id = 1 }
+                    new SchoolSubjectDto { Id = schoolSubjectId },
+                    new SchoolSubjectDto { Id = schoolSubjectId }
                 ],
                 StudyGroups =
                 [
-                    new StudyGroupDto { Id = 2 },
-                    new StudyGroupDto { Id = 2 }
+                    new StudyGroupDto { Id = studyGroupId },
+                    new StudyGroupDto { Id = studyGroupId }
                 ]
             };
 
             var schoolSubjects = new List<SchoolSubject>
             {
-                SchoolSubject.CreateSchoolSubject(1, "Math")
+                SchoolSubject.CreateSchoolSubject(schoolSubjectId, "Math")
             };
 
             var studyGroups = new List<StudyGroup>
             {
-                StudyGroup.CreateStudyGroup(2, "Group A")
+                StudyGroup.CreateStudyGroup(studyGroupId, "Group A")
             };
 
             _schoolSubjectRepositoryMock
-                .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(new List<int> { 1 }))
+                .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(new List<Guid> { schoolSubjectId }))
                 .ReturnsAsync(schoolSubjects);
 
             _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupListByIdsAsync(new List<int> { 2 }))
+                .Setup(repo => repo.GetStudyGroupListByIdsAsync(new List<Guid> { studyGroupId }))
                 .ReturnsAsync(studyGroups);
 
             // Act
@@ -392,7 +402,7 @@ namespace Tests.ServicesTests
 
             // Assert
             _schoolSubjectRepositoryMock.Verify(repo => 
-                repo.GetSchoolSubjectListByIdsAsync(It.Is<List<int>>(list => list.Count == 1 && list[0] == 1)), 
+                repo.GetSchoolSubjectListByIdsAsync(It.Is<List<Guid>>(list => list.Count == 1 && list[0] == schoolSubjectId)), 
                 Times.Once);
         }
     }

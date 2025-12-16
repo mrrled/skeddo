@@ -27,7 +27,7 @@ public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUni
     {
         var studyGroup = await studyGroupRepository.GetStudyGroupByIdAsync(studyGroupDto.Id);
         if (studyGroup is null)
-            throw new  ArgumentException($"StudyGroup with id {studyGroupDto.Id} not found");
+            throw new ArgumentException($"StudyGroup with id {studyGroupDto.Id} not found");
         if (studyGroupDto.Name != studyGroup.Name)
             studyGroup.SetName(studyGroupDto.Name);
         await studyGroupRepository.UpdateAsync(studyGroup);

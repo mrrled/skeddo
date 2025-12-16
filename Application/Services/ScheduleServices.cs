@@ -14,8 +14,10 @@ public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWor
         return scheduleList.ToSchedulesDto();
     }
 
-    public async Task<ScheduleDto> AddSchedule(CreateScheduleDto scheduleDto)
+    public async Task<ScheduleDto> AddSchedule(CreateScheduleDto? scheduleDto)
     {
+        if (scheduleDto is null)
+            throw new ArgumentNullException(nameof(scheduleDto));
         var id = Guid.NewGuid();
         var schedule = Schedule.CreateSchedule(id, scheduleDto.Name);
         await scheduleRepository.AddAsync(schedule, 1);

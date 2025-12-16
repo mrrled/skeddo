@@ -27,8 +27,8 @@ namespace Tests.ServicesTests
             // Arrange
             var studyGroups = new List<StudyGroup>
             {
-                StudyGroup.CreateStudyGroup(1, "Group 1"),
-                StudyGroup.CreateStudyGroup(2, "Group 2")
+                StudyGroup.CreateStudyGroup(Guid.NewGuid(), "Group 1"),
+                StudyGroup.CreateStudyGroup(Guid.NewGuid(), "Group 2")
             };
 
             _studyGroupRepositoryMock
@@ -66,7 +66,7 @@ namespace Tests.ServicesTests
         public async Task AddStudyGroup_ShouldAddStudyGroupAndSaveChanges()
         {
             // Arrange
-            var studyGroupDto = new StudyGroupDto { Id = 1, Name = "New Group" };
+            var studyGroupDto = new CreateStudyGroupDto { Name = "New Group" };
             
             _studyGroupRepositoryMock
                 .Setup(repo => repo.AddAsync(It.IsAny<StudyGroup>(), 1))
@@ -81,7 +81,7 @@ namespace Tests.ServicesTests
 
             // Assert
             _studyGroupRepositoryMock.Verify(repo => repo.AddAsync(
-                It.Is<StudyGroup>(sg => sg.Id == 1 && sg.Name == "New Group"), 
+                It.Is<StudyGroup>(sg => sg.Name == "New Group"), 
                 1), Times.Once);
             _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -90,7 +90,7 @@ namespace Tests.ServicesTests
         public async Task AddStudyGroup_WithNullName_ShouldThrowArgumentNullException()
         {
             // Arrange
-            var studyGroupDto = new StudyGroupDto { Id = 1, Name = null! };
+            var studyGroupDto = new CreateStudyGroupDto { Name = null! };
 
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentNullException>(() => 
@@ -101,11 +101,12 @@ namespace Tests.ServicesTests
         public async Task EditStudyGroup_WhenGroupExistsAndNameChanged_ShouldUpdateAndSaveChanges()
         {
             // Arrange
-            var studyGroupDto = new StudyGroupDto { Id = 1, Name = "Updated Name" };
-            var existingStudyGroup = StudyGroup.CreateStudyGroup(1, "Original Name");
+            var studyGroupId = Guid.NewGuid();
+            var studyGroupDto = new StudyGroupDto { Id = studyGroupId, Name = "Updated Name" };
+            var existingStudyGroup = StudyGroup.CreateStudyGroup(studyGroupId, "Original Name");
             
             _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupByIdAsync(1))
+                .Setup(repo => repo.GetStudyGroupByIdAsync(studyGroupId))
                 .ReturnsAsync(existingStudyGroup);
                 
             _unitOfWorkMock
@@ -125,11 +126,12 @@ namespace Tests.ServicesTests
         public async Task EditStudyGroup_WhenGroupExistsAndNameUnchanged_ShouldStillSaveChanges()
         {
             // Arrange
-            var studyGroupDto = new StudyGroupDto { Id = 1, Name = "Same Name" };
-            var existingStudyGroup = StudyGroup.CreateStudyGroup(1, "Same Name");
+            var studyGroupId = Guid.NewGuid();
+            var studyGroupDto = new StudyGroupDto { Id = studyGroupId, Name = "Same Name" };
+            var existingStudyGroup = StudyGroup.CreateStudyGroup(studyGroupId, "Same Name");
             
             _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupByIdAsync(1))
+                .Setup(repo => repo.GetStudyGroupByIdAsync(studyGroupId))
                 .ReturnsAsync(existingStudyGroup);
                 
             _unitOfWorkMock
@@ -148,17 +150,18 @@ namespace Tests.ServicesTests
         public async Task EditStudyGroup_WhenGroupNotFound_ShouldThrowArgumentException()
         {
             // Arrange
-            var studyGroupDto = new StudyGroupDto { Id = 999, Name = "Updated Name" };
+            var studyGroupId = Guid.NewGuid();
+            var studyGroupDto = new StudyGroupDto { Id = studyGroupId, Name = "Updated Name" };
             
             _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupByIdAsync(999))
+                .Setup(repo => repo.GetStudyGroupByIdAsync(studyGroupId))
                 .ThrowsAsync(new InvalidOperationException());
 
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentException>(() => 
                 _service.EditStudyGroup(studyGroupDto));
                 
-            _studyGroupRepositoryMock.Verify(repo => repo.GetStudyGroupByIdAsync(999), Times.Once);
+            _studyGroupRepositoryMock.Verify(repo => repo.GetStudyGroupByIdAsync(studyGroupId), Times.Once);
             _studyGroupRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<StudyGroup>()), Times.Never);
             _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -167,11 +170,12 @@ namespace Tests.ServicesTests
         public async Task EditStudyGroup_WithNullName_ShouldThrowArgumentNullException()
         {
             // Arrange
-            var studyGroupDto = new StudyGroupDto { Id = 1, Name = null! };
-            var existingStudyGroup = StudyGroup.CreateStudyGroup(1, "Original Name");
+            var studyGroupId = Guid.NewGuid();
+            var studyGroupDto = new StudyGroupDto { Id = studyGroupId, Name = null! };
+            var existingStudyGroup = StudyGroup.CreateStudyGroup(studyGroupId, "Original Name");
             
             _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupByIdAsync(1))
+                .Setup(repo => repo.GetStudyGroupByIdAsync(studyGroupId))
                 .ReturnsAsync(existingStudyGroup);
 
             // Act & Assert
@@ -186,11 +190,12 @@ namespace Tests.ServicesTests
         public async Task DeleteStudyGroup_WhenGroupExists_ShouldDeleteAndSaveChanges()
         {
             // Arrange
-            var studyGroupDto = new StudyGroupDto { Id = 1, Name = "Group to Delete" };
-            var existingStudyGroup = StudyGroup.CreateStudyGroup(1, "Group to Delete");
+            var studyGroupId = Guid.NewGuid();
+            var studyGroupDto = new StudyGroupDto { Id = studyGroupId, Name = "Group to Delete" };
+            var existingStudyGroup = StudyGroup.CreateStudyGroup(studyGroupId, "Group to Delete");
             
             _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupByIdAsync(1))
+                .Setup(repo => repo.GetStudyGroupByIdAsync(studyGroupId))
                 .ReturnsAsync(existingStudyGroup);
                 
             _studyGroupRepositoryMock
@@ -213,17 +218,18 @@ namespace Tests.ServicesTests
         public async Task DeleteStudyGroup_WhenGroupNotFound_ShouldThrowArgumentException()
         {
             // Arrange
-            var studyGroupDto = new StudyGroupDto { Id = 999, Name = "Non-existent Group" };
+            var studyGroupId = Guid.NewGuid();
+            var studyGroupDto = new StudyGroupDto { Id = studyGroupId, Name = "Non-existent Group" };
             
             _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupByIdAsync(999))
+                .Setup(repo => repo.GetStudyGroupByIdAsync(studyGroupId))
                 .ThrowsAsync(new InvalidOperationException());
 
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentException>(() => 
                 _service.DeleteStudyGroup(studyGroupDto));
                 
-            _studyGroupRepositoryMock.Verify(repo => repo.GetStudyGroupByIdAsync(999), Times.Once);
+            _studyGroupRepositoryMock.Verify(repo => repo.GetStudyGroupByIdAsync(studyGroupId), Times.Once);
             _studyGroupRepositoryMock.Verify(repo => repo.Delete(It.IsAny<StudyGroup>()), Times.Never);
             _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -232,12 +238,13 @@ namespace Tests.ServicesTests
         public async Task SaveChangesAsync_ShouldBeCalledWithCorrectCancellationToken()
         {
             // Arrange
-            var studyGroupDto = new StudyGroupDto { Id = 1, Name = "Test Group" };
-            var existingStudyGroup = StudyGroup.CreateStudyGroup(1, "Test Group");
+            var studyGroupId = Guid.NewGuid();
+            var studyGroupDto = new StudyGroupDto { Id = studyGroupId, Name = "Test Group" };
+            var existingStudyGroup = StudyGroup.CreateStudyGroup(studyGroupId, "Test Group");
             var cancellationToken = new CancellationToken(true);
             
             _studyGroupRepositoryMock
-                .Setup(repo => repo.GetStudyGroupByIdAsync(1))
+                .Setup(repo => repo.GetStudyGroupByIdAsync(studyGroupId))
                 .ReturnsAsync(existingStudyGroup);
 
             // Act

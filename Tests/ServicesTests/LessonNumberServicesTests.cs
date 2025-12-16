@@ -31,7 +31,7 @@ namespace Tests.ServicesTests
         public async Task GetLessonNumbersByScheduleId_ShouldReturnLessonNumbers_WhenScheduleExists()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumbers = new List<LessonNumber>
             {
                 LessonNumber.CreateLessonNumber(1, "08:00-08:45"),
@@ -64,7 +64,7 @@ namespace Tests.ServicesTests
         public async Task GetLessonNumbersByScheduleId_ShouldReturnEmptyList_WhenNoLessonNumbersExist()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var emptyList = new List<LessonNumber>();
 
             _mockLessonNumberRepository
@@ -83,7 +83,7 @@ namespace Tests.ServicesTests
         public async Task GetLessonNumbersByScheduleId_ShouldThrowException_WhenRepositoryThrowsException()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             
             _mockLessonNumberRepository
                 .Setup(repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId))
@@ -103,7 +103,7 @@ namespace Tests.ServicesTests
         public async Task AddLessonNumber_ShouldAddLessonNumberAndSaveChanges_WhenValidInput()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto
             {
                 Number = 4,
@@ -147,7 +147,7 @@ namespace Tests.ServicesTests
         public async Task AddLessonNumber_ShouldCreateLessonNumberWithVariousInputs(int number, string time)
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto
             {
                 Number = number,
@@ -182,7 +182,7 @@ namespace Tests.ServicesTests
         public async Task AddLessonNumber_ShouldThrowException_WhenRepositoryThrowsException()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto
             {
                 Number = 1,
@@ -208,7 +208,7 @@ namespace Tests.ServicesTests
         public async Task AddLessonNumber_ShouldNotSaveChanges_WhenRepositoryThrowsException()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto
             {
                 Number = 1,
@@ -238,7 +238,7 @@ namespace Tests.ServicesTests
         public async Task EditLessonNumber_ShouldUpdateLessonNumberAndSaveChanges_WhenValidInput()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var oldLessonNumberDto = new LessonNumberDto
             {
                 Number = 1,
@@ -295,7 +295,7 @@ namespace Tests.ServicesTests
         public async Task EditLessonNumber_ShouldHandleDifferentNumbers_WhenLessonNumberChanged()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var oldLessonNumberDto = new LessonNumberDto
             {
                 Number = 1,
@@ -341,7 +341,7 @@ namespace Tests.ServicesTests
         public async Task EditLessonNumber_ShouldThrowException_WhenRepositoryThrowsException()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var oldLessonNumberDto = new LessonNumberDto
             {
                 Number = 1,
@@ -384,7 +384,7 @@ namespace Tests.ServicesTests
         public async Task DeleteLessonNumber_ShouldDeleteLessonNumberAndSaveChanges_WhenValidInput()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto
             {
                 Number = 1,
@@ -427,7 +427,7 @@ namespace Tests.ServicesTests
         public async Task DeleteLessonNumber_ShouldHandleNullTime_WhenLessonNumberHasNoTime()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto
             {
                 Number = 1,
@@ -465,7 +465,7 @@ namespace Tests.ServicesTests
         public async Task DeleteLessonNumber_ShouldThrowException_WhenRepositoryThrowsException()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto
             {
                 Number = 1,
@@ -494,7 +494,7 @@ namespace Tests.ServicesTests
         public async Task DeleteLessonNumber_ShouldVerifySaveChangesCalled_WhenOperationSuccessful()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto
             {
                 Number = 1,
@@ -529,7 +529,7 @@ namespace Tests.ServicesTests
         public async Task AllMethods_ShouldCallSaveChangesExactlyOnce_WhenOperationsSuccess()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "08:00-08:45" };
             var newLessonNumberDto = new LessonNumberDto { Number = 1, Time = "08:00-09:00" };
             
@@ -581,7 +581,7 @@ namespace Tests.ServicesTests
         public async Task AddLessonNumber_ShouldHandleMaxIntegerNumber()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto
             {
                 Number = int.MaxValue,
@@ -613,7 +613,7 @@ namespace Tests.ServicesTests
         public async Task EditLessonNumber_ShouldHandleSameDtoForOldAndNew()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var sameDto = new LessonNumberDto
             {
                 Number = 1,
@@ -650,7 +650,7 @@ namespace Tests.ServicesTests
         public async Task DeleteLessonNumber_ShouldHandleZeroNumber()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto
             {
                 Number = 0,
@@ -689,7 +689,7 @@ namespace Tests.ServicesTests
         public async Task AllMethods_ShouldPassDefaultCancellationToken_ToSaveChanges()
         {
             // Arrange
-            var scheduleId = 1;
+            var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "08:00-08:45" };
             var newLessonNumberDto = new LessonNumberDto { Number = 1, Time = "08:00-09:00" };
 

@@ -53,7 +53,7 @@ public class Schedule(
     private List<Lesson> UpdateByLesson(Lesson lesson)
     {
         var updatableLessons = _lessons
-            .Where(l => l.StudyGroup == lesson.StudyGroup || l.LessonNumber == lesson.LessonNumber)
+            .Where(l => (l.StudyGroup == lesson.StudyGroup) ^ (l.LessonNumber == lesson.LessonNumber))
             .ToList();
         foreach (var element in updatableLessons.Where(l =>
                      l.Teacher.Id == lesson.Teacher.Id || l.Classroom == lesson.Classroom))
