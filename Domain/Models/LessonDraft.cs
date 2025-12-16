@@ -2,7 +2,7 @@
 
 public class LessonDraft(
     Guid id,
-    int scheduleId,
+    Guid scheduleId,
     SchoolSubject schoolSubject,
     LessonNumber? lessonNumber,
     Teacher? teacher,
@@ -11,7 +11,7 @@ public class LessonDraft(
     StudySubgroup? studySubgroup = null,
     string? comment = null) : Entity<Guid>(id)
 {
-    public int ScheduleId { get; private set; } = scheduleId;
+    public Guid ScheduleId { get; private set; } = scheduleId;
     public SchoolSubject SchoolSubject { get; private set; } = schoolSubject;
     public LessonNumber? LessonNumber { get; private set; } = lessonNumber;
     public Teacher? Teacher { get; private set; } = teacher;

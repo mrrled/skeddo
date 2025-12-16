@@ -2,7 +2,7 @@ namespace Domain.Models;
 
 public class Lesson(
     Guid id,
-    int scheduleId,
+    Guid scheduleId,
     SchoolSubject schoolSubject,
     LessonNumber lessonNumber,
     Teacher teacher,
@@ -13,7 +13,7 @@ public class Lesson(
     WarningType warningType = WarningType.Normal
 ) : Entity<Guid>(id)
 {
-    public int ScheduleId { get; private set; } = scheduleId;
+    public Guid ScheduleId { get; private set; } = scheduleId;
     public SchoolSubject SchoolSubject { get; private set; } = schoolSubject;
     public LessonNumber LessonNumber { get; private set; } = lessonNumber;
     public Teacher Teacher { get; private set; } = teacher;

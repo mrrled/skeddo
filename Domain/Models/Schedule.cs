@@ -35,6 +35,7 @@ public class Schedule(
         lesson.SetClassroom(classroom);
         lesson.SetComment(comment);
         var editedLessons = UpdateByLesson(lesson);
+        editedLessons.Add(lesson);
         return editedLessons;
     }
 

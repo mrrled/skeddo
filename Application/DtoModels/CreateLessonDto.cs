@@ -4,6 +4,7 @@ namespace Application.DtoModels;
 
 public class CreateLessonDto
 {
+    public Guid ScheduleId { get; set; }
     public SchoolSubjectDto? SchoolSubject { get; set; }
     public LessonNumberDto? LessonNumber { get; set; }
     public TeacherDto? Teacher { get; set; }

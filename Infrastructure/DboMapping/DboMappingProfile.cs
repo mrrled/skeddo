@@ -47,7 +47,7 @@ public class DboMappingProfile : Profile
         CreateMap<LessonDbo, Lesson>()
             .ConstructUsing((src, ctx) => new Lesson(
                 src.Id,
-                ctx.Mapper.Map<int>(src.ScheduleId),
+                ctx.Mapper.Map<Guid>(src.ScheduleId),
                 ctx.Mapper.Map<SchoolSubject>(src.SchoolSubject),
                 ctx.Mapper.Map<LessonNumber>(src.LessonNumber),
                 ctx.Mapper.Map<Teacher>(src.Teacher),
@@ -70,7 +70,7 @@ public class DboMappingProfile : Profile
         CreateMap<LessonDraftDbo, LessonDraft>()
             .ConstructUsing((src, ctx) => new LessonDraft(
                 src.Id,
-                ctx.Mapper.Map<int>(src.ScheduleId),
+                ctx.Mapper.Map<Guid>(src.ScheduleId),
                 ctx.Mapper.Map<SchoolSubject>(src.SchoolSubject),
                 ctx.Mapper.Map<LessonNumber>(src.LessonNumber),
                 ctx.Mapper.Map<Teacher>(src.Teacher),

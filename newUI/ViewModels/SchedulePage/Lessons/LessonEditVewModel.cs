@@ -119,7 +119,7 @@ public class LessonEditViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedTeacher, value))
             {
-                originalLesson.Teacher = value;
+                lesson.Teacher = value;
             }
         }
     }
@@ -131,7 +131,7 @@ public class LessonEditViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedClassroom, value))
             {
-                originalLesson.Classroom = value;
+                lesson.Classroom = value;
             }
         }
     }
@@ -143,7 +143,7 @@ public class LessonEditViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedStudyGroup, value))
             {
-                originalLesson.StudyGroup = value;
+                lesson.StudyGroup = value;
             }
         }
     }
@@ -155,7 +155,7 @@ public class LessonEditViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedSubject, value))
             {
-                originalLesson.SchoolSubject = value;
+                lesson.SchoolSubject = value;
             }
         }
     }
@@ -167,7 +167,7 @@ public class LessonEditViewModel : ViewModelBase
         {
             if (SetProperty(ref selectedTimeSlot, value))
             {
-                originalLesson.LessonNumber = value;
+                lesson.LessonNumber = value;
             }
         }
     }
@@ -200,7 +200,7 @@ public class LessonEditViewModel : ViewModelBase
     private async Task CreateLessonAsync()
     {
         using var scope = scopeFactory.CreateScope();
-        LessonCreated?.Invoke(originalLesson);
+        LessonCreated?.Invoke(lesson);
         Console.WriteLine(Window);
         Window?.Close();
     }

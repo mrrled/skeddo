@@ -29,7 +29,6 @@ public class LessonCardViewModel : ViewModelBase
         this.scopeFactory = scopeFactory;
         this.windowManager = windowManager;
         this.refreshCallback = refreshCallback;
-        ;
         IsVisible = isVisible;
         
         ClickCommand = new AsyncRelayCommand(OnClick);

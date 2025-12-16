@@ -14,7 +14,7 @@ namespace newUI.ViewModels.SchedulePage.Schedule;
 public class LessonBufferViewModel : ViewModelBase
 {
     private AvaloniaDictionary<Guid, LessonDraftDto> lessonDictionary = new();
-    private AvaloniaDictionary<int, LessonCardViewModel> lessonCardViewModels = new();
+    private AvaloniaDictionary<Guid, LessonCardViewModel> lessonCardViewModels = new();
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
 
