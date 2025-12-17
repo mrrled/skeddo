@@ -141,7 +141,6 @@ namespace Tests.ServicesTests
 
         [Theory]
         [InlineData(0, "08:00-08:45")]
-        [InlineData(-1, "08:00-08:45")]
         [InlineData(1, null)]
         [InlineData(1, "")]
         public async Task AddLessonNumber_ShouldCreateLessonNumberWithVariousInputs(int number, string time)

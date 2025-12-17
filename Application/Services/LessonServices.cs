@@ -123,6 +123,8 @@ public class LessonServices(
     public async Task DeleteLesson(LessonDto lessonDto, Guid scheduleId)
     {
         var lesson = await lessonRepository.GetLessonByIdAsync(lessonDto.Id);
+        if (lesson is null)
+            throw new ArgumentException($"Cannot find a lesson with id {lessonDto.Id}");
         await lessonRepository.Delete(lesson);
         await unitOfWork.SaveChangesAsync();
     }

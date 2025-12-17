@@ -41,8 +41,6 @@ public class Teacher(
 
     public void SetDescription(string? description)
     {
-        if (description is null)
-            throw new ArgumentNullException();
         Description = description;
     }
 

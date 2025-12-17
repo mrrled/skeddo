@@ -286,8 +286,7 @@ namespace Tests.ServicesTests
         public async Task AddTeacher_ShouldHandleEmptyLists()
         {
             // Arrange
-            var teacherId = Guid.NewGuid();
-            var teacherDto = new CreateTeacherDto()
+            var teacherDto = new CreateTeacherDto
             {
                 Name = "John",
                 Surname = "Doe",
@@ -318,43 +317,6 @@ namespace Tests.ServicesTests
                     t.StudyGroups.Count == 0),
                 1), Times.Once);
         }
-
-        // [Fact]
-        // public async Task EditTeacher_ShouldHandleNullDescription()
-        // {
-        //     // Arrange
-        //     var teacherId = Guid.NewGuid();
-        //     var teacherDto = new TeacherDto
-        //     {
-        //         Id = 1,
-        //         Name = "John",
-        //         Surname = "Doe",
-        //         Patronymic = "Smith",
-        //         Description = null,
-        //         SchoolSubjects = new List<SchoolSubjectDto>(),
-        //         StudyGroups = new List<StudyGroupDto>()
-        //     };
-        //
-        //     var existingTeacher = Teacher.CreateTeacher(teacherId, "Old", "Name", "Patronymic",
-        //         new List<SchoolSubject>(), new List<StudyGroup>());
-        //
-        //     _teacherRepositoryMock
-        //         .Setup(repo => repo.GetTeacherByIdAsync(teacherId))
-        //         .ReturnsAsync(existingTeacher);
-        //
-        //     _schoolSubjectRepositoryMock
-        //         .Setup(repo => repo.GetSchoolSubjectListByIdsAsync(new List<Guid>()))
-        //         .ReturnsAsync(new List<SchoolSubject>());
-        //
-        //     _studyGroupRepositoryMock
-        //         .Setup(repo => repo.GetStudyGroupListByIdsAsync(new List<Guid>()))
-        //         .ReturnsAsync(new List<StudyGroup>());
-        //
-        //     // Act & Assert
-        //     // Note: Teacher.SetDescription throws ArgumentNullException for null description, это где-то вроде поправлено
-        //     await Assert.ThrowsAsync<ArgumentNullException>(() => 
-        //         _teacherServices.EditTeacher(teacherDto));
-        // }
 
         [Fact]
         public async Task AddTeacher_ShouldHandleDuplicateIds()
