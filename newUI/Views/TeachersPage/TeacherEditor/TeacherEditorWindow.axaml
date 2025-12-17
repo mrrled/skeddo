@@ -1,13 +1,13 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:scheduleEditor="clr-namespace:newUI.ViewModels.TeachersPage.TeacherEditor"
+        xmlns:teacherEditor="clr-namespace:newUI.ViewModels.TeachersPage.TeacherEditor"
         x:Class="newUI.Views.TeachersPage.TeacherEditor.TeacherEditorWindow"
         Title=""
         WindowStartupLocation="CenterOwner"
         CanResize="False"
         SizeToContent="WidthAndHeight"
         MaxWidth="500"
-        x:DataType="scheduleEditor:TeacherEditorViewModel">
+        x:DataType="teacherEditor:TeacherEditorViewModel">
 
     <Window.Styles>
         <Style Selector="Button.accent">

@@ -5,14 +5,14 @@
         xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Lessons"
         mc:Ignorable="d" 
         d:DesignWidth="500" d:DesignHeight="600"
-        x:Class="newUI.Views.SchedulePage.LessonCreationWindow.LessonCreationWindow"
+        x:Class="newUI.Views.SchedulePage.Lessons.LessonEditorWindow"
         Title=""
         Width="500" Height="650"
         MinWidth="450" MinHeight="550"
-        x:DataType="vm:LessonEditViewModel">
+        x:DataType="vm:LessonEditorViewModel">
     
     <Design.DataContext>
-        <vm:LessonEditViewModel />
+        <vm:LessonEditorViewModel />
     </Design.DataContext>
     
     <Window.Styles>

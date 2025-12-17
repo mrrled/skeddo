@@ -21,6 +21,7 @@ using newUI.ViewModels.ClassroomsPage.ClassroomEditor;
 using newUI.ViewModels.ClassroomsPage.ClassroomList;
 using newUI.ViewModels.MainPage.ScheduleEditor;
 using newUI.ViewModels.MainPage.ScheduleList;
+using newUI.ViewModels.SchedulePage.Editors;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchedulePage.Lessons;
 using newUI.ViewModels.SchedulePage.Toolbar;
@@ -34,10 +35,9 @@ using newUI.Views.ClassroomsPage.ClassroomEditor;
 using newUI.Views.ClassroomsPage.ClassroomList;
 using newUI.Views.MainPage.ScheduleEditor;
 using newUI.Views.MainPage.ScheduleList;
-using newUI.Views.SchedulePage.LessonCreationWindow;
-using newUI.Views.SchedulePage.ScheduleTable;
-using newUI.Views.SchedulePage.ScheduleWindow;
-using newUI.Views.SchedulePage.Toolbar;
+using newUI.Views.SchedulePage.Editors;
+using newUI.Views.SchedulePage.Lessons;
+using newUI.Views.SchedulePage.Schedule;
 using newUI.Views.SchoolSubjectsPage.SchoolSubjectEditor;
 using newUI.Views.SchoolSubjectsPage.SchoolSubjectList;
 using newUI.Views.TeachersPage.TeacherList;
@@ -110,11 +110,11 @@ public partial class App : Avalonia.Application
         services.AddTransient<ScheduleEditorViewModel>();
         
         // services.AddTransient<LessonCreationViewModel>();
-        services.AddTransient<LessonCreationWindow>();
+        services.AddTransient<LessonEditorWindow>();
         
         services.AddSingleton<ScheduleViewModel>();
         // services.AddTransient<ScheduleViewModel>();
-        services.AddTransient<ScheduleWindow>();
+        services.AddTransient<ScheduleView>();
         
         services.AddTransient<LessonTableView>();
         services.AddTransient<LessonTableViewModel>();
@@ -173,11 +173,12 @@ public partial class App : Avalonia.Application
         
         ViewMappingService.RegisterWindow<ConfirmDeleteViewModel, ConfirmDeleteWindow>();
         
+        ViewMappingService.RegisterWindow<LessonNumberEditorViewModel, LessonNumberEditorWindow>();
+        ViewMappingService.RegisterWindow<StudyGroupEditorViewModel, StudyGroupEditorWindow>();
+        ViewMappingService.RegisterWindow<LessonEditorViewModel, LessonEditorWindow>();
+        
         ViewMappingService.RegisterWindow<ScheduleEditorViewModel, ScheduleEditorWindow>();
         ViewMappingService.RegisterUserControl<ScheduleListViewModel, ScheduleListView>();
-        
-        ViewMappingService.RegisterWindow<LessonEditViewModel, LessonCreationWindow>();
-        // ViewMappingService.RegisterUserControl<ScheduleViewModel, ScheduleWindow>();
         
         ViewMappingService.RegisterWindow<TeacherEditorViewModel, TeacherEditorWindow>();
         ViewMappingService.RegisterUserControl<TeacherListViewModel, TeacherListView>();

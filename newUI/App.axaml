@@ -7,12 +7,12 @@
              xmlns:scheduleListViewModel="clr-namespace:newUI.ViewModels.MainPage.ScheduleList"
              xmlns:scheduleListView="clr-namespace:newUI.Views.MainPage.ScheduleList"
              xmlns:scheduleViewModel="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
-             xmlns:scheduleView="clr-namespace:newUI.Views.SchedulePage.ScheduleWindow"
              xmlns:schoolSubjectListViewModel="clr-namespace:newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectList"
              xmlns:schoolSubjectListView="clr-namespace:newUI.Views.SchoolSubjectsPage.SchoolSubjectList"
              xmlns:teacherListViewModel="clr-namespace:newUI.ViewModels.TeachersPage.TeacherList"
              xmlns:teacherListView="clr-namespace:newUI.Views.TeachersPage.TeacherList"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:schedule="clr-namespace:newUI.Views.SchedulePage.Schedule"
              x:Class="newUI.App"
              RequestedThemeVariant="Light">
 
@@ -28,7 +28,7 @@
         </DataTemplate>
 
         <DataTemplate DataType="scheduleViewModel:ScheduleViewModel">
-            <scheduleView:ScheduleWindow />
+            <schedule:ScheduleView />
         </DataTemplate>
 
         <DataTemplate DataType="teacherListViewModel:TeacherListViewModel">

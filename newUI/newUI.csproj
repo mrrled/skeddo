@@ -71,9 +71,26 @@
     <Compile Update="Views\Shared\NotificationWindow.axaml.cs">
       <DependentUpon>NotificationView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\SchedulePage\Schedule\LessonTableView.axaml.cs">
+      <DependentUpon>LessonTableView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\SchedulePage\Schedule\ScheduleView.axaml.cs">
+      <DependentUpon>ScheduleWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\SchedulePage\Lessons\LessonCardView.axaml.cs">
+      <DependentUpon>LessonCard.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\SchedulePage\Lessons\LessonEditorWindow.axaml.cs">
+      <DependentUpon>LessonCreationWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\SchedulePage\BufferWindow\" />
+    <AdditionalFiles Include="Views\SchedulePage\Lessons\LessonCard.axaml" />
+    <AdditionalFiles Include="Views\SchedulePage\Schedule\LessonTableView.axaml" />
   </ItemGroup>
 </Project>

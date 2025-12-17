@@ -70,7 +70,7 @@ public class LessonCardViewModel : ViewModelBase
     
     private void EditLesson()
     {
-        var editVm = new LessonEditViewModel(scopeFactory, Lesson);
+        var editVm = new LessonEditorViewModel(scopeFactory, Lesson);
         editVm.LessonUpdated += updatedLesson =>
         {
             Lesson = updatedLesson;
@@ -80,7 +80,7 @@ public class LessonCardViewModel : ViewModelBase
             // TableUpdated?.Invoke();
         };
         
-        windowManager.ShowDialog<LessonEditViewModel, LessonDto?>(editVm);
+        windowManager.ShowDialog<LessonEditorViewModel, LessonDto?>(editVm);
     }
     
     private void StartDrag()
