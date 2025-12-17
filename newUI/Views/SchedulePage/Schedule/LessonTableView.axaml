@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
              xmlns:lessons="clr-namespace:newUI.Views.SchedulePage.Lessons"
+             xmlns:dto="clr-namespace:Application.DtoModels;assembly=Application"
              x:Class="newUI.Views.SchedulePage.Schedule.LessonTableView"
              x:DataType="vm:LessonTableViewModel">
 
@@ -16,13 +17,11 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!-- Пустая ячейка в углу -->
             <Border Grid.Row="0" Grid.Column="0"
                     Width="50" Height="30"
                     Background="LightGray"
                     BorderBrush="Gray" BorderThickness="1" />
 
-            <!-- Заголовки столбцов (StudyGroups) с кнопкой + -->
             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
                 <ItemsControl ItemsSource="{Binding Columns}">
                     <ItemsControl.ItemsPanel>
@@ -31,25 +30,29 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderBrush="Gray" BorderThickness="1"
-                                    Width="{DynamicResource LessonCardWidth}" Height="30"
-                                    Background="LightBlue">
+                        <DataTemplate x:DataType="dto:StudyGroupDto">
+                            <Button Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditStudyGroupCommand}"
+                                    CommandParameter="{Binding}"
+                                    Padding="0"
+                                    BorderThickness="1"
+                                    BorderBrush="Gray"
+                                    CornerRadius="0"
+                                    Width="{DynamicResource LessonCardWidth}" 
+                                    Height="30"
+                                    Background="LightBlue"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center">
                                 <TextBlock Text="{Binding Name}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
                                            FontWeight="Bold" />
-                            </Border>
+                            </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- Плюс для добавления новой StudyGroup -->
                 <Button Content="+" Width="30" Height="30" Margin="2,0,0,0"
                         Command="{Binding AddStudyGroupCommand}" />
             </StackPanel>
 
-            <!-- Заголовки строк (LessonNumbers) с кнопкой + -->
             <StackPanel Grid.Row="1" Grid.Column="0">
                 <ItemsControl ItemsSource="{Binding Rows}">
                     <ItemsControl.ItemTemplate>
@@ -66,12 +69,10 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- Плюс для добавления нового LessonNumber -->
                 <Button Content="+" Width="50" Height="30" Margin="0,2,0,0"
                         Command="{Binding AddLessonNumberCommand}" />
             </StackPanel>
 
-            <!-- Основная таблица с ячейками -->
             <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Rows}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
