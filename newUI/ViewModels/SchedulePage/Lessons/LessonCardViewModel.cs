@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using CommunityToolkit.Mvvm.Input;
+using Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
 
@@ -15,6 +16,7 @@ public class LessonCardViewModel : ViewModelBase
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
     public bool IsVisible { get; set; }
+    public string Color { get; private set; }
     public event Action<LessonDto>? LessonClicked;
     
     private bool isDragging;
@@ -32,18 +34,25 @@ public class LessonCardViewModel : ViewModelBase
         IsVisible = isVisible;
         
         ClickCommand = new AsyncRelayCommand(OnClick);
-        StartDragCommand = new RelayCommand(StartDrag);
-        DropCommand = new RelayCommand<LessonCardViewModel>(OnDrop);
+        // StartDragCommand = new RelayCommand(StartDrag);
+        // DropCommand = new RelayCommand<LessonCardViewModel>(OnDrop);
     }
 
     public LessonDto Lesson
     {
         get => lesson;
-        set => SetProperty(ref lesson, value);
+        set
+        {
+            if (SetProperty(ref lesson, value))
+            {
+                Color = WarningToColor(value.WarningType);
+                OnPropertyChanged(nameof(Color));
+            }
+        }
     }
     
-    public ICommand StartDragCommand { get; }
-    public ICommand DropCommand { get; }
+    // public ICommand StartDragCommand { get; }
+    // public ICommand DropCommand { get; }
     public ICommand ClickCommand { get; }
     
     public bool IsDragging
@@ -70,54 +79,62 @@ public class LessonCardViewModel : ViewModelBase
     
     private void EditLesson()
     {
-        var editVm = new LessonEditViewModel(scopeFactory, Lesson);
+        var editVm = new LessonEditViewModel(scopeFactory, Lesson, !IsVisible);
         editVm.LessonUpdated += updatedLesson =>
         {
             Lesson = updatedLesson;
             OnPropertyChanged(nameof(Lesson));
             refreshCallback.Invoke();
-            // Можно вызвать событие для обновления таблицы
-            // TableUpdated?.Invoke();
         };
         
         windowManager.ShowDialog<LessonEditViewModel, LessonDto?>(editVm);
     }
-    
-    private void StartDrag()
-    {
-        IsDragging = true;
-        Console.WriteLine($"Starting drag for lesson: {Lesson?.Id}");
-    }
-    
-    private void OnDrop(LessonCardViewModel target)
-    {
-        if (target != null && target != this)
-        {
-            SwapLessons(target);
-        }
-    }
-    
-    private void SwapLessons(LessonCardViewModel target)
-    {
-        (Lesson.LessonNumber, target.Lesson.LessonNumber) = (target.Lesson.LessonNumber, Lesson.LessonNumber);
-        (Lesson.StudyGroup, target.Lesson.StudyGroup) = (target.Lesson.StudyGroup, Lesson.StudyGroup);
 
-        OnPropertyChanged(nameof(Lesson));
-        target.OnPropertyChanged(nameof(Lesson));
-        
-        SaveSwappedLessons(target);
+    private string WarningToColor(WarningType warningType)
+    {
+        return warningType switch
+        {
+            WarningType.Conflict => "Crismon",
+            WarningType.Warning => "LemonChiffon",
+            _ => "White"
+        };
     }
     
-    private async void SaveSwappedLessons(LessonCardViewModel target)
-    {
-        using var scope = scopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-        
-        if (Lesson != null && target.Lesson != null)
-        {
-            // Сохраняем оба урока с новыми позициями
-            await service.EditLesson(Lesson, Lesson.ScheduleId);
-            await service.EditLesson(target.Lesson, Lesson.ScheduleId);
-        }
-    }
+    // private void StartDrag()
+    // {
+    //     IsDragging = true;
+    //     Console.WriteLine($"Starting drag for lesson: {Lesson?.Id}");
+    // }
+    //
+    // private void OnDrop(LessonCardViewModel target)
+    // {
+    //     if (target != null && target != this)
+    //     {
+    //         SwapLessons(target);
+    //     }
+    // }
+    //
+    // private void SwapLessons(LessonCardViewModel target)
+    // {
+    //     (Lesson.LessonNumber, target.Lesson.LessonNumber) = (target.Lesson.LessonNumber, Lesson.LessonNumber);
+    //     (Lesson.StudyGroup, target.Lesson.StudyGroup) = (target.Lesson.StudyGroup, Lesson.StudyGroup);
+    //
+    //     OnPropertyChanged(nameof(Lesson));
+    //     target.OnPropertyChanged(nameof(Lesson));
+    //     
+    //     SaveSwappedLessons(target);
+    // }
+    //
+    // private async void SaveSwappedLessons(LessonCardViewModel target)
+    // {
+    //     using var scope = scopeFactory.CreateScope();
+    //     var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
+    //     
+    //     if (Lesson != null && target.Lesson != null)
+    //     {
+    //         // Сохраняем оба урока с новыми позициями
+    //         await service.EditLesson(Lesson, Lesson.ScheduleId);
+    //         await service.EditLesson(target.Lesson, Lesson.ScheduleId);
+    //     }
+    // }
 }

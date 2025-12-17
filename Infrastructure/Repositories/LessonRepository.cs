@@ -72,6 +72,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
         lessonDbo.StudySubgroupId = studySubgroup?.Id;
         lessonDbo.ScheduleId = scheduleId;
         lessonDbo.LessonNumberId = lessonNumber.Id;
+        lessonDbo.WarningType = (int)lesson.WarningType;
         await context.Lessons.AddAsync(lessonDbo);
     }
 

@@ -125,7 +125,7 @@
                     <TextBlock Text="Номер урока:" Classes="Label"/>
                     
                     <ComboBox  ItemsSource="{Binding TimeSlots}"
-                              SelectedItem="{Binding SelectedTimeSlot, Mode=TwoWay}"
+                              SelectedItem="{Binding SelectedLessonNumber, Mode=TwoWay}"
                               PlaceholderText="Выберите номер..."
                               Width="200">
                         <ComboBox.ItemTemplate>
@@ -170,7 +170,10 @@
                         
                         <StackPanel Orientation="Horizontal" Spacing="5">
                             <TextBlock Text="Номер урока:" Foreground="Gray"/>
-                            <TextBlock Text="{Binding SelectedTimeSlot.Number, StringFormat='{}{0}'}" FontWeight="Bold"/>
+                            <TextBlock 
+                                Text="{Binding SelectedLessonNumber.Number, StringFormat='{}{0}'}"
+                                FontWeight="Bold"
+                                IsVisible="{Binding }"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -196,7 +199,7 @@
                     IsVisible="{Binding !IsCreation}"
                     BorderBrush="Gray"/>
             
-            <Button Content="Создать" 
+            <Button Content="Сохранить" 
                     Command="{Binding SaveCommand}"
                     Classes="accent"/>
             

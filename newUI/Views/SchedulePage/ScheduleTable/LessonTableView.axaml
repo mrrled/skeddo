@@ -120,7 +120,7 @@
                                         </Interaction.Behaviors>
                                         
                                         <!-- Контент карточки -->
-                                        <lessonCard:LessonCard IsVisible="{Binding IsVisible}"/>
+                                        <lessonCard:LessonCard/>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

@@ -13,7 +13,7 @@
     
     
     <Border Name="Cell" CornerRadius="6"
-            Background="White"
+            Background="{Binding Color}"
             BorderBrush="#E0E0E0"
             BorderThickness="1"
             Padding="12"
@@ -30,7 +30,8 @@
                        Foreground="Gray"
                        TextAlignment="Center"
                        MaxWidth="{DynamicResource LessonCardWidth}"
-                       TextWrapping="Wrap">
+                       TextWrapping="Wrap"
+                       IsVisible="{Binding IsVisible}">
                 <TextBlock.Text>
                     <MultiBinding StringFormat="{}{0} {1} {2}">
                         <Binding Path="Lesson.Teacher.Name"/>
@@ -41,10 +42,12 @@
             </TextBlock>
             <TextBlock 
                 Text="{Binding Lesson.Classroom.Name}"
-                FontSize="12" Foreground="Gray" TextAlignment="Center"/>
+                FontSize="12" Foreground="Gray" TextAlignment="Center"
+                IsVisible="{Binding IsVisible}"/>
             <TextBlock 
                 Text="{Binding Lesson.StudyGroup.Name}"
-                FontSize="12" Foreground="Gray" TextAlignment="Center"/>
+                FontSize="12" Foreground="Gray" TextAlignment="Center"
+                IsVisible="{Binding IsVisible}"/>
             <!-- <TextBlock  -->
             <!--     Text="{Binding Lesson.LessonNumber.Number }"  -->
             <!--     FontSize="12" Foreground="Gray" TextAlignment="Center"/> -->

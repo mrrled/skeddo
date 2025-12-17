@@ -56,11 +56,18 @@ public class Schedule(
         var updatableLessons = _lessons
             .Where(l => (l.StudyGroup == lesson.StudyGroup) ^ (l.LessonNumber == lesson.LessonNumber))
             .ToList();
-        foreach (var element in updatableLessons.Where(l =>
-                     l.Teacher.Id == lesson.Teacher.Id || l.Classroom == lesson.Classroom))
+        foreach (var element in updatableLessons)
         {
-            element.SetWarningType(WarningType.Warning);
-            lesson.SetWarningType(WarningType.Warning);
+            if (element.LessonNumber == lesson.LessonNumber && element.StudyGroup == lesson.StudyGroup)
+            {
+                element.SetWarningType(WarningType.Conflict);
+                lesson.SetWarningType(WarningType.Conflict);
+            }
+            else if (element.Teacher.Id == lesson.Teacher.Id || element.Classroom == lesson.Classroom)
+            {
+                element.SetWarningType(WarningType.Warning);
+                lesson.SetWarningType(WarningType.Warning);
+            }
         }
 
         UpdateByTeacherSpecialization(lesson);

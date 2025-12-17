@@ -5,6 +5,7 @@ using Application.DtoModels;
 using Application.IServices;
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.Input;
+using Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace newUI.ViewModels.SchedulePage.Lessons;
@@ -14,7 +15,7 @@ public class LessonEditViewModel : ViewModelBase
     public event Action<LessonDto>? LessonUpdated;
     public event Action<CreateLessonDto>? LessonCreated;
     
-    private readonly LessonDto originalLesson;
+    private readonly LessonDto originalLessonDto;
     private readonly CreateLessonDto lesson;
     private readonly IServiceScopeFactory scopeFactory;
 
@@ -28,7 +29,7 @@ public class LessonEditViewModel : ViewModelBase
     private ClassroomDto? selectedClassroom;
     private StudyGroupDto? selectedStudyGroup;
     private SchoolSubjectDto? selectedSubject;
-    private LessonNumberDto? selectedTimeSlot;
+    private LessonNumberDto? selectedLessonNumber;
     
     public readonly Guid ScheduleId;
 
@@ -38,7 +39,7 @@ public class LessonEditViewModel : ViewModelBase
     {
         IsCreation = true;
         this.scopeFactory = scopeFactory;
-        originalLesson = new LessonDto();
+        originalLessonDto = new LessonDto();
         ScheduleId = scheduleId;
         lesson = new CreateLessonDto();
         
@@ -51,22 +52,36 @@ public class LessonEditViewModel : ViewModelBase
     
     public LessonEditViewModel(
         IServiceScopeFactory scopeFactory,
-        LessonDto lesson)
+        LessonDto lessonDTO,
+        bool isCreation = false)
     {
-        IsCreation = false;
+        IsCreation = isCreation;
         this.scopeFactory = scopeFactory;
-        originalLesson = lesson;
-        ScheduleId = lesson.ScheduleId;
+        ScheduleId = lessonDTO.ScheduleId;
+        originalLessonDto = lessonDTO;
         
-        selectedTeacher = lesson.Teacher;
-        selectedClassroom = lesson.Classroom;
-        selectedStudyGroup = lesson.StudyGroup;
-        selectedSubject = lesson.SchoolSubject;
-        selectedTimeSlot = lesson.LessonNumber;
+        if(!IsCreation)
+        {
+            selectedTeacher = lessonDTO.Teacher;
+            selectedClassroom = lessonDTO.Classroom;
+            selectedStudyGroup = lessonDTO.StudyGroup;
+            selectedSubject = lessonDTO.SchoolSubject;
+            selectedLessonNumber = lessonDTO.LessonNumber;
+        }
+        else
+        {
+            lesson = new CreateLessonDto
+            {
+                LessonNumber = lessonDTO.LessonNumber,
+                StudyGroup = lessonDTO.StudyGroup
+            };
+            SelectedStudyGroup = lessonDTO.StudyGroup;
+            SelectedLessonNumber = lessonDTO.LessonNumber;
+        }
         
         _ = Initialize();
         
-        SaveCommand = new AsyncRelayCommand(SaveLessonAsync);
+        SaveCommand = new AsyncRelayCommand(IsCreation ? CreateLessonAsync : SaveLessonAsync);
         DeleteCommand = new AsyncRelayCommand(DeleteLessonAsync);
         CancelCommand = new RelayCommand(() => Window?.Close());
     }
@@ -123,7 +138,7 @@ public class LessonEditViewModel : ViewModelBase
                 {
                     lesson.Teacher = value;
                 }
-                originalLesson.Teacher = value;
+                originalLessonDto.Teacher = value;
             }
         }
     }
@@ -139,7 +154,7 @@ public class LessonEditViewModel : ViewModelBase
                 {
                     lesson.Classroom = value;
                 }
-                originalLesson.Classroom = value;
+                originalLessonDto.Classroom = value;
             }
         }
     }
@@ -155,7 +170,7 @@ public class LessonEditViewModel : ViewModelBase
                 {
                     lesson.StudyGroup = value;
                 }
-                originalLesson.StudyGroup = value;
+                originalLessonDto.StudyGroup = value;
             }
         }
     }
@@ -171,23 +186,23 @@ public class LessonEditViewModel : ViewModelBase
                 {
                     lesson.SchoolSubject = value;
                 }
-                originalLesson.SchoolSubject = value;
+                originalLessonDto.SchoolSubject = value;
             }
         }
     }
     
-    public LessonNumberDto SelectedTimeSlot
+    public LessonNumberDto SelectedLessonNumber
     {
-        get => selectedTimeSlot;
+        get => selectedLessonNumber;
         set
         {
-            if (SetProperty(ref selectedTimeSlot, value))
+            if (SetProperty(ref selectedLessonNumber, value))
             {
                 if (IsCreation)
                 {
                     lesson.LessonNumber = value;
                 }
-                originalLesson.LessonNumber = value;
+                originalLessonDto.LessonNumber = value;
             }
         }
     }
@@ -230,14 +245,14 @@ public class LessonEditViewModel : ViewModelBase
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
         
-        originalLesson.Teacher = selectedTeacher;
-        originalLesson.Classroom = selectedClassroom;
-        originalLesson.StudyGroup = selectedStudyGroup;
-        originalLesson.SchoolSubject = selectedSubject;
-        originalLesson.LessonNumber = selectedTimeSlot;
+        originalLessonDto.Teacher = selectedTeacher;
+        originalLessonDto.Classroom = selectedClassroom;
+        originalLessonDto.StudyGroup = selectedStudyGroup;
+        originalLessonDto.SchoolSubject = selectedSubject;
+        originalLessonDto.LessonNumber = selectedLessonNumber;
         
-        await service.EditLesson(originalLesson, ScheduleId);
-        LessonUpdated?.Invoke(originalLesson);
+        await service.EditLesson(originalLessonDto, ScheduleId);
+        LessonUpdated?.Invoke(originalLessonDto);
         Window?.Close();
     }
     
@@ -246,7 +261,7 @@ public class LessonEditViewModel : ViewModelBase
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
         
-        await service.DeleteLesson(originalLesson, ScheduleId);
+        await service.DeleteLesson(originalLessonDto, ScheduleId);
         Window?.Close();
     }
 }

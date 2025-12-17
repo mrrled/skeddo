@@ -26,12 +26,14 @@ public static class DtoMapper
     
     public static LessonDto ToLessonDto(Lesson lesson)
     {
-        return Mapper.Map<LessonDto>(lesson);
+        var les = Mapper.Map<LessonDto>(lesson);
+        return les;
     }
     
     public static List<LessonDto> ToLessonDto(ICollection<Lesson> lessons)
     {
-        return Mapper.Map<List<LessonDto>>(lessons);
+        var les = Mapper.Map<List<LessonDto>>(lessons);
+        return les;
     }
     
     public static LessonNumberDto ToLessonNumberDto(LessonNumber dtoLessonNumber)
