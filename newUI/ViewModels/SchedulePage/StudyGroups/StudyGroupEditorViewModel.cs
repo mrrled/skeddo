@@ -5,7 +5,7 @@ using Application.DtoModels;
 using Application.IServices;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace newUI.ViewModels.SchedulePage.Editors;
+namespace newUI.ViewModels.SchedulePage.StudyGroups;
 
 public class StudyGroupEditorViewModel : ViewModelBase
 {

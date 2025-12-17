@@ -35,9 +35,9 @@ public class LessonBufferViewModel : ViewModelBase
 
     public AvaloniaList<LessonCardViewModel> LessonCards
     {
-        get => new (lessonCardViewModels.Select(x => x.Value));
+        get => new(lessonCardViewModels.Select(x => x.Value));
     }
-    
+
     public ICommand ClearCommand { get; }
 
     private Task ClearAsync()
@@ -66,10 +66,11 @@ public class LessonBufferViewModel : ViewModelBase
             card.LessonClicked += OnLessonClicked;
             lessonCardViewModels[lesson.Id] = card;
         }
+
         OnPropertyChanged(nameof(Lessons));
         OnPropertyChanged(nameof(LessonCards));
     }
-    
+
     private void OnLessonClicked(LessonDto lesson)
     {
         Console.WriteLine($"Lesson clicked: {lesson.Id}");

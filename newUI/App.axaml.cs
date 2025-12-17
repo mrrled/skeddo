@@ -21,9 +21,10 @@ using newUI.ViewModels.ClassroomsPage.ClassroomEditor;
 using newUI.ViewModels.ClassroomsPage.ClassroomList;
 using newUI.ViewModels.MainPage.ScheduleEditor;
 using newUI.ViewModels.MainPage.ScheduleList;
-using newUI.ViewModels.SchedulePage.Editors;
+using newUI.ViewModels.SchedulePage.LessonNumbers;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchedulePage.Lessons;
+using newUI.ViewModels.SchedulePage.StudyGroups;
 using newUI.ViewModels.SchedulePage.Toolbar;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectEditor;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectList;
@@ -109,15 +110,19 @@ public partial class App : Avalonia.Application
         services.AddTransient<ScheduleListViewModel>();
         services.AddTransient<ScheduleEditorViewModel>();
         
-        // services.AddTransient<LessonCreationViewModel>();
-        services.AddTransient<LessonEditorWindow>();
+        services.AddTransient<LessonNumberEditorWindow>();
+        services.AddTransient<LessonNumberEditorViewModel>();
+        services.AddTransient<StudyGroupEditorWindow>();
+        services.AddTransient<StudyGroupEditorViewModel>();
         
-        services.AddSingleton<ScheduleViewModel>();
-        // services.AddTransient<ScheduleViewModel>();
-        services.AddTransient<ScheduleView>();
+        services.AddTransient<LessonEditorWindow>();
+        services.AddTransient<LessonEditorViewModel>();
         
         services.AddTransient<LessonTableView>();
         services.AddTransient<LessonTableViewModel>();
+        
+        services.AddTransient<ScheduleView>();
+        services.AddSingleton<ScheduleViewModel>();
         
         services.AddTransient<TeacherListView>();
         services.AddTransient<TeacherListViewModel>();

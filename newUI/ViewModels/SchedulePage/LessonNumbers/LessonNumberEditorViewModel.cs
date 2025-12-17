@@ -5,7 +5,7 @@ using Application.DtoModels;
 using Application.IServices;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace newUI.ViewModels.SchedulePage.Editors;
+namespace newUI.ViewModels.SchedulePage.LessonNumbers;
 
 public class LessonNumberEditorViewModel : ViewModelBase
 {
@@ -53,7 +53,7 @@ public class LessonNumberEditorViewModel : ViewModelBase
             // // Создание нового
             // var createLessonNumber = new CreateLessonNumberDto { Number = LessonNumberNumber };
             // lessonNumber = await service.AddLessonNumber(createLessonNumber);
-            
+
             // временно
             lessonNumber = new LessonNumberDto { Number = LessonNumberNumber };
             // временно
@@ -63,7 +63,7 @@ public class LessonNumberEditorViewModel : ViewModelBase
             // // Редактирование существующего
             // lessonNumber = new LessonNumberDto { Id = editingLessonNumber.Id, Number = LessonNumberNumber };
             // await service.EditLessonNumber(lessonNumber);
-            
+
             // временно
             lessonNumber = new LessonNumberDto { Id = editingLessonNumber.Id, Number = LessonNumberNumber };
             // временно

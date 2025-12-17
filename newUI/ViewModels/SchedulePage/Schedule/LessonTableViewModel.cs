@@ -10,10 +10,12 @@ using newUI.ViewModels.Helpers;
 using newUI.ViewModels.SchedulePage.Lessons;
 using Application.DtoModels;
 using Application.IServices;
+using newUI.ViewModels.SchedulePage.StudyGroups;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
-public class LessonTableViewModel : DynamicGridViewModel<LessonCardViewModel, StudyGroupDto, LessonNumberDto>
+public class LessonTableViewModel
+    : DynamicGridViewModel<LessonCardViewModel, StudyGroupDto, LessonNumberDto>
 {
     public event Action? TableUpdated;
 
@@ -25,14 +27,16 @@ public class LessonTableViewModel : DynamicGridViewModel<LessonCardViewModel, St
 
     private ScheduleDto Schedule;
 
-    public AvaloniaList<StudyGroupDto> StudyGroups { get; set; } = new();
-    public AvaloniaList<LessonNumberDto> LessonNumbers { get; set; } = new();
+    public AvaloniaList<StudyGroupDto> StudyGroups { get; private set; } = new();
+    public AvaloniaList<LessonNumberDto> LessonNumbers { get; private set; } = new();
 
-    // Команды для кнопок +
-    public IRelayCommand AddRowCommand { get; }
-    public IRelayCommand AddColumnCommand { get; }
+    // Команды
+    public IRelayCommand AddStudyGroupCommand { get; }
+    public IRelayCommand AddLessonNumberCommand { get; }
+    public IRelayCommand<StudyGroupDto> EditStudyGroupCommand { get; }
 
-    public LessonTableViewModel(ScheduleDto schedule,
+    public LessonTableViewModel(
+        ScheduleDto schedule,
         IServiceScopeFactory scopeFactory,
         IWindowManager windowManager)
     {
@@ -40,8 +44,9 @@ public class LessonTableViewModel : DynamicGridViewModel<LessonCardViewModel, St
         this.scopeFactory = scopeFactory;
         this.windowManager = windowManager;
 
-        AddRowCommand = new RelayCommand(AddRow);
-        AddColumnCommand = new RelayCommand(AddColumn);
+        AddStudyGroupCommand = new RelayCommand(OpenAddStudyGroupEditor);
+        EditStudyGroupCommand = new RelayCommand<StudyGroupDto>(OpenEditStudyGroupEditor);
+        AddLessonNumberCommand = new RelayCommand(AddRow);
 
         _ = InitializeAsync();
     }
@@ -54,27 +59,25 @@ public class LessonTableViewModel : DynamicGridViewModel<LessonCardViewModel, St
         isInitialized = true;
     }
 
-    public async Task RefreshAsync(ScheduleDto newSchedule = null)
+    public async Task RefreshAsync(ScheduleDto? newSchedule = null)
     {
         try
         {
             IsLoading = true;
 
             if (newSchedule != null)
-            {
                 Schedule = newSchedule;
-            }
 
-            if (isInitialized)
-            {
-                await LoadStudyGroupsAsync();
-                await LoadLessonNumbersAsync();
-                LoadDataToGrid();
+            if (!isInitialized)
+                return;
 
-                TableUpdated?.Invoke();
-                OnPropertyChanged(nameof(Rows));
-                OnPropertyChanged(nameof(Columns));
-            }
+            await LoadStudyGroupsAsync();
+            await LoadLessonNumbersAsync();
+            LoadDataToGrid();
+
+            TableUpdated?.Invoke();
+            OnPropertyChanged(nameof(Rows));
+            OnPropertyChanged(nameof(Columns));
         }
         finally
         {
@@ -113,7 +116,8 @@ public class LessonTableViewModel : DynamicGridViewModel<LessonCardViewModel, St
         OnPropertyChanged(nameof(Columns));
     }
 
-    private async Task<List<(LessonNumberDto RowHeader, Dictionary<StudyGroupDto, LessonCardViewModel?> CellData)>> LoadData()
+    private async Task<List<(LessonNumberDto RowHeader,
+        Dictionary<StudyGroupDto, LessonCardViewModel?> CellData)>> LoadData()
     {
         var result = new List<(LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel?>)>();
         using var scope = scopeFactory.CreateScope();
@@ -126,6 +130,7 @@ public class LessonTableViewModel : DynamicGridViewModel<LessonCardViewModel, St
             Schedule = currentSchedule;
 
         var lessonDictionary = new Dictionary<(int, string), LessonDto>();
+
         foreach (var lesson in Schedule.Lessons)
         {
             if (lesson.LessonNumber != null && lesson.StudyGroup != null)
@@ -138,28 +143,35 @@ public class LessonTableViewModel : DynamicGridViewModel<LessonCardViewModel, St
 
             foreach (var studyGroup in StudyGroups)
             {
-                if (lessonDictionary.TryGetValue((lessonNumber.Number, studyGroup.Name), out var lesson))
+                LessonCardViewModel card;
+
+                if (lessonDictionary.TryGetValue(
+                        (lessonNumber.Number, studyGroup.Name),
+                        out var lesson))
                 {
-                    var card = new LessonCardViewModel(scopeFactory, windowManager, Refresh)
+                    card = new LessonCardViewModel(scopeFactory, windowManager, Refresh)
                     {
                         Lesson = lesson
                     };
-                    card.LessonClicked += OnLessonClicked;
-                    rowData[studyGroup] = card;
                 }
                 else
                 {
-                    var card = new LessonCardViewModel(scopeFactory, windowManager, Refresh, isVisible: false)
+                    card = new LessonCardViewModel(
+                        scopeFactory,
+                        windowManager,
+                        Refresh,
+                        isVisible: false)
                     {
-                        Lesson = new LessonDto()
+                        Lesson = new LessonDto
                         {
                             StudyGroup = studyGroup,
-                            LessonNumber = lessonNumber,
+                            LessonNumber = lessonNumber
                         }
                     };
-                    card.LessonClicked += OnLessonClicked;
-                    rowData[studyGroup] = card;
                 }
+
+                card.LessonClicked += OnLessonClicked;
+                rowData[studyGroup] = card;
             }
 
             result.Add((lessonNumber, rowData));
@@ -178,18 +190,52 @@ public class LessonTableViewModel : DynamicGridViewModel<LessonCardViewModel, St
         Console.WriteLine($"Lesson clicked: {lesson.Id}");
     }
 
-    // --- Методы для кнопок + ---
-    private void AddColumn()
+    // -------------------------
+    // StudyGroup Editor logic
+    // -------------------------
+
+    private async void OpenAddStudyGroupEditor()
     {
-        var newGroup = new StudyGroupDto { Name = $"Новая группа {StudyGroups.Count + 1}" };
-        StudyGroups.Add(newGroup);
-        LoadDataToGrid();
-        TableUpdated?.Invoke();
+        using var scope = scopeFactory.CreateScope();
+        var vm = new StudyGroupEditorViewModel(scopeFactory);
+
+        vm.StudyGroupSaved += async studyGroup =>
+        {
+            StudyGroups.Add(studyGroup);
+            await RefreshAsync();
+        };
+
+        await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
     }
+
+    private async void OpenEditStudyGroupEditor(StudyGroupDto studyGroup)
+    {
+        using var scope = scopeFactory.CreateScope();
+        var vm = new StudyGroupEditorViewModel(scopeFactory, studyGroup);
+
+        vm.StudyGroupSaved += async updatedGroup =>
+        {
+            var existing = StudyGroups.FirstOrDefault(x => x.Id == updatedGroup.Id);
+            if (existing != null)
+                existing.Name = updatedGroup.Name;
+
+            await RefreshAsync();
+        };
+
+        await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
+    }
+
+    // -------------------------
+    // LessonNumber (+) — без изменений
+    // -------------------------
 
     private void AddRow()
     {
-        var newLessonNumber = new LessonNumberDto { Number = LessonNumbers.Count + 1 };
+        var newLessonNumber = new LessonNumberDto
+        {
+            Number = LessonNumbers.Count + 1
+        };
+
         LessonNumbers.Add(newLessonNumber);
         LoadDataToGrid();
         TableUpdated?.Invoke();
@@ -197,6 +243,10 @@ public class LessonTableViewModel : DynamicGridViewModel<LessonCardViewModel, St
 
     protected override LessonCardViewModel CreateEmptyCell()
     {
-        return new LessonCardViewModel(scopeFactory, windowManager, Refresh, isVisible: false);
+        return new LessonCardViewModel(
+            scopeFactory,
+            windowManager,
+            Refresh,
+            isVisible: false);
     }
 }

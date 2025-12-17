@@ -16,10 +16,10 @@ public class LessonCardViewModel : ViewModelBase
     private readonly IWindowManager windowManager;
     public bool IsVisible { get; set; }
     public event Action<LessonDto>? LessonClicked;
-    
+
     private bool isDragging;
     private bool isDragOver;
-    
+
     private readonly Action? refreshCallback;
 
     public LessonCardViewModel(
@@ -30,7 +30,7 @@ public class LessonCardViewModel : ViewModelBase
         this.windowManager = windowManager;
         this.refreshCallback = refreshCallback;
         IsVisible = isVisible;
-        
+
         ClickCommand = new AsyncRelayCommand(OnClick);
         StartDragCommand = new RelayCommand(StartDrag);
         DropCommand = new RelayCommand<LessonCardViewModel>(OnDrop);
@@ -41,23 +41,23 @@ public class LessonCardViewModel : ViewModelBase
         get => lesson;
         set => SetProperty(ref lesson, value);
     }
-    
+
     public ICommand StartDragCommand { get; }
     public ICommand DropCommand { get; }
     public ICommand ClickCommand { get; }
-    
+
     public bool IsDragging
     {
         get => isDragging;
         set => SetProperty(ref isDragging, value);
     }
-    
+
     public bool IsDragOver
     {
         get => isDragOver;
         set => SetProperty(ref isDragOver, value);
     }
-    
+
     private Task OnClick()
     {
         if (Lesson != null)
@@ -65,9 +65,10 @@ public class LessonCardViewModel : ViewModelBase
             LessonClicked?.Invoke(Lesson);
             EditLesson();
         }
+
         return Task.CompletedTask;
     }
-    
+
     private void EditLesson()
     {
         var editVm = new LessonEditorViewModel(scopeFactory, Lesson);
@@ -79,16 +80,16 @@ public class LessonCardViewModel : ViewModelBase
             // Можно вызвать событие для обновления таблицы
             // TableUpdated?.Invoke();
         };
-        
+
         windowManager.ShowDialog<LessonEditorViewModel, LessonDto?>(editVm);
     }
-    
+
     private void StartDrag()
     {
         IsDragging = true;
         Console.WriteLine($"Starting drag for lesson: {Lesson?.Id}");
     }
-    
+
     private void OnDrop(LessonCardViewModel target)
     {
         if (target != null && target != this)
@@ -96,7 +97,7 @@ public class LessonCardViewModel : ViewModelBase
             SwapLessons(target);
         }
     }
-    
+
     private void SwapLessons(LessonCardViewModel target)
     {
         (Lesson.LessonNumber, target.Lesson.LessonNumber) = (target.Lesson.LessonNumber, Lesson.LessonNumber);
@@ -104,15 +105,15 @@ public class LessonCardViewModel : ViewModelBase
 
         OnPropertyChanged(nameof(Lesson));
         target.OnPropertyChanged(nameof(Lesson));
-        
+
         SaveSwappedLessons(target);
     }
-    
+
     private async void SaveSwappedLessons(LessonCardViewModel target)
     {
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-        
+
         if (Lesson != null && target.Lesson != null)
         {
             // Сохраняем оба урока с новыми позициями

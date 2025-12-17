@@ -87,10 +87,17 @@
       <DependentUpon>LessonCreationWindow.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\SchedulePage\StudyGroups\StudyGroupEditorWindow.axaml.cs">
+      <DependentUpon>StudyGroupEditorWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\SchedulePage\LessonNumbers\LessonNumberEditorWindow.axaml.cs">
+      <DependentUpon>LessonNumberEditorWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="Views\SchedulePage\Lessons\LessonCard.axaml" />
     <AdditionalFiles Include="Views\SchedulePage\Schedule\LessonTableView.axaml" />
   </ItemGroup>
 </Project>

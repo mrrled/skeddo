@@ -1,13 +1,13 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:editors="clr-namespace:newUI.ViewModels.SchedulePage.Editors"
-        x:Class="newUI.Views.SchedulePage.Editors.LessonNumberEditorWindow"
+        xmlns:editors="clr-namespace:newUI.ViewModels.SchedulePage.StudyGroups"
+        x:Class="newUI.Views.SchedulePage.Editors.StudyGroupEditorWindow"
         Title=""
         WindowStartupLocation="CenterOwner"
         CanResize="False"
         SizeToContent="WidthAndHeight"
         MaxWidth="500"
-        x:DataType="editors:LessonNumberEditorViewModel">
+        x:DataType="editors:StudyGroupEditorViewModel">
 
     <Window.Styles>
         <Style Selector="Button.accent">
@@ -42,7 +42,7 @@
                     Height="36"
                     Padding="5, 0">
                 <TextBox Watermark="Введите название"
-                         Text="{Binding LessonNumberNumber, Mode=TwoWay}"
+                         Text="{Binding StudyGroupName, Mode=TwoWay}"
                          Background="Transparent"
                          BorderThickness="0"
                          VerticalAlignment="Center" />

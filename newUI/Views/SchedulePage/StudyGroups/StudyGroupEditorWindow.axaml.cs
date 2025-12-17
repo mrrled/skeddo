@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using newUI.ViewModels.SchedulePage.Editors;
+using newUI.ViewModels.SchedulePage.StudyGroups;
 
 namespace newUI.Views.SchedulePage.Editors;
 
