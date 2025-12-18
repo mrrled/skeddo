@@ -19,7 +19,7 @@ public class LessonTableViewModel
     : DynamicGridViewModel<LessonCardViewModel, StudyGroupDto, LessonNumberDto>
 {
     public event Action? TableUpdated;
-
+    
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
 
@@ -200,18 +200,34 @@ public class LessonTableViewModel
 
     private async void OpenAddStudyGroupEditor()
     {
-        var vm = new StudyGroupEditorViewModel(scopeFactory);
+        var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory);
 
-        vm.StudyGroupSaved += async _ => { await RefreshAsync(); };
+        vm.StudyGroupSaved += async _ =>
+        {
+            await RefreshAsync();
+        };
+
+        vm.StudyGroupDeleted += async _ =>
+        {
+            await RefreshAsync();
+        };
 
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
     }
 
     private async void OpenEditStudyGroupEditor(StudyGroupDto studyGroup)
     {
-        var vm = new StudyGroupEditorViewModel(scopeFactory, studyGroup);
+        var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory, studyGroup);
 
-        vm.StudyGroupSaved += async _ => { await RefreshAsync(); };
+        vm.StudyGroupSaved += async _ =>
+        {
+            await RefreshAsync();
+        };
+
+        vm.StudyGroupDeleted += async _ =>
+        {
+            await RefreshAsync();
+        };
 
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
     }
@@ -225,11 +241,17 @@ public class LessonTableViewModel
         var nextNumber = GetNextLessonNumber();
 
         var vm = new LessonNumberEditorViewModel(
+            windowManager,
             scopeFactory,
             nextNumber,
             Schedule.Id);
 
         vm.LessonNumberSaved += async _ =>
+        {
+            await RefreshAsync();
+        };
+
+        vm.LessonNumberDeleted += async _ =>
         {
             await RefreshAsync();
         };
@@ -240,11 +262,20 @@ public class LessonTableViewModel
     private async void OpenEditLessonNumberEditor(LessonNumberDto lessonNumber)
     {
         var vm = new LessonNumberEditorViewModel(
+            windowManager,
             scopeFactory,
             lessonNumber,
             Schedule.Id);
 
-        vm.LessonNumberSaved += async _ => { await RefreshAsync(); };
+        vm.LessonNumberSaved += async _ =>
+        {
+            await RefreshAsync();
+        };
+
+        vm.LessonNumberDeleted += async _ =>
+        {
+            await RefreshAsync();
+        };
 
         await windowManager.ShowDialog<LessonNumberEditorViewModel, LessonNumberDto>(vm);
     }
