@@ -53,7 +53,9 @@ public class DboMappingProfile : Profile
                 ctx.Mapper.Map<Teacher>(src.Teacher),
                 ctx.Mapper.Map<StudyGroup>(src.StudyGroup),
                 ctx.Mapper.Map<Classroom>(src.Classroom),
-                ctx.Mapper.Map<StudySubgroup>(src.StudySubgroup)
+                ctx.Mapper.Map<StudySubgroup>(src.StudySubgroup),
+                null,
+                (WarningType)src.WarningType
             ))
             .ForAllMembers(opt => opt.Ignore());
         CreateMap<Lesson, LessonDbo>()
@@ -66,7 +68,8 @@ public class DboMappingProfile : Profile
             .ForMember(dest => dest.StudyGroup, opt => opt.Ignore())
             .ForMember(dest => dest.Classroom, opt => opt.Ignore())
             .ForMember(dest => dest.Teacher, opt => opt.Ignore())
-            .ForMember(dest => dest.Schedule, opt => opt.Ignore());
+            .ForMember(dest => dest.Schedule, opt => opt.Ignore())
+            .ForMember(dest => dest.WarningType, opt => opt.Ignore());
         CreateMap<LessonDraftDbo, LessonDraft>()
             .ConstructUsing((src, ctx) => new LessonDraft(
                 src.Id,

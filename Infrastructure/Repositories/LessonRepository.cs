@@ -72,6 +72,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
         lessonDbo.StudySubgroupId = studySubgroup?.Id;
         lessonDbo.ScheduleId = scheduleId;
         lessonDbo.LessonNumberId = lessonNumber.Id;
+        lessonDbo.WarningType = (int)lesson.WarningType;
         await context.Lessons.AddAsync(lessonDbo);
     }
 
@@ -107,6 +108,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             if (!dboDict.TryGetValue(lesson.Id, out var lessonDbo))
                 continue;
             DboMapper.Mapper.Map(lesson, lessonDbo);
+            lessonDbo.WarningType = (int)lesson.WarningType;
             var lessonNumber =
                 await context.LessonNumbers
                     .FirstOrDefaultAsync(x => x.Number == lesson.LessonNumber.Number

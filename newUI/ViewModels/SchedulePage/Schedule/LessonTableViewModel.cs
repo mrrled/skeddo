@@ -137,8 +137,7 @@ public class LessonTableViewModel :
         using var scope = scopeFactory.CreateScope();
         
         var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
-        var schedules = await scheduleService.FetchSchedulesFromBackendAsync();
-        var currentSchedule = schedules.FirstOrDefault(s => s.Id == Schedule.Id);
+        var currentSchedule = await scheduleService.GetScheduleByIdAsync(Schedule.Id);
     
         if (currentSchedule != null) 
             Schedule = currentSchedule;
