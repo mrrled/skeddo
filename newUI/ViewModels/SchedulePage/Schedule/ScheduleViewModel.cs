@@ -176,21 +176,19 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
         var id = CurrentSchedule?.Id;
         if (id == null) return;
 
-        var vm = new LessonEditorViewModel(scopeFactory, id.Value);
+        // Создаем редактор в режиме создания (передаем только ID расписания)
+        var vm = new LessonEditorViewModel(scopeFactory, windowManager, id.Value);
 
-        vm.LessonCreated += async createDto =>
+        vm.LessonSaved += async result =>
         {
-            using var scope = scopeFactory.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-            var result = await service.AddLesson(createDto, id.Value);
-
             if (result.IsDraft && result.LessonDraft != null)
             {
+                // Если созданный урок сразу попал в черновики (конфликт)
                 Buffer?.AddMany(new[] { result.LessonDraft });
             }
             else
             {
-                // ВМЕСТО LoadSchedule(id) используем Refresh текущей таблицы
+                // Если создался успешно — обновляем таблицу
                 if (CurrentScheduleTable != null)
                 {
                     await CurrentScheduleTable.RefreshAsync();

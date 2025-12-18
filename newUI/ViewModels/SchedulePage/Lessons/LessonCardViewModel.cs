@@ -61,46 +61,33 @@ public class LessonCardViewModel : ViewModelBase
     {
         if (Lesson == null) return;
 
-        bool isCreation = Lesson.Id == Guid.Empty;
-        LessonEditorViewModel editVm;
-
-        if (isCreation)
-        {
-            editVm = new LessonEditorViewModel(scopeFactory, Lesson.ScheduleId)
+        // Определяем режим: создание на пустой ячейке или редактирование существующего
+        LessonEditorViewModel editVm = Lesson.Id == Guid.Empty
+            ? new LessonEditorViewModel(scopeFactory, windowManager, Lesson.ScheduleId)
             {
                 SelectedStudyGroup = Lesson.StudyGroup,
                 SelectedLessonNumber = Lesson.LessonNumber
-            };
+            }
+            : new LessonEditorViewModel(scopeFactory, windowManager, Lesson);
 
-            editVm.LessonCreated += async createDto =>
-            {
-                using var scope = scopeFactory.CreateScope();
-                var result = await scope.ServiceProvider.GetRequiredService<ILessonServices>()
-                    .AddLesson(createDto, Lesson.ScheduleId);
-
-                if (!result.IsDraft) LessonUpdated?.Invoke(result.Lesson!);
-                refreshCallback?.Invoke();
-            };
-        }
-        else
+        editVm.LessonSaved += result =>
         {
-            editVm = new LessonEditorViewModel(scopeFactory, Lesson);
-            editVm.LessonResultUpdated += (result) =>
+            if (result.IsDraft && result.LessonDraft != null)
             {
-                if (result.IsDraft && result.LessonDraft != null)
-                {
-                    Lesson = result.LessonDraft.ToLessonDto();
-                    LessonDowngraded?.Invoke(result.LessonDraft);
-                }
-                else if (result.Lesson != null)
-                {
-                    // Сигнал о том, что объект перестал быть черновиком (для буфера)
-                    LessonUpdated?.Invoke(result.Lesson);
-                }
+                // Если урок стал черновиком (Downgraded)
+                Lesson = result.LessonDraft.ToLessonDto();
+                LessonDowngraded?.Invoke(result.LessonDraft);
+            }
+            else if (result.Lesson != null)
+            {
+                // Если урок успешно сохранен/обновлен
+                LessonUpdated?.Invoke(result.Lesson);
+            }
 
-                refreshCallback?.Invoke();
-            };
-        }
+            refreshCallback?.Invoke();
+        };
+
+        editVm.LessonDeleted += _ => refreshCallback?.Invoke();
 
         await windowManager.ShowDialog<LessonEditorViewModel, object?>(editVm);
     }
