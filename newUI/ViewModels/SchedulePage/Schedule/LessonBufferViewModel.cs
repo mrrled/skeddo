@@ -1,14 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using Application.DtoExtensions;
 using Application.DtoModels;
+using Application.IServices;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
-using newUI.ViewModels.SchedulePage.Lessons;
+using newUI.ViewModels.Shared;
 
-namespace newUI.ViewModels.SchedulePage.Schedule;
+namespace newUI.ViewModels.SchedulePage.Lessons;
 
 public class LessonBufferViewModel : ViewModelBase
 {
@@ -16,55 +19,47 @@ public class LessonBufferViewModel : ViewModelBase
     private readonly IWindowManager windowManager;
     private readonly Guid scheduleId;
 
-    // ObservableCollection обеспечивает мгновенное исчезновение карточки из UI
     public ObservableCollection<LessonCardViewModel> LessonCards { get; } = new();
-
     public event Action? RequestTableRefresh;
+    public ICommand ClearCommand { get; }
 
     public LessonBufferViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager, Guid scheduleId)
     {
         this.scopeFactory = scopeFactory;
         this.windowManager = windowManager;
         this.scheduleId = scheduleId;
-        ClearCommand = new RelayCommand(Clear);
-    }
-
-    public IRelayCommand ClearCommand { get; }
-
-    public void Clear()
-    {
-        LessonCards.Clear();
-        // В продакшене здесь также можно вызвать сервис для удаления черновиков из БД, если нужно
+        ClearCommand = new AsyncRelayCommand(ClearBufferAsync);
     }
 
     public void AddMany(IEnumerable<LessonDraftDto> drafts)
     {
+        LessonCards.Clear();
         foreach (var draft in drafts)
         {
-            if (LessonCards.Any(c => c.Lesson.Id == draft.Id)) continue;
-
-            // Создаем карточку. refreshCallback здесь не нужен, так как мы подписываемся на LessonUpdated
-            var card = new LessonCardViewModel(scopeFactory, windowManager);
-            var lessonDto = draft.ToLessonDto();
-            lessonDto.ScheduleId = scheduleId;
-            card.Lesson = lessonDto;
-            card.IsVisible = true; // Возвращаем свойство
-
-            // Когда черновик в этой карточке заполнен и сохранен как полноценный урок
-            card.LessonUpdated += (updatedLesson) =>
+            var card = new LessonCardViewModel(scopeFactory, windowManager, async () => await RefreshAsync())
             {
-                RemoveCard(card);
-                // Сигнализируем ScheduleViewModel, что нужно обновить таблицу
-                RequestTableRefresh?.Invoke();
+                Lesson = draft.ToLessonDto(),
+                IsVisible = true
             };
-
             LessonCards.Add(card);
         }
+
+        RequestTableRefresh?.Invoke();
     }
 
-    private void RemoveCard(LessonCardViewModel card)
+    public async Task RefreshAsync()
     {
-        // Выполняем в UI-потоке, чтобы избежать исключений при асинхронном сохранении
-        Avalonia.Threading.Dispatcher.UIThread.Post(() => { LessonCards.Remove(card); });
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<ILessonDraftServices>();
+        var drafts = await service.GetLessonDraftsByScheduleId(scheduleId);
+        AddMany(drafts);
+    }
+
+    private async Task ClearBufferAsync()
+    {
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<ILessonDraftServices>();
+        await service.ClearDraftsByScheduleId(scheduleId);
+        await RefreshAsync();
     }
 }

@@ -17,8 +17,9 @@
             <Setter Property="Padding" Value="15, 8" />
             <Setter Property="BorderThickness" Value="0" />
         </Style>
-        <Style Selector="Button.accent:pointerover">
-            <Setter Property="Background" Value="#1976D2" />
+        <Style Selector="Button.accent:disabled">
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Background" Value="#BDBDBD" />
         </Style>
         <Style Selector="TextBlock.Label">
             <Setter Property="Width" Value="120" />
@@ -37,7 +38,6 @@
     </Window.Styles>
 
     <StackPanel Margin="25" Spacing="12">
-
         <TextBlock Text="{Binding HeaderText}"
                    FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"
                    Margin="0,0,0,10" />
@@ -45,8 +45,7 @@
         <StackPanel Orientation="Horizontal" Spacing="10">
             <TextBlock Text="Предмет:" Classes="Label" />
             <Border Classes="InputWrapper">
-                <ComboBox ItemsSource="{Binding Subjects}"
-                          SelectedItem="{Binding SelectedSubject}"
+                <ComboBox ItemsSource="{Binding Subjects}" SelectedItem="{Binding SelectedSubject}"
                           HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -60,8 +59,7 @@
         <StackPanel Orientation="Horizontal" Spacing="10">
             <TextBlock Text="Учитель:" Classes="Label" />
             <Border Classes="InputWrapper">
-                <ComboBox ItemsSource="{Binding Teachers}"
-                          SelectedItem="{Binding SelectedTeacher}"
+                <ComboBox ItemsSource="{Binding Teachers}" SelectedItem="{Binding SelectedTeacher}"
                           HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -75,8 +73,7 @@
         <StackPanel Orientation="Horizontal" Spacing="10">
             <TextBlock Text="Группа:" Classes="Label" />
             <Border Classes="InputWrapper">
-                <ComboBox ItemsSource="{Binding StudyGroups}"
-                          SelectedItem="{Binding SelectedStudyGroup}"
+                <ComboBox ItemsSource="{Binding StudyGroups}" SelectedItem="{Binding SelectedStudyGroup}"
                           HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -90,8 +87,7 @@
         <StackPanel Orientation="Horizontal" Spacing="10">
             <TextBlock Text="Кабинет:" Classes="Label" />
             <Border Classes="InputWrapper">
-                <ComboBox ItemsSource="{Binding Classrooms}"
-                          SelectedItem="{Binding SelectedClassroom}"
+                <ComboBox ItemsSource="{Binding Classrooms}" SelectedItem="{Binding SelectedClassroom}"
                           HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -105,8 +101,7 @@
         <StackPanel Orientation="Horizontal" Spacing="10">
             <TextBlock Text="№ Урока:" Classes="Label" />
             <Border Classes="InputWrapper">
-                <ComboBox ItemsSource="{Binding TimeSlots}"
-                          SelectedItem="{Binding SelectedLessonNumber}"
+                <ComboBox ItemsSource="{Binding TimeSlots}" SelectedItem="{Binding SelectedLessonNumber}"
                           HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -118,15 +113,12 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
-            <Button Content="Удалить"
-                    Command="{Binding DeleteCommand}"
+            <Button Content="Удалить" Command="{Binding DeleteCommand}"
                     IsVisible="{Binding IsEditMode}"
                     Background="#E53935" Foreground="White"
                     CornerRadius="8" Padding="15,8" />
 
-            <Button Content="Сохранить"
-                    Command="{Binding SaveCommand}"
-                    Classes="accent" />
+            <Button Content="Сохранить" Command="{Binding SaveCommand}" Classes="accent" />
         </StackPanel>
     </StackPanel>
 </Window>

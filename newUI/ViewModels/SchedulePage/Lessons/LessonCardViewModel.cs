@@ -2,10 +2,12 @@ using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
+using Application.DtoExtensions; // Для ToLessonDto()
 using Application.IServices;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
+using Domain.Models; // Проверь, чтобы WarningType был доступен здесь
 
 namespace newUI.ViewModels.SchedulePage.Lessons;
 
@@ -43,16 +45,18 @@ public class LessonCardViewModel : ViewModelBase
         {
             if (SetProperty(ref lesson, value))
             {
+                // При обновлении урока обязательно пересчитываем цвет для UI
                 OnPropertyChanged(nameof(Color));
             }
         }
     }
 
+    // Логика валидации через цвета
     public string Color => lesson?.WarningType switch
     {
-        Domain.Models.WarningType.Conflict => "LightCoral",
-        Domain.Models.WarningType.Warning => "LemonChiffon",
-        _ => "White"
+        WarningType.Conflict => "LightCoral", // Ошибка/Конфликт
+        WarningType.Warning => "LemonChiffon", // Предупреждение
+        _ => "White" // Всё ок
     };
 
     public ICommand ClickCommand { get; }
@@ -61,7 +65,7 @@ public class LessonCardViewModel : ViewModelBase
     {
         if (Lesson == null) return;
 
-        // Определяем режим: создание на пустой ячейке или редактирование существующего
+        // Создаем ViewModel редактора в зависимости от того, пустая это ячейка или существующий урок
         LessonEditorViewModel editVm = Lesson.Id == Guid.Empty
             ? new LessonEditorViewModel(scopeFactory, windowManager, Lesson.ScheduleId)
             {
@@ -74,13 +78,13 @@ public class LessonCardViewModel : ViewModelBase
         {
             if (result.IsDraft && result.LessonDraft != null)
             {
-                // Если урок стал черновиком (Downgraded)
+                // Если бизнес-логика "понизила" урок до черновика
                 Lesson = result.LessonDraft.ToLessonDto();
                 LessonDowngraded?.Invoke(result.LessonDraft);
             }
             else if (result.Lesson != null)
             {
-                // Если урок успешно сохранен/обновлен
+                // Если всё успешно
                 LessonUpdated?.Invoke(result.Lesson);
             }
 

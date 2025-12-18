@@ -196,9 +196,10 @@ public class LessonTableViewModel : DynamicGridViewModel<LessonCardViewModel, St
 
     protected override LessonCardViewModel CreateEmptyCell()
     {
-        return new LessonCardViewModel(scopeFactory, windowManager, Refresh, isVisible: true)
+        return new LessonCardViewModel(scopeFactory, windowManager, async () => await RefreshAsync())
         {
-            Lesson = new LessonDto { Id = Guid.Empty }
+            Lesson = new LessonDto { Id = Guid.Empty, ScheduleId = Schedule.Id },
+            IsVisible = true
         };
     }
 

@@ -176,23 +176,18 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
         var id = CurrentSchedule?.Id;
         if (id == null) return;
 
-        // Создаем редактор в режиме создания (передаем только ID расписания)
         var vm = new LessonEditorViewModel(scopeFactory, windowManager, id.Value);
 
         vm.LessonSaved += async result =>
         {
             if (result.IsDraft && result.LessonDraft != null)
             {
-                // Если созданный урок сразу попал в черновики (конфликт)
+                // Здесь можно добавить проверку на дубликат, если нужно
                 Buffer?.AddMany(new[] { result.LessonDraft });
             }
-            else
+            else if (CurrentScheduleTable != null)
             {
-                // Если создался успешно — обновляем таблицу
-                if (CurrentScheduleTable != null)
-                {
-                    await CurrentScheduleTable.RefreshAsync();
-                }
+                await CurrentScheduleTable.RefreshAsync();
             }
         };
 
