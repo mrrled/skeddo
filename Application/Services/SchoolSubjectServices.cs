@@ -1,12 +1,14 @@
 ﻿using Application.DtoModels;
 using Application.DtoExtensions;
 using Application.IServices;
+using Domain;
 using Domain.Models;
 using Domain.IRepositories;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class SchoolSubjectServices(ISchoolSubjectRepository schoolSubjectRepository, IUnitOfWork unitOfWork) : ISchoolSubjectServices
+public class SchoolSubjectServices(ISchoolSubjectRepository schoolSubjectRepository, IUnitOfWork unitOfWork, ILogger logger) : BaseService(unitOfWork, logger), ISchoolSubjectServices
 {
     public async Task<List<SchoolSubjectDto>> FetchSchoolSubjectsFromBackendAsync()
     {
@@ -14,32 +16,38 @@ public class SchoolSubjectServices(ISchoolSubjectRepository schoolSubjectReposit
         return schoolSubjectList.ToSchoolSubjectsDto();
     }
 
-    public async Task<SchoolSubjectDto> AddSchoolSubject(CreateSchoolSubjectDto schoolSubjectDto)
+    public async Task<Result<SchoolSubjectDto>> AddSchoolSubject(CreateSchoolSubjectDto schoolSubjectDto)
     {
         var schoolSubjectId = Guid.NewGuid();
-        var schoolSubject = SchoolSubject.CreateSchoolSubject(schoolSubjectId, schoolSubjectDto.Name);
-        await schoolSubjectRepository.AddAsync(schoolSubject, 1);
-        await unitOfWork.SaveChangesAsync();
-        return schoolSubject.ToSchoolSubjectDto();
+        var schoolSubjectCreateResult = SchoolSubject.CreateSchoolSubject(schoolSubjectId, schoolSubjectDto.Name);
+        if (schoolSubjectCreateResult.IsFailure)
+            return Result<SchoolSubjectDto>.Failure(schoolSubjectCreateResult.Error);
+        await schoolSubjectRepository.AddAsync(schoolSubjectCreateResult.Value, 1);
+        return await TrySaveChangesAsync(schoolSubjectCreateResult.Value.ToSchoolSubjectDto(),
+            "Не удалось сохранить предмет. Попробуйте позже.");
     }
 
-    public async Task EditSchoolSubject(SchoolSubjectDto schoolSubjectDto)
+    public async Task<Result> EditSchoolSubject(SchoolSubjectDto schoolSubjectDto)
     {
         var schoolSubject = await schoolSubjectRepository.GetSchoolSubjectByIdAsync(schoolSubjectDto.Id);
         if (schoolSubject is null)
-            throw new  ArgumentException($"School subject with id {schoolSubjectDto.Id} not found");
+            return Result.Failure("Предмет не найден.");
         if (schoolSubject.Name != schoolSubjectDto.Name)
-            schoolSubject.SetName(schoolSubjectDto.Name);
+        {
+            var renameResult = schoolSubject.SetName(schoolSubjectDto.Name);
+            if (renameResult.IsFailure)
+                return Result.Failure(renameResult.Error);
+        }
         await schoolSubjectRepository.UpdateAsync(schoolSubject);
-        await unitOfWork.SaveChangesAsync();
+        return await TrySaveChangesAsync("Не удалось изменить предмет. Попробуйте позже.");
     }
 
-    public async Task DeleteSchoolSubject(SchoolSubjectDto schoolSubjectDto)
+    public async Task<Result> DeleteSchoolSubject(SchoolSubjectDto schoolSubjectDto)
     {
         var schoolSubject = await schoolSubjectRepository.GetSchoolSubjectByIdAsync(schoolSubjectDto.Id);
         if (schoolSubject is null)
-            throw new  ArgumentException($"School subject with id {schoolSubjectDto.Id} not found");
+            return Result.Failure("Предмет не найден.");
         await schoolSubjectRepository.Delete(schoolSubject);
-        await unitOfWork.SaveChangesAsync();
+        return await TrySaveChangesAsync("Не удалось удалить предмет. Попробуйте позже.");
     }
 }

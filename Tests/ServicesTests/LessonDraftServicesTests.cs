@@ -154,7 +154,7 @@ public class LessonDraftServicesTests
         {
             Id = lessonId,
             SchoolSubject = new SchoolSubjectDto { Id = schoolSubjectId, Name = "Physics" },
-            LessonNumber = new LessonNumberDto { Id = 1, Number = 1, Time = "8:00-8:45" },
+            LessonNumber = new LessonNumberDto { Number = 1, Time = "8:00-8:45" },
             Teacher = new TeacherDto { Id = teacherId },
             Classroom = null, 
             StudyGroup = new StudyGroupDto { Id = studyGroupId },
@@ -218,7 +218,7 @@ public class LessonDraftServicesTests
         {
             Id = lessonId,
             SchoolSubject = new SchoolSubjectDto { Id = schoolSubjectId, Name = "Math" },
-            LessonNumber = new LessonNumberDto { Id = 1, Number = 1, Time = "8:00-8:45" },
+            LessonNumber = new LessonNumberDto { Number = 1, Time = "8:00-8:45" },
             Teacher = new TeacherDto { Id = teacherId },
             Classroom = new ClassroomDto { Id = classroomId },
             StudyGroup = new StudyGroupDto { Id = studyGroupId },
@@ -299,7 +299,7 @@ public class LessonDraftServicesTests
         {
             Id = lessonId,
             SchoolSubject = new SchoolSubjectDto { Id = schoolSubjectId },
-            LessonNumber = new LessonNumberDto { Id = 1, Number = 1 },
+            LessonNumber = new LessonNumberDto { Number = 1 },
             Teacher = new TeacherDto { Id = teacherId },
             Classroom = new ClassroomDto { Id = classroomId },
             StudyGroup = new StudyGroupDto { Id = studyGroupId }
@@ -453,7 +453,7 @@ public class LessonDraftServicesTests
         {
             Id = lessonId,
             SchoolSubject = null,
-            LessonNumber = new LessonNumberDto { Id = 1, Number = 1 },
+            LessonNumber = new LessonNumberDto { Number = 1 },
             Teacher = new TeacherDto { Id = Guid.NewGuid() },
             Classroom = new ClassroomDto { Id = Guid.NewGuid() },
             StudyGroup = new StudyGroupDto { Id = Guid.NewGuid() }
@@ -487,7 +487,7 @@ public class LessonDraftServicesTests
         {
             Id = lessonId,
             SchoolSubject = new SchoolSubjectDto { Id = schoolSubjectId, Name = "Math" },
-            LessonNumber = new LessonNumberDto { Id = 1, Number = 1, Time = "8:00-8:45" },
+            LessonNumber = new LessonNumberDto { Number = 1, Time = "8:00-8:45" },
             Teacher = null, // Missing teacher
             Classroom = new ClassroomDto { Id = classroomId },
             StudyGroup = new StudyGroupDto { Id = studyGroupId }

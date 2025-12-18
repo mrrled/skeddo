@@ -4,6 +4,7 @@ using Application.IServices;
 using Domain;
 using Domain.IRepositories;
 using Domain.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
@@ -16,7 +17,8 @@ public class LessonDraftServices(
     IStudyGroupRepository studyGroupRepository,
     IClassroomRepository classroomRepository,
     ILessonFactory lessonFactory,
-    IUnitOfWork unitOfWork) : ILessonDraftServices
+    IUnitOfWork unitOfWork,
+    ILogger logger) : BaseService(unitOfWork, logger), ILessonDraftServices
 {
     public async Task<List<LessonDraftDto>> GetLessonDraftsByScheduleId(Guid scheduleId)
     {
@@ -24,33 +26,41 @@ public class LessonDraftServices(
         return drafts.ToLessonsDraftDto();
     }
 
-    public async Task<LessonDraftDto> GetLessonDraftById(Guid id)
+    public async Task<Result<LessonDraftDto>> GetLessonDraftById(Guid id)
     {
         var lessonDraft = await lessonDraftRepository.GetLessonDraftById(id);
-        return lessonDraft.ToLessonDraftDto();
+        if (lessonDraft is null)
+            return Result<LessonDraftDto>.Failure("Урок не найден.");
+        return Result<LessonDraftDto>.Success(lessonDraft.ToLessonDraftDto());
     }
 
-    public async Task<EditLessonResult> EditDraftLesson(LessonDraftDto lessonDraftDto, Guid scheduleId)
+    public async Task<Result<EditLessonResult>> EditDraftLesson(LessonDraftDto lessonDraftDto, Guid scheduleId)
     {
         var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId);
+        if (schedule is null)
+            return Result<EditLessonResult>.Failure("Расписание не найдено.");
         var lessonDraft = schedule.LessonDrafts.FirstOrDefault(x => x.Id == lessonDraftDto.Id);
         if (lessonDraft is null)
             throw new ArgumentException($"Cannot find a lessonDraft with id {lessonDraftDto.Id}");
         var schoolSubject = lessonDraftDto.SchoolSubject is null
             ? null
             : await schoolSubjectRepository.GetSchoolSubjectByIdAsync(lessonDraftDto.SchoolSubject.Id);
-        var lessonNumber = lessonDraftDto.LessonNumber is null
+        var lessonNumberCreateResult = lessonDraftDto.LessonNumber is null
             ? null
             : LessonNumber.CreateLessonNumber(lessonDraftDto.LessonNumber.Number, lessonDraftDto.LessonNumber.Time);
+        if (lessonNumberCreateResult.IsFailure)
+            return Result<EditLessonResult>.Failure(lessonNumberCreateResult.Error);
         var teacher = lessonDraftDto.Teacher is null
             ? null
             : await teacherRepository.GetTeacherByIdAsync(lessonDraftDto.Teacher.Id);
         var studyGroup = lessonDraftDto.StudyGroup is null
             ? null
             : await studyGroupRepository.GetStudyGroupByIdAsync(lessonDraftDto.StudyGroup.Id);
-        var studySubgroup = lessonDraftDto.StudySubgroup is null
+        var studySubgroupCreateResult = lessonDraftDto.StudySubgroup is null || studyGroup is null
             ? null
-            : studyGroup?.StudySubgroups.FirstOrDefault(x => x.Name == lessonDraftDto.StudySubgroup.Name);
+            : StudySubgroup.CreateStudySubgroup(studyGroup, lessonDraftDto.StudySubgroup.Name);
+        if (studySubgroupCreateResult.IsFailure)
+            return Result<EditLessonResult>.Failure(studySubgroupCreateResult.Error);
         var classroom = lessonDraftDto.Classroom is null
             ? null
             : await classroomRepository.GetClassroomByIdAsync(lessonDraftDto.Classroom.Id);
@@ -58,33 +68,33 @@ public class LessonDraftServices(
             lessonDraftDto.Teacher is null ||
             lessonDraftDto.Classroom is null || lessonDraftDto.StudyGroup is null)
         {
+            lessonDraft.SetStudySubgroup(studySubgroupCreateResult.Value);
             lessonDraft.SetSchoolSubject(schoolSubject);
-            lessonDraft.SetLessonNumber(lessonNumber);
+            lessonDraft.SetLessonNumber(lessonNumberCreateResult.Value);
             lessonDraft.SetTeacher(teacher);
             lessonDraft.SetStudyGroup(studyGroup);
-            lessonDraft.SetStudySubgroup(studySubgroup);
             lessonDraft.SetClassroom(classroom);
             lessonDraft.SetComment(lessonDraftDto.Comment);
             await lessonDraftRepository.Update(lessonDraft);
-            await unitOfWork.SaveChangesAsync();
-            return EditLessonResult.Downgraded(lessonDraft.ToLessonDraftDto());
+            return await TrySaveChangesAsync(EditLessonResult.Downgraded(lessonDraft.ToLessonDraftDto()),
+                "Не удалось изменить урок. Попробуйте позже.");
         }
 
         var result = lessonFactory.CreateFromDraft(lessonDraft);
         if (result.IsFailure)
-            throw new Exception(result.Error); //надо нормальный exception выкидывать
+            return Result<EditLessonResult>.Failure(result.Error);
         var lesson = result.Value;
         await lessonRepository.AddAsync(lesson, scheduleId);
         await lessonDraftRepository.Delete(lessonDraft);
-        await unitOfWork.SaveChangesAsync();
-        return EditLessonResult.Success(lesson.ToLessonDto());
+        return await TrySaveChangesAsync(EditLessonResult.Success(lesson.ToLessonDto()),
+            "Не удалось изменить урок. Попробуйте позже.");
     }
 
-    public async Task DeleteLessonDraft(LessonDraftDto lessonDto, Guid scheduleId)
+    public async Task<Result> DeleteLessonDraft(LessonDraftDto lessonDto, Guid scheduleId)
     {
         var lesson = await lessonDraftRepository.GetLessonDraftById(lessonDto.Id);
         await lessonDraftRepository.Delete(lesson);
-        await unitOfWork.SaveChangesAsync();
+        return await TrySaveChangesAsync("Не удалось удалить урок. Попробуйте позже.");
     }
 
     public async Task ClearDraftsByScheduleId(Guid scheduleId)

@@ -41,7 +41,7 @@ public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepo
         return lessonDraftDbos.ToLessonDrafts();
     }
 
-    public async Task<LessonDraft> GetLessonDraftById(Guid id)
+    public async Task<LessonDraft?> GetLessonDraftById(Guid id)
     {
         var lessonDraftDbo = await context.LessonDrafts
             .Include(x => x.Teacher)
@@ -51,7 +51,7 @@ public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepo
             .Include(x => x.LessonNumber)
             .FirstOrDefaultAsync(x => x.Id == id);
         if (lessonDraftDbo is null)
-            throw new InvalidOperationException();
+            return null;
         return lessonDraftDbo.ToLessonDraft();
     }
 

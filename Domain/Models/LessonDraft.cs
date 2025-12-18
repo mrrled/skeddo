@@ -33,11 +33,12 @@ public class LessonDraft(
             lesson.Comment);
     }
     
-    public void SetSchoolSubject(SchoolSubject? subject)
+    public Result SetSchoolSubject(SchoolSubject? subject)
     {
         if (subject is null)
-            throw new ArgumentNullException(nameof(subject));
+            return Result.Failure("Урок не может быть предмета");
         SchoolSubject = subject;
+        return Result.Success();
     }
 
     public void SetLessonNumber(LessonNumber? number)
@@ -63,6 +64,11 @@ public class LessonDraft(
     public void SetClassroom(Classroom? classroom)
     {
         Classroom = classroom;
+    }
+    
+    public void SetStudySubgroup(StudySubgroup? studySubgroup)
+    {
+        StudySubgroup = studySubgroup;
     }
 
     public void SetComment(string? comment)

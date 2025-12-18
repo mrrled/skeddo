@@ -16,11 +16,11 @@ public class SchoolSubjectRepository(ScheduleDbContext context) : ISchoolSubject
         return schoolSubjectDbos.ToSchoolSubjects();
     }
 
-    public async Task<SchoolSubject> GetSchoolSubjectByIdAsync(Guid schoolSubjectId)
+    public async Task<SchoolSubject?> GetSchoolSubjectByIdAsync(Guid schoolSubjectId)
     {
         var schoolSubjectDbo = await context.SchoolSubjects.FirstOrDefaultAsync(s => s.Id == schoolSubjectId);
         if (schoolSubjectDbo is null)
-            throw new InvalidOperationException();
+            return null;
         return schoolSubjectDbo.ToSchoolSubject();
     }
 

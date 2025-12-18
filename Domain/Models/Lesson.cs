@@ -28,32 +28,36 @@ public class Lesson(
         WarningType = warningType;
     }
 
-    public void SetSchoolSubject(SchoolSubject? schoolSubject)
+    public Result SetSchoolSubject(SchoolSubject? schoolSubject)
     {
         if (schoolSubject is null)
-            throw new ArgumentNullException(nameof(schoolSubject));
+            return Result.Failure("Урок не может быть без предмета");
         SchoolSubject = schoolSubject;
+        return Result.Success();
     }
 
-    public void SetLessonNumber(LessonNumber? lessonNumber)
+    public Result SetLessonNumber(LessonNumber? lessonNumber)
     {
         if (lessonNumber is null)
-            throw new ArgumentNullException(nameof(lessonNumber));
+            return Result.Failure("Урок не может быть без номера урока");
         LessonNumber = lessonNumber;
+        return Result.Success();
     }
 
-    public void SetTeacher(Teacher? teacher)
+    public Result SetTeacher(Teacher? teacher)
     {
         if (teacher is null)
-            throw new ArgumentNullException(nameof(teacher));
+            return Result.Failure("Урок не может быть без учителя");
         Teacher = teacher;
+        return Result.Success();
     }
 
-    public void SetStudyGroup(StudyGroup? studyGroup)
+    public Result SetStudyGroup(StudyGroup? studyGroup)
     {
         if (studyGroup is null)
-            throw new ArgumentNullException(nameof(studyGroup));
+            return Result.Failure("Урок не может быть без учебной группы");
         StudyGroup = studyGroup;
+        return Result.Success();
     }
     
     public void SetStudySubgroup(StudySubgroup? subgroup)
@@ -61,11 +65,12 @@ public class Lesson(
         StudySubgroup = subgroup;
     }
 
-    public void SetClassroom(Classroom? classroom)
+    public Result SetClassroom(Classroom? classroom)
     {
         if (classroom is null)
-            throw new ArgumentNullException(nameof(classroom));
+            return Result.Failure("Урок не может быть без аудитории");
         Classroom = classroom;
+        return Result.Success();
     }
 
     public void SetComment(string? comment)

@@ -14,14 +14,14 @@ public class ClassroomRepository(ScheduleDbContext context) : IClassroomReposito
         return classrooms.ToClassrooms();
     }
 
-    public async Task<Classroom> GetClassroomByIdAsync(Guid classroomId)
+    public async Task<Classroom?> GetClassroomByIdAsync(Guid classroomId)
     {
         var scheduleGroup = await context.ScheduleGroups.Include(x => x.Classrooms).FirstOrDefaultAsync();
         if (scheduleGroup is null)
-            throw new InvalidOperationException();
+            return null;
         var classroomDbo = scheduleGroup.Classrooms.FirstOrDefault(x => x.Id == classroomId);
         if (classroomDbo is null)
-            throw new InvalidOperationException();
+            return null;
         return classroomDbo.ToClassroom();
     }
 

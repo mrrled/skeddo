@@ -38,7 +38,7 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
         return scheduleDbos.ToSchedules();
     }
     
-    public async Task<Schedule> GetScheduleByIdAsync(Guid scheduleId)
+    public async Task<Schedule?> GetScheduleByIdAsync(Guid scheduleId)
     {
         var scheduleDbo = await context.Schedules
             .Include(s => s.Lessons)
@@ -65,7 +65,7 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
             .ThenInclude(l => l.Classroom)
             .FirstOrDefaultAsync(s => s.Id == scheduleId);
         if (scheduleDbo is null)
-            throw new InvalidOperationException();
+            return null;
         return scheduleDbo.ToSchedule();
     }
     

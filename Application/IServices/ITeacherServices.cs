@@ -1,4 +1,5 @@
 ﻿using Application.DtoModels;
+using Domain;
 using Domain.Models;
 
 namespace Application.IServices;
@@ -6,8 +7,8 @@ namespace Application.IServices;
 public interface ITeacherServices
 {
     public Task<List<TeacherDto>> FetchTeachersFromBackendAsync();
-    public Task<TeacherDto> GetTeacherById(Guid id);
-    public Task<TeacherDto> AddTeacher(CreateTeacherDto teacherDto);
-    public Task EditTeacher(TeacherDto teacherDto);
-    public Task DeleteTeacher(TeacherDto teacherDto);
+    public Task<Result<TeacherDto>> GetTeacherById(Guid id);
+    public Task<Result<TeacherDto>> AddTeacher(CreateTeacherDto teacherDto);
+    public Task<Result> EditTeacher(TeacherDto teacherDto);
+    public Task<Result> DeleteTeacher(TeacherDto teacherDto);
 }

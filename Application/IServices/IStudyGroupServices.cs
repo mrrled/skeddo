@@ -1,4 +1,5 @@
 ﻿using Application.DtoModels;
+using Domain;
 using Domain.Models;
 
 namespace Application.IServices;
@@ -6,7 +7,7 @@ namespace Application.IServices;
 public interface IStudyGroupServices
 {
     public Task<List<StudyGroupDto>> FetchStudyGroupsFromBackendAsync();
-    public Task<StudyGroupDto> AddStudyGroup(CreateStudyGroupDto studyGroupDto);
-    public Task EditStudyGroup(StudyGroupDto studyGroupDto);
-    public Task DeleteStudyGroup(StudyGroupDto studyGroupDto);
+    public Task<Result<StudyGroupDto>> AddStudyGroup(CreateStudyGroupDto studyGroupDto);
+    public Task<Result> EditStudyGroup(StudyGroupDto studyGroupDto);
+    public Task<Result> DeleteStudyGroup(StudyGroupDto studyGroupDto);
 }

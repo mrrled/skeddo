@@ -1,4 +1,5 @@
 ﻿using Application.DtoModels;
+using Domain;
 using Domain.Models;
 
 namespace Application.IServices;
@@ -6,8 +7,8 @@ namespace Application.IServices;
 public interface IScheduleServices
 {
     public Task<List<ScheduleDto>> FetchSchedulesFromBackendAsync();
-    public Task<ScheduleDto> AddSchedule(CreateScheduleDto scheduleDto);
-    public Task EditSchedule(ScheduleDto scheduleDto);
-    public Task DeleteSchedule(ScheduleDto scheduleDto);
-    public Task<ScheduleDto> GetScheduleByIdAsync(Guid id);
+    public Task<Result<ScheduleDto>> AddSchedule(CreateScheduleDto scheduleDto);
+    public Task<Result> EditSchedule(ScheduleDto scheduleDto);
+    public Task<Result> DeleteSchedule(ScheduleDto scheduleDto);
+    public Task<Result<ScheduleDto>> GetScheduleByIdAsync(Guid id);
 }

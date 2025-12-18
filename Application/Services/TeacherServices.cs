@@ -1,8 +1,10 @@
 ﻿using Application.DtoModels;
 using Application.DtoExtensions;
 using Application.IServices;
+using Domain;
 using Domain.Models;
 using Domain.IRepositories;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
@@ -10,7 +12,9 @@ public class TeacherServices(
     ITeacherRepository teacherRepository,
     ISchoolSubjectRepository schoolSubjectRepository,
     IStudyGroupRepository studyGroupRepository,
-    IUnitOfWork unitOfWork) : ITeacherServices
+    IUnitOfWork  unitOfWork,
+    ILogger logger
+    ) : BaseService(unitOfWork, logger), ITeacherServices
 {
     public async Task<List<TeacherDto>> FetchTeachersFromBackendAsync()
     {
@@ -18,13 +22,15 @@ public class TeacherServices(
         return teacherList.ToTeachersDto();
     }
 
-    public async Task<TeacherDto> GetTeacherById(Guid id)
+    public async Task<Result<TeacherDto>> GetTeacherById(Guid id)
     {
         var teacher = await teacherRepository.GetTeacherByIdAsync(id);
-        return teacher.ToTeacherDto();
+        if (teacher is null)
+            return Result<TeacherDto>.Failure("Учитель не найден.");
+        return Result<TeacherDto>.Success(teacher.ToTeacherDto());
     }
 
-    public async Task<TeacherDto> AddTeacher(CreateTeacherDto teacherDto)
+    public async Task<Result<TeacherDto>> AddTeacher(CreateTeacherDto teacherDto)
     {
         var schoolSubjects =
             await schoolSubjectRepository.GetSchoolSubjectListByIdsAsync(teacherDto.SchoolSubjects.Select(x => x.Id)
@@ -33,40 +39,50 @@ public class TeacherServices(
             await studyGroupRepository.GetStudyGroupListByIdsAsync(teacherDto.StudyGroups.Select(x => x.Id).Distinct()
                 .ToList());
         var teacherId = Guid.NewGuid();
-        var teacher = Teacher.CreateTeacher(teacherId, teacherDto.Name, teacherDto.Surname,
+        var teacherCreateResult = Teacher.CreateTeacher(teacherId, teacherDto.Name, teacherDto.Surname,
             teacherDto.Patronymic, schoolSubjects, studyGroups);
-        await teacherRepository.AddAsync(teacher, 1);
-        await unitOfWork.SaveChangesAsync();
-        return teacher.ToTeacherDto();
+        if (teacherCreateResult.IsFailure)
+            return Result<TeacherDto>.Failure(teacherCreateResult.Error);
+        await teacherRepository.AddAsync(teacherCreateResult.Value, 1);
+        return await TrySaveChangesAsync(teacherCreateResult.Value.ToTeacherDto(),
+            "Не удалось сохранить учителя. Попробуйте позже.");
     }
 
-    public async Task EditTeacher(TeacherDto teacherDto)
+    public async Task<Result> EditTeacher(TeacherDto teacherDto)
     {
-        var schoolSubjects =
-            await schoolSubjectRepository.GetSchoolSubjectListByIdsAsync(teacherDto.SchoolSubjects.Select(x => x.Id)
-                .Distinct().ToList());
-        var studyGroups =
-            await studyGroupRepository.GetStudyGroupListByIdsAsync(teacherDto.StudyGroups.Select(x => x.Id).Distinct()
-                .ToList());
         var teacher = await teacherRepository.GetTeacherByIdAsync(teacherDto.Id);
         if (teacher is null)
-            throw new ArgumentException($"Teacher with id {teacherDto.Id} not found");
-        teacher.SetName(teacherDto.Name);
-        teacher.SetSurname(teacherDto.Surname);
-        teacher.SetPatronymic(teacherDto.Patronymic);
+            return Result.Failure("Учитель не найден.");
+        var subjectIds = teacherDto.SchoolSubjects.Select(x => x.Id).Distinct().ToList();
+        var groupIds = teacherDto.StudyGroups.Select(x => x.Id).Distinct().ToList();
+        var schoolSubjects = await schoolSubjectRepository.GetSchoolSubjectListByIdsAsync(subjectIds);
+        var studyGroups = await studyGroupRepository.GetStudyGroupListByIdsAsync(groupIds);
+        if (schoolSubjects.Count != subjectIds.Count)
+            return Result.Failure("Некоторые выбранные предметы не найдены.");
+        if (studyGroups.Count != groupIds.Count)
+            return Result.Failure("Некоторые выбранные группы не найдены.");
+        var renameResult = teacher.SetName(teacherDto.Name);
+        if (renameResult.IsFailure)
+            return Result.Failure(renameResult.Error);
+        var surnameEditResult = teacher.SetSurname(teacherDto.Surname);
+        if (surnameEditResult.IsFailure)
+            return Result.Failure(surnameEditResult.Error);
+        var patronymicEditResult = teacher.SetPatronymic(teacherDto.Patronymic);
+        if (patronymicEditResult.IsFailure)
+            return Result.Failure(patronymicEditResult.Error); 
         teacher.SetDescription(teacherDto.Description);
         teacher.SetSchoolSubjects(schoolSubjects);
         teacher.SetStudyGroups(studyGroups);
         await teacherRepository.UpdateAsync(teacher);
-        await unitOfWork.SaveChangesAsync();
+        return await TrySaveChangesAsync("Не удалось изменить учителя. Попробуйте позже.");
     }
 
-    public async Task DeleteTeacher(TeacherDto teacherDto)
+    public async Task<Result> DeleteTeacher(TeacherDto teacherDto)
     {
         var teacher = await teacherRepository.GetTeacherByIdAsync(teacherDto.Id);
         if (teacher is null)
-            throw new ArgumentException($"Teacher with id {teacherDto.Id} not found");
+            return Result.Failure("Учитель не найден.");
         await teacherRepository.Delete(teacher);
-        await unitOfWork.SaveChangesAsync();
+        return await TrySaveChangesAsync("Не удалось удалить учителя. Попробуйте позже.");
     }
 }

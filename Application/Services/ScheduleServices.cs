@@ -1,12 +1,14 @@
 ﻿using Application.DtoModels;
 using Application.DtoExtensions;
 using Application.IServices;
+using Domain;
 using Domain.Models;
 using Domain.IRepositories;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWork unitOfWork) : IScheduleServices
+public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWork unitOfWork, ILogger logger) : BaseService(unitOfWork, logger), IScheduleServices
 {
     public async Task<List<ScheduleDto>> FetchSchedulesFromBackendAsync()
     {
@@ -14,40 +16,46 @@ public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWor
         return scheduleList.ToSchedulesDto();
     }
 
-    public async Task<ScheduleDto> AddSchedule(CreateScheduleDto? scheduleDto)
+    public async Task<Result<ScheduleDto>> AddSchedule(CreateScheduleDto scheduleDto)
     {
-        if (scheduleDto is null)
-            throw new ArgumentNullException(nameof(scheduleDto));
         var id = Guid.NewGuid();
-        var schedule = Schedule.CreateSchedule(id, scheduleDto.Name);
-        await scheduleRepository.AddAsync(schedule, 1);
-        await unitOfWork.SaveChangesAsync();
-        return schedule.ToScheduleDto();
+        var scheduleCreateResult = Schedule.CreateSchedule(id, scheduleDto.Name);
+        if (scheduleCreateResult.IsFailure)
+            return Result<ScheduleDto>.Failure(scheduleCreateResult.Error);
+        await scheduleRepository.AddAsync(scheduleCreateResult.Value, 1);
+        return await TrySaveChangesAsync(scheduleCreateResult.Value.ToScheduleDto(),
+            "Не удалось сохранить расписание.  Попробуйте позже.");
     }
 
-    public async Task EditSchedule(ScheduleDto scheduleDto)
+    public async Task<Result> EditSchedule(ScheduleDto scheduleDto)
     {
         var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleDto.Id);
         if (schedule is null)
-            throw new ArgumentException($"Schedule with id {scheduleDto.Id} not found");
+            return Result.Failure("Расписание не найдено. Попробуйте позже.");
         if (schedule.Name != scheduleDto.Name)
-            schedule.SetName(scheduleDto.Name);
+        {
+            var renameResult = schedule.SetName(scheduleDto.Name);
+            if (renameResult.IsFailure)
+                return Result.Failure(renameResult.Error);
+        }
         await scheduleRepository.UpdateAsync(schedule);
-        await unitOfWork.SaveChangesAsync();
+        return await TrySaveChangesAsync("Не удалось изменить расписание. Попробуйте позже.");
     }
 
-    public async Task DeleteSchedule(ScheduleDto scheduleDto)
+    public async Task<Result> DeleteSchedule(ScheduleDto scheduleDto)
     {
         var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleDto.Id);
         if (schedule is null)
-            throw new ArgumentException($"Schedule with id {scheduleDto.Id} not found");
+            return Result.Failure("Расписание не найдено. Попробуйте позже.");
         await scheduleRepository.Delete(schedule);
-        await unitOfWork.SaveChangesAsync();
+        return await TrySaveChangesAsync("Не удалось удалить расписание. Попробуйте позже.");
     }
 
-    public async Task<ScheduleDto> GetScheduleByIdAsync(Guid id)
+    public async Task<Result<ScheduleDto>> GetScheduleByIdAsync(Guid id)
     {
         var schedule = await scheduleRepository.GetScheduleByIdAsync(id);
-        return schedule.ToScheduleDto();
+        if (schedule is null)
+            return Result<ScheduleDto>.Failure("Расписание не найдено");
+        return Result<ScheduleDto>.Success(schedule.ToScheduleDto());
     }
 }

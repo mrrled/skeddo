@@ -650,7 +650,7 @@ public class LessonServicesTests
         {
             Id = id,
             SchoolSubject = new SchoolSubjectDto { Id = Guid.NewGuid(), Name = "Math" },
-            LessonNumber = new LessonNumberDto { Id = 1, Number = 1, Time = "09:00" },
+            LessonNumber = new LessonNumberDto { Number = 1, Time = "09:00" },
             Teacher = new TeacherDto { Id = Guid.NewGuid(), Name = "John", Surname = "Doe", Patronymic = "Smith" },
             StudyGroup = new StudyGroupDto { Id = Guid.NewGuid(), Name = "Group A" },
             Classroom = new ClassroomDto { Id = Guid.NewGuid(), Name = "101" },
@@ -667,7 +667,7 @@ public class LessonServicesTests
             return new CreateLessonDto()
         {
             SchoolSubject = new SchoolSubjectDto { Id = Guid.NewGuid(), Name = "Math" },
-            LessonNumber = new LessonNumberDto { Id = 1, Number = 1, Time = "09:00" },
+            LessonNumber = new LessonNumberDto { Number = 1, Time = "09:00" },
             Teacher = new TeacherDto { Id = Guid.NewGuid(), Name = "John", Surname = "Doe", Patronymic = "Smith" },
             StudyGroup = new StudyGroupDto { Id = Guid.NewGuid(), Name = "Group A" },
             Classroom = new ClassroomDto { Id = Guid.NewGuid(), Name = "101" },

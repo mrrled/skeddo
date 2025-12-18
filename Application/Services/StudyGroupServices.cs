@@ -1,12 +1,14 @@
 ﻿using Application.DtoModels;
 using Application.DtoExtensions;
 using Application.IServices;
+using Domain;
 using Domain.Models;
 using Domain.IRepositories;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUnitOfWork unitOfWork) : IStudyGroupServices
+public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUnitOfWork unitOfWork, ILogger logger) : BaseService(unitOfWork, logger), IStudyGroupServices
 {
     public async Task<List<StudyGroupDto>> FetchStudyGroupsFromBackendAsync()
     {
@@ -14,32 +16,38 @@ public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUni
         return studyGroupList.ToStudyGroupsDto();
     }
 
-    public async Task<StudyGroupDto> AddStudyGroup(CreateStudyGroupDto studyGroupDto)
+    public async Task<Result<StudyGroupDto>> AddStudyGroup(CreateStudyGroupDto studyGroupDto)
     {
         var studyGroupId = Guid.NewGuid();
-        var studyGroup = StudyGroup.CreateStudyGroup(studyGroupId, studyGroupDto.Name);
-        await studyGroupRepository.AddAsync(studyGroup, 1);
-        await unitOfWork.SaveChangesAsync();
-        return studyGroup.ToStudyGroupDto();
+        var studyGroupCreateResult = StudyGroup.CreateStudyGroup(studyGroupId, studyGroupDto.Name);
+        if (studyGroupCreateResult.IsFailure)
+            return Result<StudyGroupDto>.Failure(studyGroupCreateResult.Error);
+        await studyGroupRepository.AddAsync(studyGroupCreateResult.Value, 1);
+        return await TrySaveChangesAsync(studyGroupCreateResult.Value.ToStudyGroupDto(),
+            "Не удалось сохранить учебную группу. Попробуйте позже.");
     }
 
-    public async Task EditStudyGroup(StudyGroupDto studyGroupDto)
+    public async Task<Result> EditStudyGroup(StudyGroupDto studyGroupDto)
     {
         var studyGroup = await studyGroupRepository.GetStudyGroupByIdAsync(studyGroupDto.Id);
         if (studyGroup is null)
-            throw new ArgumentException($"StudyGroup with id {studyGroupDto.Id} not found");
+            return Result.Failure("Учебная группа не найдена.");
         if (studyGroupDto.Name != studyGroup.Name)
-            studyGroup.SetName(studyGroupDto.Name);
+        {
+            var renameResult = studyGroup.SetName(studyGroupDto.Name);
+            if (renameResult.IsFailure)
+                return Result.Failure(renameResult.Error);
+        }
         await studyGroupRepository.UpdateAsync(studyGroup);
-        await unitOfWork.SaveChangesAsync();
+        return await TrySaveChangesAsync("Не удалось изменить учебную группу. Попробуйте позже.");
     }
 
-    public async Task DeleteStudyGroup(StudyGroupDto studyGroupDto)
+    public async Task<Result> DeleteStudyGroup(StudyGroupDto studyGroupDto)
     {
         var studyGroup = await studyGroupRepository.GetStudyGroupByIdAsync(studyGroupDto.Id);
         if (studyGroup is null)
-            throw new  ArgumentException($"StudyGroup with id {studyGroupDto.Id} not found");
+            return Result.Failure("Учебная группа не найдена.");
         await studyGroupRepository.Delete(studyGroup);
-        await unitOfWork.SaveChangesAsync();
+        return await TrySaveChangesAsync("Не удалось удалить учебную группу. Попробуйте позже.");
     }
 }

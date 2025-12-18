@@ -23,19 +23,21 @@ public class Schedule(
         _lessonDrafts.Add(lessonDraft);
     }
 
-    public List<Lesson> EditLesson(Guid id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher,
-        StudyGroup? studyGroup, StudySubgroup? studySubgroup,
+    public Result<List<Lesson>> EditLesson(Guid id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher,
+        StudyGroup? studyGroup,
         Classroom? classroom, string? comment = null)
     {
         var lesson = Lessons.FirstOrDefault(x => x.Id == id);
         if (lesson is null)
             throw new ArgumentException($"There is no lesson with id {id}");
-        lesson.SetSchoolSubject(subject);
-        lesson.SetLessonNumber(lessonNumber);
-        lesson.SetTeacher(teacher);
-        lesson.SetStudyGroup(studyGroup);
-        lesson.SetStudySubgroup(studySubgroup);
-        lesson.SetClassroom(classroom);
+        var updateResult = Result.Combine(
+            lesson.SetSchoolSubject(subject),
+            lesson.SetLessonNumber(lessonNumber),
+            lesson.SetTeacher(teacher),
+            lesson.SetStudyGroup(studyGroup),
+            lesson.SetClassroom(classroom));
+        if (updateResult.IsFailure)
+            return Result<List<Lesson>>.Failure(updateResult.Error);
         lesson.SetComment(comment);
         var editedLessons = UpdateAllLessons();
         editedLessons.Add(lesson);
@@ -49,9 +51,12 @@ public class Schedule(
         return new Schedule(id, name);
     }
 
-    public void SetName(string name)
+    public Result SetName(string? name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure("Название расписания не может быть пустым.");
         Name = name;
+        return Result.Success();
     }
 
     private List<Lesson> UpdateAllLessons()

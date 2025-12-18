@@ -17,13 +17,13 @@ public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupReposi
         return studyGroupDbos.ToStudyGroups();
     }
 
-    public async Task<StudyGroup> GetStudyGroupByIdAsync(Guid studyGroupId)
+    public async Task<StudyGroup?> GetStudyGroupByIdAsync(Guid studyGroupId)
     {
         var studyGroupDbo = await context.StudyGroups
             .Include(x => x.StudySubgroups)
             .FirstOrDefaultAsync(s => s.Id == studyGroupId);
         if (studyGroupDbo is null)
-            throw new InvalidOperationException();
+            return null;
         return studyGroupDbo.ToStudyGroup();
     }
 

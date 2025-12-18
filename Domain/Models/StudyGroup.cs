@@ -5,17 +5,18 @@ public class StudyGroup(Guid id, string name, List<StudySubgroup> studySubgroups
     public string Name { get; private set; } = name;
     public List<StudySubgroup> StudySubgroups => studySubgroups;
 
-    public static StudyGroup CreateStudyGroup(Guid id, string? name)
+    public static Result<StudyGroup> CreateStudyGroup(Guid id, string? name)
     {
-        if (name is null)
-            throw new ArgumentNullException();
-        return new StudyGroup(id, name, new());
+        if (string.IsNullOrWhiteSpace(name))
+            return Result<StudyGroup>.Failure("Название учебной группы не может быть пустым.");
+        return Result<StudyGroup>.Success(new StudyGroup(id, name, new()));
     }
     
-    public void SetName(string? name)
+    public Result SetName(string? name)
     {
-        if (name is null)
-            throw new ArgumentNullException();
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure("Название учебной группы не может быть пустым.");
         Name = name;
+        return Result.Success();
     }
 }

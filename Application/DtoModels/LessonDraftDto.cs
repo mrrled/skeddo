@@ -12,6 +12,7 @@ public class LessonDraftDto
     public StudyGroupDto? StudyGroup { get; set; }
     public StudySubgroupDto? StudySubgroup { get; set; }
     public ClassroomDto? Classroom { get; set; }
+    public StudySubgroupDto? StudySubgroup { get; set; }
     public string? Comment { get; set; }
 
     public LessonDto ToLessonDto()

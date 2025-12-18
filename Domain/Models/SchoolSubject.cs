@@ -3,17 +3,18 @@ namespace Domain.Models;
 public class SchoolSubject(Guid id, string name) : Entity<Guid>(id)
 {
     public string Name { get; set; } = name;
-    public static SchoolSubject CreateSchoolSubject(Guid id, string? name)
+    public static Result<SchoolSubject> CreateSchoolSubject(Guid id, string? name)
     {
-        if (name is null)
-            throw new ArgumentNullException();
-        return new SchoolSubject(id, name);
+        if (string.IsNullOrWhiteSpace(name))
+            return Result<SchoolSubject>.Failure("Название предмета не может быть пустым.");
+        return Result<SchoolSubject>.Success(new SchoolSubject(id, name));
     }
 
-    public void SetName(string? name)
+    public Result SetName(string? name)
     {
-        if (name is null)
-            throw new ArgumentNullException();
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Failure("Название предмета не может быть пустым.");
         Name = name;
+        return Result.Success();
     }
 }

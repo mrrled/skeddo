@@ -22,7 +22,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
         return lessons.ToLessons();
     }
 
-    public async Task<Lesson> GetLessonByIdAsync(Guid id)
+    public async Task<Lesson?> GetLessonByIdAsync(Guid id)
     {
         var lessonDbo = await context.Lessons
             .Include(x => x.Teacher)
@@ -34,7 +34,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.StudySubgroup)
             .FirstOrDefaultAsync(x => x.Id == id);
         if (lessonDbo is null)
-            throw new InvalidOperationException();
+            return null;
         return lessonDbo.ToLesson();
     }
 
