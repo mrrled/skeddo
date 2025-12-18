@@ -129,21 +129,32 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
     public async Task LoadSchedule(Guid id)
     {
+        // 1. Сначала ищем вкладку, чтобы не делать лишних запросов, если она уже есть
+        var existingTab = Tabs.FirstOrDefault(t => t.Id == id);
+
         using var scope = scopeFactory.CreateScope();
-        var schedule = await scope.ServiceProvider.GetRequiredService<IScheduleServices>().GetScheduleByIdAsync(id);
+        var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
+        var schedule = await service.GetScheduleByIdAsync(id);
 
-        var tableViewModel = new LessonTableViewModel(schedule, scopeFactory, windowManager);
-        var bufferViewModel = new LessonBufferViewModel(scopeFactory, windowManager, id);
+        if (existingTab != null)
+        {
+            // Если вкладка есть, просто обновляем её данные (это не создаст новую вкладку)
+            existingTab.Update(schedule);
+            SelectedTab = existingTab;
+        }
+        else
+        {
+            // Только если вкладки нет, создаем новую
+            var tableViewModel = new LessonTableViewModel(schedule, scopeFactory, windowManager);
+            var bufferViewModel = new LessonBufferViewModel(scopeFactory, windowManager, id);
 
-        // Подписка на автоматическое обновление таблицы при действиях в буфере
-        bufferViewModel.RequestTableRefresh += async () => { await tableViewModel.RefreshAsync(); };
+            bufferViewModel.RequestTableRefresh += async () => await tableViewModel.RefreshAsync();
+            tableViewModel.LessonMovedToBuffer += draft => bufferViewModel.AddMany(new[] { draft });
 
-        // Подписка на перенос из таблицы в буфер
-        tableViewModel.LessonMovedToBuffer += draft => { bufferViewModel.AddMany(new[] { draft }); };
-
-        var tab = new ScheduleTabViewModel(schedule, tableViewModel, scopeFactory, CloseTabById, bufferViewModel);
-        Tabs.Add(tab);
-        SelectedTab = tab;
+            var tab = new ScheduleTabViewModel(schedule, tableViewModel, scopeFactory, CloseTabById, bufferViewModel);
+            Tabs.Add(tab);
+            SelectedTab = tab;
+        }
     }
 
     private void CloseTabById(Guid tabId)
@@ -165,15 +176,12 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
         var id = CurrentSchedule?.Id;
         if (id == null) return;
 
-        // Открываем редактор в чистом режиме создания
         var vm = new LessonEditorViewModel(scopeFactory, id.Value);
 
         vm.LessonCreated += async createDto =>
         {
             using var scope = scopeFactory.CreateScope();
             var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-
-            // Сервис AddLesson сам решит: создать Lesson или LessonDraft
             var result = await service.AddLesson(createDto, id.Value);
 
             if (result.IsDraft && result.LessonDraft != null)
@@ -182,11 +190,15 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
             }
             else
             {
-                await LoadSchedule(id.Value); // Обновляем таблицу
+                // ВМЕСТО LoadSchedule(id) используем Refresh текущей таблицы
+                if (CurrentScheduleTable != null)
+                {
+                    await CurrentScheduleTable.RefreshAsync();
+                }
             }
         };
 
-        windowManager.ShowWindow(vm);
+        await windowManager.ShowDialog<LessonEditorViewModel, object?>(vm);
     }
 
     private async Task SaveScheduleAsync() => await Task.CompletedTask;
