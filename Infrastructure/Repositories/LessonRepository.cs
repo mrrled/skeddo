@@ -108,6 +108,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             if (!dboDict.TryGetValue(lesson.Id, out var lessonDbo))
                 continue;
             DboMapper.Mapper.Map(lesson, lessonDbo);
+            lessonDbo.WarningType = (int)lesson.WarningType;
             var lessonNumber =
                 await context.LessonNumbers
                     .FirstOrDefaultAsync(x => x.Number == lesson.LessonNumber.Number

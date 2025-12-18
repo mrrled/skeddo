@@ -33,26 +33,22 @@ public static class DboMapper
 
     public static LessonDbo ToLessonDbo(Lesson lesson)
     {
-        var db = Mapper.Map<LessonDbo>(lesson);
-        return db;
+        return Mapper.Map<LessonDbo>(lesson);
     }
 
     public static List<LessonDbo> ToLessonDbo(ICollection<Lesson> lessons)
     {
-        var db = Mapper.Map<List<LessonDbo>>(lessons);
-        return db;
+        return Mapper.Map<List<LessonDbo>>(lessons);
     }
 
     public static Lesson ToLesson(LessonDbo lesson)
     {
-        var ls = Mapper.Map<Lesson>(lesson);
-        return ls;
+        return Mapper.Map<Lesson>(lesson);
     }
 
     public static List<Lesson> ToLesson(ICollection<LessonDbo> lessons)
     {
-        var ls = Mapper.Map<List<Lesson>>(lessons);
-        return ls;
+        return Mapper.Map<List<Lesson>>(lessons);
     }
 
     public static LessonNumberDbo ToLessonNumberDbo(LessonNumber dboLessonNumber)

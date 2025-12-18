@@ -94,47 +94,9 @@ public class LessonCardViewModel : ViewModelBase
     {
         return warningType switch
         {
-            WarningType.Conflict => "Crismon",
+            WarningType.Conflict => "LightCoral",
             WarningType.Warning => "LemonChiffon",
             _ => "White"
         };
     }
-    
-    // private void StartDrag()
-    // {
-    //     IsDragging = true;
-    //     Console.WriteLine($"Starting drag for lesson: {Lesson?.Id}");
-    // }
-    //
-    // private void OnDrop(LessonCardViewModel target)
-    // {
-    //     if (target != null && target != this)
-    //     {
-    //         SwapLessons(target);
-    //     }
-    // }
-    //
-    // private void SwapLessons(LessonCardViewModel target)
-    // {
-    //     (Lesson.LessonNumber, target.Lesson.LessonNumber) = (target.Lesson.LessonNumber, Lesson.LessonNumber);
-    //     (Lesson.StudyGroup, target.Lesson.StudyGroup) = (target.Lesson.StudyGroup, Lesson.StudyGroup);
-    //
-    //     OnPropertyChanged(nameof(Lesson));
-    //     target.OnPropertyChanged(nameof(Lesson));
-    //     
-    //     SaveSwappedLessons(target);
-    // }
-    //
-    // private async void SaveSwappedLessons(LessonCardViewModel target)
-    // {
-    //     using var scope = scopeFactory.CreateScope();
-    //     var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-    //     
-    //     if (Lesson != null && target.Lesson != null)
-    //     {
-    //         // Сохраняем оба урока с новыми позициями
-    //         await service.EditLesson(Lesson, Lesson.ScheduleId);
-    //         await service.EditLesson(target.Lesson, Lesson.ScheduleId);
-    //     }
-    // }
 }
