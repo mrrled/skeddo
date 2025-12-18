@@ -1,8 +1,6 @@
 using Avalonia.Controls;
-using Avalonia.Xaml.Interactions.Core;
-using Avalonia.Xaml.Interactivity;
 
-namespace newUI.Views.SchedulePage.ScheduleTable;
+namespace newUI.Views.SchedulePage.Schedule;
 
 public partial class LessonTableView : UserControl
 {

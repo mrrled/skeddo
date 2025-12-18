@@ -1,13 +1,13 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:classroomEditor="clr-namespace:newUI.ViewModels.ClassroomsPage.ClassroomEditor"
-        x:Class="newUI.Views.ClassroomsPage.ClassroomEditor.ClassroomEditorWindow"
+        xmlns:editors="clr-namespace:newUI.ViewModels.SchedulePage.StudyGroups"
+        x:Class="newUI.Views.SchedulePage.StudyGroups.StudyGroupEditorWindow"
         Title=""
         WindowStartupLocation="CenterOwner"
         CanResize="False"
         SizeToContent="WidthAndHeight"
         MaxWidth="500"
-        x:DataType="classroomEditor:ClassroomEditorViewModel">
+        x:DataType="editors:StudyGroupEditorViewModel">
 
     <Window.Styles>
         <Style Selector="Button.accent">
@@ -29,8 +29,8 @@
                    Margin="0,0,0,10" />
 
         <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Text="Номер/Название:"
-                       Width="150"
+            <TextBlock Text="Название:"
+                       Width="100"
                        VerticalAlignment="Center"
                        FontSize="16" />
 
@@ -41,15 +41,29 @@
                     Width="220"
                     Height="36"
                     Padding="5, 0">
-                <TextBox Watermark="Введите номер/название"
-                         Text="{Binding ClassroomName, Mode=TwoWay}"
+                <TextBox Watermark="Введите название"
+                         Text="{Binding StudyGroupName, Mode=TwoWay}"
                          Background="Transparent"
                          BorderThickness="0"
                          VerticalAlignment="Center" />
             </Border>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="10"
+                    Margin="0,20,0,0">
+
+            <!-- Удалить -->
+            <Button Content="Удалить"
+                    Command="{Binding DeleteCommand}"
+                    IsVisible="{Binding IsEditMode}"
+                    Background="#E53935"
+                    Foreground="White"
+                    CornerRadius="8"
+                    Padding="15,8" />
+
+            <!-- Сохранить -->
             <Button Content="Сохранить"
                     Command="{Binding SaveCommand}"
                     Classes="accent" />

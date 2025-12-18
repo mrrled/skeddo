@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace newUI.ViewModels.SchedulePage.Lessons;
 
-public class LessonEditViewModel : ViewModelBase
+public class LessonEditorViewModel : ViewModelBase
 {
     public event Action<LessonDto>? LessonUpdated;
     public event Action<CreateLessonDto>? LessonCreated;
@@ -33,7 +33,7 @@ public class LessonEditViewModel : ViewModelBase
     
     public readonly Guid ScheduleId;
 
-    public LessonEditViewModel(
+    public LessonEditorViewModel(
         IServiceScopeFactory scopeFactory,
         Guid scheduleId)
     {
@@ -50,7 +50,7 @@ public class LessonEditViewModel : ViewModelBase
         CancelCommand = new RelayCommand(() => Window?.Close());
     }
     
-    public LessonEditViewModel(
+    public LessonEditorViewModel(
         IServiceScopeFactory scopeFactory,
         LessonDto lessonDTO,
         bool isCreation = false)

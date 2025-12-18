@@ -1,10 +1,10 @@
 <UserControl xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
-        xmlns:scheduleTable="clr-namespace:newUI.Views.SchedulePage.ScheduleTable"
-        xmlns:lessonCard="clr-namespace:newUI.Views.SchedulePage.LessonCard"
         xmlns:toolbar="clr-namespace:newUI.Views.SchedulePage.Toolbar"
-        x:Class="newUI.Views.SchedulePage.ScheduleWindow.ScheduleWindow"
+        xmlns:schedule="clr-namespace:newUI.Views.SchedulePage.Schedule"
+        xmlns:lessons="clr-namespace:newUI.Views.SchedulePage.Lessons"
+        x:Class="newUI.Views.SchedulePage.Schedule.ScheduleView"
         x:DataType="vm:ScheduleViewModel">
 
     <Grid>
@@ -161,7 +161,7 @@
                                         <!--     ~1~ </EventTriggerBehavior> @1@ -->
                                         <!-- </Interaction.Behaviors> -->
                                         
-                                        <lessonCard:LessonCard />
+                                        <lessons:LessonCardView />
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
@@ -248,7 +248,7 @@
                        IsVisible="{Binding HasSelectedTab}">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                  VerticalScrollBarVisibility="Auto">
-                        <scheduleTable:LessonTableView DataContext="{Binding SelectedTab.TableViewModel}"/>
+                        <schedule:LessonTableView DataContext="{Binding SelectedTab.TableViewModel}"/>
                     </ScrollViewer>
                 </Border>
             </Grid>

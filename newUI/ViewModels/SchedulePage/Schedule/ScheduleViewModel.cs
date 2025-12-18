@@ -170,7 +170,7 @@ public class ScheduleViewModel : ViewModelBase
         var id = CurrentSchedule?.Id;
         if (id == null) return;
 
-        var vm = new LessonEditViewModel(scopeFactory, id.Value);
+        var vm = new LessonEditorViewModel(scopeFactory, id.Value);
         vm.LessonCreated += async lesson =>
         {
             using var scope = scopeFactory.CreateScope();
