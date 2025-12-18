@@ -3,92 +3,150 @@
              xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
              xmlns:lessons="clr-namespace:newUI.Views.SchedulePage.Lessons"
              xmlns:dto="clr-namespace:Application.DtoModels;assembly=Application"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="newUI.Views.SchedulePage.Schedule.LessonTableView"
              x:DataType="vm:LessonTableViewModel">
 
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+    <!-- Локальные стили ТОЛЬКО для этого контрола -->
+    <UserControl.Styles>
+        <Style Selector="Button.IconButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="4" />
+        </Style>
+
+        <Style Selector="Button.IconButton:pointerover">
+            <Setter Property="Background" Value="#E0E0E0" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto">
+
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
+            <!-- Пустая ячейка в левом верхнем углу -->
             <Border Grid.Row="0" Grid.Column="0"
-                    Width="50" Height="30"
+                    Width="50"
+                    Height="30"
                     Background="LightGray"
-                    BorderBrush="Gray" BorderThickness="1" />
+                    BorderBrush="Gray"
+                    BorderThickness="1" />
 
-            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+            <!-- ===================== -->
+            <!-- Заголовки StudyGroup -->
+            <!-- ===================== -->
+            <StackPanel Grid.Row="0"
+                        Grid.Column="1"
+                        Orientation="Horizontal">
+
                 <ItemsControl ItemsSource="{Binding Columns}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
+
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="dto:StudyGroupDto">
-                            <Button Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditStudyGroupCommand}"
-                                    CommandParameter="{Binding}"
-                                    Padding="0"
-                                    BorderThickness="1"
-                                    BorderBrush="Gray"
-                                    CornerRadius="0"
-                                    Width="{DynamicResource LessonCardWidth}" 
-                                    Height="30"
-                                    Background="LightBlue"
-                                    HorizontalContentAlignment="Center"
-                                    VerticalContentAlignment="Center">
+                            <Button
+                                Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditStudyGroupCommand}"
+                                CommandParameter="{Binding}"
+                                Padding="0"
+                                BorderThickness="1"
+                                BorderBrush="Gray"
+                                CornerRadius="0"
+                                Width="{DynamicResource LessonCardWidth}"
+                                Height="30"
+                                Background="LightBlue"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center">
+
                                 <TextBlock Text="{Binding Name}"
+                                           FontWeight="Bold"
                                            HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontWeight="Bold" />
+                                           VerticalAlignment="Center" />
                             </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <Button Content="+" Width="30" Height="30" Margin="2,0,0,0"
-                        Command="{Binding AddStudyGroupCommand}" />
+                <!-- Кнопка добавления StudyGroup -->
+                <Button Width="30"
+                        Height="30"
+                        Margin="2,0,0,0"
+                        Command="{Binding AddStudyGroupCommand}"
+                        Classes="IconButton">
+                    <Viewbox Width="16" Height="16">
+                        <icons:MaterialIcon Kind="Plus" />
+                    </Viewbox>
+                </Button>
             </StackPanel>
 
-            <StackPanel Grid.Row="1" Grid.Column="0">
+            <!-- ===================== -->
+            <!-- Заголовки LessonNumber -->
+            <!-- ===================== -->
+            <StackPanel Grid.Row="1"
+                        Grid.Column="0">
+
                 <ItemsControl ItemsSource="{Binding Rows}">
-                    <ItemsControl ItemsSource="{Binding Rows}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditLessonNumberCommand}"
-                                        CommandParameter="{Binding RowHeader}"
-                                        Padding="0"
-                                        BorderThickness="1"
-                                        BorderBrush="Gray"
-                                        CornerRadius="0"
-                                        Width="50"
-                                        Height="{DynamicResource LessonCardHeight}"
-                                        Background="LightGray">
-                                    <TextBlock Text="{Binding RowHeader.Number}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               FontWeight="Bold" />
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button
+                                Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditLessonNumberCommand}"
+                                CommandParameter="{Binding RowHeader}"
+                                Padding="0"
+                                BorderThickness="1"
+                                BorderBrush="Gray"
+                                CornerRadius="0"
+                                Width="50"
+                                Height="{DynamicResource LessonCardHeight}"
+                                Background="LightGray">
+
+                                <TextBlock Text="{Binding RowHeader.Number}"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <Button Content="+" Width="50" Height="30" Margin="0,2,0,0"
-                        Command="{Binding AddLessonNumberCommand}" />
+                <!-- Кнопка добавления LessonNumber -->
+                <Button Width="50"
+                        Height="30"
+                        Margin="0,2,0,0"
+                        Command="{Binding AddLessonNumberCommand}"
+                        Classes="IconButton">
+                    <Viewbox Width="16" Height="16">
+                        <icons:MaterialIcon Kind="Plus" />
+                    </Viewbox>
+                </Button>
             </StackPanel>
 
-            <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Rows}">
+            <!-- ===================== -->
+            <!-- Таблица уроков -->
+            <!-- ===================== -->
+            <ItemsControl Grid.Row="1"
+                          Grid.Column="1"
+                          ItemsSource="{Binding Rows}">
+
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Vertical" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
+
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <ItemsControl ItemsSource="{Binding Cells}">
@@ -97,10 +155,10 @@
                                     <StackPanel Orientation="Horizontal" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
+
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border x:Name="LessonBorder"
-                                            BorderBrush="Gray"
+                                    <Border BorderBrush="Gray"
                                             BorderThickness="1"
                                             Width="{DynamicResource LessonCardWidth}"
                                             Height="{DynamicResource LessonCardHeight}">
@@ -112,6 +170,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+
         </Grid>
     </ScrollViewer>
 </UserControl>
