@@ -11,6 +11,8 @@ using newUI.Services;
 using newUI.ViewModels.MainPage.ScheduleEditor;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.Shared;
+using CommunityToolkit.Mvvm.Messaging;
+using newUI.Messages;
 
 namespace newUI.ViewModels.MainPage.ScheduleList;
 
@@ -33,10 +35,7 @@ public class ScheduleListViewModel : ViewModelBase
         }
     }
 
-    // Источник правды
     private readonly AvaloniaList<ScheduleItemViewModel> allItems = new();
-
-    // Коллекция для UI
     public AvaloniaList<ScheduleItemViewModel> ScheduleItems { get; } = new();
 
     public ICommand AddScheduleCommand { get; }
@@ -94,13 +93,16 @@ public class ScheduleListViewModel : ViewModelBase
 
             if (result != true) return;
             
+            var scheduleId = item.Schedule.Id;
+
             using var scope = scopeFactory.CreateScope();
             var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
             await service.DeleteSchedule(item.Schedule);
 
-            // Удаляем из обеих коллекций
             allItems.Remove(item);
             Avalonia.Threading.Dispatcher.UIThread.Post(() => ScheduleItems.Remove(item));
+
+            WeakReferenceMessenger.Default.Send(new ScheduleDeletedMessage(scheduleId));
         };
 
         itemVm.RequestEdit += async item =>
