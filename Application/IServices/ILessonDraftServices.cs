@@ -8,4 +8,5 @@ public interface ILessonDraftServices
     public Task<LessonDraftDto> GetLessonDraftById(Guid id);
     public Task<EditLessonResult> EditDraftLesson(LessonDraftDto lessonDraftDto, Guid scheduleId);
     public Task DeleteLessonDraft(LessonDraftDto lessonDto, Guid scheduleId);
+    public Task ClearDraftsByScheduleId(Guid scheduleId); // Новый метод
 }

@@ -1,267 +1,213 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.Input;
-using Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
+using newUI.Services;
+using newUI.ViewModels.Shared;
 
 namespace newUI.ViewModels.SchedulePage.Lessons;
 
 public class LessonEditorViewModel : ViewModelBase
 {
-    public event Action<LessonDto>? LessonUpdated;
-    public event Action<CreateLessonDto>? LessonCreated;
-    
-    private readonly LessonDto originalLessonDto;
-    private readonly CreateLessonDto lesson;
-    private readonly IServiceScopeFactory scopeFactory;
+    public string HeaderText { get; }
+    public event Action<EditLessonResult>? LessonSaved;
+    public event Action<Guid>? LessonDeleted;
 
-    private AvaloniaList<TeacherDto> teachers;
-    private AvaloniaList<ClassroomDto> classrooms;
-    private AvaloniaList<StudyGroupDto> studyGroups;
-    private AvaloniaList<SchoolSubjectDto> subjects;
-    private AvaloniaList<LessonNumberDto> timeSlots;
-    
+    private readonly IServiceScopeFactory scopeFactory;
+    private readonly IWindowManager windowManager;
+    private readonly LessonDto? editingLesson;
+    private readonly Guid scheduleId;
+    private readonly bool isPureCreation;
+
+    public bool IsEditMode => !isPureCreation;
+
+    public AvaloniaList<TeacherDto> Teachers { get; } = new();
+    public AvaloniaList<ClassroomDto> Classrooms { get; } = new();
+    public AvaloniaList<StudyGroupDto> StudyGroups { get; } = new();
+    public AvaloniaList<SchoolSubjectDto> Subjects { get; } = new();
+    public AvaloniaList<LessonNumberDto> TimeSlots { get; } = new();
+
     private TeacherDto? selectedTeacher;
     private ClassroomDto? selectedClassroom;
     private StudyGroupDto? selectedStudyGroup;
     private SchoolSubjectDto? selectedSubject;
     private LessonNumberDto? selectedLessonNumber;
-    
-    public readonly Guid ScheduleId;
 
-    public LessonEditorViewModel(
-        IServiceScopeFactory scopeFactory,
-        Guid scheduleId)
-    {
-        IsCreation = true;
-        this.scopeFactory = scopeFactory;
-        originalLessonDto = new LessonDto();
-        ScheduleId = scheduleId;
-        lesson = new CreateLessonDto();
-        
-        _ = Initialize();
-        
-        SaveCommand = new AsyncRelayCommand(CreateLessonAsync);
-        DeleteCommand = new AsyncRelayCommand(DeleteLessonAsync);
-        CancelCommand = new RelayCommand(() => Window?.Close());
-    }
-    
-    public LessonEditorViewModel(
-        IServiceScopeFactory scopeFactory,
-        LessonDto lessonDTO,
-        bool isCreation = false)
-    {
-        IsCreation = isCreation;
-        this.scopeFactory = scopeFactory;
-        ScheduleId = lessonDTO.ScheduleId;
-        originalLessonDto = lessonDTO;
-        
-        if(!IsCreation)
-        {
-            selectedTeacher = lessonDTO.Teacher;
-            selectedClassroom = lessonDTO.Classroom;
-            selectedStudyGroup = lessonDTO.StudyGroup;
-            selectedSubject = lessonDTO.SchoolSubject;
-            selectedLessonNumber = lessonDTO.LessonNumber;
-        }
-        else
-        {
-            lesson = new CreateLessonDto
-            {
-                LessonNumber = lessonDTO.LessonNumber,
-                StudyGroup = lessonDTO.StudyGroup
-            };
-            SelectedStudyGroup = lessonDTO.StudyGroup;
-            SelectedLessonNumber = lessonDTO.LessonNumber;
-        }
-        
-        _ = Initialize();
-        
-        SaveCommand = new AsyncRelayCommand(IsCreation ? CreateLessonAsync : SaveLessonAsync);
-        DeleteCommand = new AsyncRelayCommand(DeleteLessonAsync);
-        CancelCommand = new RelayCommand(() => Window?.Close());
-    }
-
-    private async Task Initialize()
-    {
-        await LoadDataAsync();
-    }
-    
-    public ICommand SaveCommand { get; }
-    public ICommand DeleteCommand { get; }
-    public ICommand CancelCommand { get; }
-    
-    public bool IsCreation { get; }
-
-    public AvaloniaList<TeacherDto> Teachers
-    {
-        get => teachers;
-        set => SetProperty(ref teachers, value);
-    }
-    
-    public AvaloniaList<ClassroomDto> Classrooms
-    {
-        get => classrooms;
-        set => SetProperty(ref classrooms, value);
-    }
-    
-    public AvaloniaList<StudyGroupDto> StudyGroups
-    {
-        get => studyGroups;
-        set => SetProperty(ref studyGroups, value);
-    }
-    
-    public AvaloniaList<SchoolSubjectDto> Subjects
-    {
-        get => subjects;
-        set => SetProperty(ref subjects, value);
-    }
-    
-    public AvaloniaList<LessonNumberDto> TimeSlots
-    {
-        get => timeSlots;
-        set => SetProperty(ref timeSlots, value);
-    }
-    
-    public TeacherDto SelectedTeacher
+    public TeacherDto? SelectedTeacher
     {
         get => selectedTeacher;
-        set
-        {
-            if (SetProperty(ref selectedTeacher, value))
-            {
-                if (IsCreation)
-                {
-                    lesson.Teacher = value;
-                }
-                originalLessonDto.Teacher = value;
-            }
-        }
+        set => SetProperty(ref selectedTeacher, value);
     }
-    
-    public ClassroomDto SelectedClassroom
+
+    public ClassroomDto? SelectedClassroom
     {
         get => selectedClassroom;
-        set
-        {
-            if (SetProperty(ref selectedClassroom, value))
-            {
-                if (IsCreation)
-                {
-                    lesson.Classroom = value;
-                }
-                originalLessonDto.Classroom = value;
-            }
-        }
+        set => SetProperty(ref selectedClassroom, value);
     }
-    
-    public StudyGroupDto SelectedStudyGroup
+
+    public StudyGroupDto? SelectedStudyGroup
     {
         get => selectedStudyGroup;
-        set
-        {
-            if (SetProperty(ref selectedStudyGroup, value))
-            {
-                if (IsCreation)
-                {
-                    lesson.StudyGroup = value;
-                }
-                originalLessonDto.StudyGroup = value;
-            }
-        }
+        set => SetProperty(ref selectedStudyGroup, value);
     }
-    
-    public SchoolSubjectDto SelectedSubject
+
+    public SchoolSubjectDto? SelectedSubject
     {
         get => selectedSubject;
         set
         {
-            if (SetProperty(ref selectedSubject, value))
-            {
-                if (IsCreation)
-                {
-                    lesson.SchoolSubject = value;
-                }
-                originalLessonDto.SchoolSubject = value;
-            }
+            if (SetProperty(ref selectedSubject, value)) (SaveCommand as AsyncRelayCommand)?.NotifyCanExecuteChanged();
         }
     }
-    
-    public LessonNumberDto SelectedLessonNumber
+
+    public LessonNumberDto? SelectedLessonNumber
     {
         get => selectedLessonNumber;
-        set
-        {
-            if (SetProperty(ref selectedLessonNumber, value))
-            {
-                if (IsCreation)
-                {
-                    lesson.LessonNumber = value;
-                }
-                originalLessonDto.LessonNumber = value;
-            }
-        }
+        set => SetProperty(ref selectedLessonNumber, value);
     }
-    
+
+    public ICommand SaveCommand { get; }
+    public ICommand DeleteCommand { get; }
+
+    public LessonEditorViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager, Guid scheduleId)
+    {
+        this.scopeFactory = scopeFactory;
+        this.windowManager = windowManager;
+        this.scheduleId = scheduleId;
+        this.isPureCreation = true;
+        this.HeaderText = "Добавление урока";
+        this.SaveCommand = new AsyncRelayCommand(SaveAsync, CanSave);
+        _ = LoadDataAsync();
+    }
+
+    public LessonEditorViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager, LessonDto lesson)
+        : this(scopeFactory, windowManager, lesson.ScheduleId)
+    {
+        this.editingLesson = lesson;
+        this.isPureCreation = false;
+        this.HeaderText = (lesson.Id == Guid.Empty) ? "Добавление урока" : "Редактирование урока";
+
+        selectedTeacher = lesson.Teacher;
+        selectedClassroom = lesson.Classroom;
+        selectedStudyGroup = lesson.StudyGroup;
+        selectedSubject = lesson.SchoolSubject;
+        selectedLessonNumber = lesson.LessonNumber;
+
+        DeleteCommand = new AsyncRelayCommand(DeleteAsync);
+    }
+
+    private bool CanSave() => SelectedSubject != null;
+
     private async Task LoadDataAsync()
     {
         using var scope = scopeFactory.CreateScope();
-        
-        var teacherService = scope.ServiceProvider.GetRequiredService<ITeacherServices>();
-        var teachers = await teacherService.FetchTeachersFromBackendAsync();
-        Teachers = new AvaloniaList<TeacherDto>(teachers);
-        
-        var classroomService = scope.ServiceProvider.GetRequiredService<IClassroomServices>();
-        var classrooms = await classroomService.FetchClassroomsFromBackendAsync();
-        Classrooms = new AvaloniaList<ClassroomDto>(classrooms);
-        
-        var studyGroupService = scope.ServiceProvider.GetRequiredService<IStudyGroupServices>();
-        var studyGroups = await studyGroupService.FetchStudyGroupsFromBackendAsync();
-        StudyGroups = new AvaloniaList<StudyGroupDto>(studyGroups);
-        
-        var subjectService = scope.ServiceProvider.GetRequiredService<ISchoolSubjectServices>();
-        var subjects = await subjectService.FetchSchoolSubjectsFromBackendAsync();
-        Subjects = new AvaloniaList<SchoolSubjectDto>(subjects);
-        
-        var timeSlotService = scope.ServiceProvider.GetRequiredService<ILessonNumberServices>();
-        var lessonNumbers = await timeSlotService.GetLessonNumbersByScheduleId(ScheduleId);
-        TimeSlots = new AvaloniaList<LessonNumberDto>(lessonNumbers);
+        var teachers = await scope.ServiceProvider.GetRequiredService<ITeacherServices>()
+            .FetchTeachersFromBackendAsync();
+        var classrooms = await scope.ServiceProvider.GetRequiredService<IClassroomServices>()
+            .FetchClassroomsFromBackendAsync();
+        var groups = await scope.ServiceProvider.GetRequiredService<IStudyGroupServices>()
+            .FetchStudyGroupsFromBackendAsync();
+        var subjects = await scope.ServiceProvider.GetRequiredService<ISchoolSubjectServices>()
+            .FetchSchoolSubjectsFromBackendAsync();
+        var slots = await scope.ServiceProvider.GetRequiredService<ILessonNumberServices>()
+            .GetLessonNumbersByScheduleId(scheduleId);
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            Teachers.AddRange(teachers);
+            Classrooms.AddRange(classrooms);
+            StudyGroups.AddRange(groups);
+            Subjects.AddRange(subjects);
+            TimeSlots.AddRange(slots);
+            SyncSelectedItems();
+        });
     }
-    
-    private async Task CreateLessonAsync()
+
+    private void SyncSelectedItems()
+    {
+        if (selectedTeacher != null) SelectedTeacher = Teachers.FirstOrDefault(x => x.Id == selectedTeacher.Id);
+        if (selectedClassroom != null) SelectedClassroom = Classrooms.FirstOrDefault(x => x.Id == selectedClassroom.Id);
+        if (selectedStudyGroup != null)
+            SelectedStudyGroup = StudyGroups.FirstOrDefault(x => x.Id == selectedStudyGroup.Id);
+        if (selectedSubject != null) SelectedSubject = Subjects.FirstOrDefault(x => x.Id == selectedSubject.Id);
+        if (selectedLessonNumber != null)
+            SelectedLessonNumber = TimeSlots.FirstOrDefault(x => x.Number == selectedLessonNumber.Number);
+    }
+
+    private async Task SaveAsync()
     {
         using var scope = scopeFactory.CreateScope();
-        LessonCreated?.Invoke(lesson);
-        Console.WriteLine(Window);
+        EditLessonResult result;
+
+        if (editingLesson == null || editingLesson.Id == Guid.Empty)
+        {
+            var res = await scope.ServiceProvider.GetRequiredService<ILessonServices>().AddLesson(new CreateLessonDto
+            {
+                ScheduleId = scheduleId, Teacher = SelectedTeacher, Classroom = SelectedClassroom,
+                StudyGroup = SelectedStudyGroup, SchoolSubject = SelectedSubject, LessonNumber = SelectedLessonNumber
+            }, scheduleId);
+            result = res.IsDraft
+                ? EditLessonResult.Downgraded(res.LessonDraft!)
+                : EditLessonResult.Success(res.Lesson!);
+        }
+        else
+        {
+            editingLesson.Teacher = SelectedTeacher;
+            editingLesson.Classroom = SelectedClassroom;
+            editingLesson.StudyGroup = SelectedStudyGroup;
+            editingLesson.SchoolSubject = SelectedSubject;
+            editingLesson.LessonNumber = SelectedLessonNumber;
+
+            try
+            {
+                result = await scope.ServiceProvider.GetRequiredService<ILessonServices>()
+                    .EditLesson(editingLesson, scheduleId);
+            }
+            catch
+            {
+                var draft = new LessonDraftDto
+                {
+                    Id = editingLesson.Id, Teacher = SelectedTeacher, Classroom = SelectedClassroom,
+                    StudyGroup = SelectedStudyGroup, SchoolSubject = SelectedSubject,
+                    LessonNumber = SelectedLessonNumber
+                };
+                result = await scope.ServiceProvider.GetRequiredService<ILessonDraftServices>()
+                    .EditDraftLesson(draft, scheduleId);
+            }
+        }
+
+        LessonSaved?.Invoke(result);
         Window?.Close();
     }
-    
-    private async Task SaveLessonAsync()
+
+    private async Task DeleteAsync()
     {
-        using var scope = scopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-        
-        originalLessonDto.Teacher = selectedTeacher;
-        originalLessonDto.Classroom = selectedClassroom;
-        originalLessonDto.StudyGroup = selectedStudyGroup;
-        originalLessonDto.SchoolSubject = selectedSubject;
-        originalLessonDto.LessonNumber = selectedLessonNumber;
-        
-        await service.EditLesson(originalLessonDto, ScheduleId);
-        LessonUpdated?.Invoke(originalLessonDto);
-        Window?.Close();
-    }
-    
-    private async Task DeleteLessonAsync()
-    {
-        using var scope = scopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-        
-        await service.DeleteLesson(originalLessonDto, ScheduleId);
-        Window?.Close();
+        var confirm = new ConfirmDeleteViewModel("Удалить этот урок?");
+        if (await windowManager.ShowDialog<ConfirmDeleteViewModel, bool?>(confirm) == true)
+        {
+            Guid idToDelete = editingLesson?.Id ?? Guid.Empty;
+            if (idToDelete != Guid.Empty)
+            {
+                using var scope = scopeFactory.CreateScope();
+                try
+                {
+                    await scope.ServiceProvider.GetRequiredService<ILessonServices>()
+                        .DeleteLesson(editingLesson!, scheduleId);
+                }
+                catch
+                {
+                    await scope.ServiceProvider.GetRequiredService<ILessonDraftServices>()
+                        .DeleteLessonDraft(new LessonDraftDto { Id = idToDelete }, scheduleId);
+                }
+            }
+
+            LessonDeleted?.Invoke(idToDelete);
+            Window?.Close();
+        }
     }
 }

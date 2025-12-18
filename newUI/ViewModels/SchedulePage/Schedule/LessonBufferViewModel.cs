@@ -1,78 +1,65 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Application.DtoExtensions;
 using Application.DtoModels;
-using Avalonia.Collections;
+using Application.IServices;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
-using newUI.ViewModels.SchedulePage.Lessons;
+using newUI.ViewModels.Shared;
 
-namespace newUI.ViewModels.SchedulePage.Schedule;
+namespace newUI.ViewModels.SchedulePage.Lessons;
 
 public class LessonBufferViewModel : ViewModelBase
 {
-    private AvaloniaDictionary<Guid, LessonDraftDto> lessonDictionary = new();
-    private AvaloniaDictionary<Guid, LessonCardViewModel> lessonCardViewModels = new();
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
+    private readonly Guid scheduleId;
 
-    public LessonBufferViewModel(
-        IServiceScopeFactory scopeFactory,
-        IWindowManager windowManager)
+    public ObservableCollection<LessonCardViewModel> LessonCards { get; } = new();
+    public event Action? RequestTableRefresh;
+    public ICommand ClearCommand { get; }
+
+    public LessonBufferViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager, Guid scheduleId)
     {
         this.scopeFactory = scopeFactory;
         this.windowManager = windowManager;
-        ClearCommand = new RelayCommandAsync(ClearAsync);
+        this.scheduleId = scheduleId;
+        ClearCommand = new AsyncRelayCommand(ClearBufferAsync);
     }
 
-    public AvaloniaDictionary<Guid, LessonDraftDto> Lessons
+    public void AddMany(IEnumerable<LessonDraftDto> drafts)
     {
-        get => lessonDictionary;
-        set => SetProperty(ref lessonDictionary, value);
-    }
-
-    public AvaloniaList<LessonCardViewModel> LessonCards
-    {
-        get => new(lessonCardViewModels.Select(x => x.Value));
-    }
-
-    public ICommand ClearCommand { get; }
-
-    private Task ClearAsync()
-    {
-        Clear();
-        return Task.CompletedTask;
-    }
-
-    public void Clear()
-    {
-        Lessons.Clear();
-        OnPropertyChanged(nameof(Lessons));
-        OnPropertyChanged(nameof(LessonCards));
-    }
-
-    public void AddMany(IEnumerable<LessonDraftDto> lessonDrafts)
-    {
-        foreach (var lesson in lessonDrafts)
+        LessonCards.Clear();
+        foreach (var draft in drafts)
         {
-            Lessons[lesson.Id] = lesson;
-            var card = new LessonCardViewModel(
-                scopeFactory, windowManager, () => OnPropertyChanged())
+            var card = new LessonCardViewModel(scopeFactory, windowManager, async () => await RefreshAsync())
             {
-                Lesson = lesson.ToLessonDto()
+                Lesson = draft.ToLessonDto(),
+                IsVisible = true
             };
-            card.LessonClicked += OnLessonClicked;
-            lessonCardViewModels[lesson.Id] = card;
+            LessonCards.Add(card);
         }
 
-        OnPropertyChanged(nameof(Lessons));
-        OnPropertyChanged(nameof(LessonCards));
+        RequestTableRefresh?.Invoke();
     }
 
-    private void OnLessonClicked(LessonDto lesson)
+    public async Task RefreshAsync()
     {
-        Console.WriteLine($"Lesson clicked: {lesson.Id}");
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<ILessonDraftServices>();
+        var drafts = await service.GetLessonDraftsByScheduleId(scheduleId);
+        AddMany(drafts);
+    }
+
+    private async Task ClearBufferAsync()
+    {
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<ILessonDraftServices>();
+        await service.ClearDraftsByScheduleId(scheduleId);
+        await RefreshAsync();
     }
 }

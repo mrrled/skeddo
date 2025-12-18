@@ -1,57 +1,65 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:lessons1="clr-namespace:newUI.ViewModels.SchedulePage.Lessons"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Lessons"
              x:Class="newUI.Views.SchedulePage.Lessons.LessonCardView"
-             x:DataType="lessons1:LessonCardViewModel">
+             x:DataType="vm:LessonCardViewModel">
     
-    <Design.DataContext>
-        <lessons1:LessonCardViewModel/>
-    </Design.DataContext>
-    
-    
-    <Border Name="Cell" CornerRadius="6"
-            Background="{Binding Color}"
-            BorderBrush="#E0E0E0"
-            BorderThickness="1"
-            Padding="12"
-            Width="{DynamicResource LessonCardWidth}"
-            Height="{DynamicResource LessonCardHeight}">
-        <Grid>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="5">
-            <TextBlock 
-                Text="{Binding Lesson.SchoolSubject}"
-                FontWeight="Bold"
-                FontSize="14"
-                TextAlignment="Center"/>
-            <TextBlock FontSize="12"
-                       Foreground="Gray"
-                       TextAlignment="Center"
-                       MaxWidth="{DynamicResource LessonCardWidth}"
-                       TextWrapping="Wrap"
-                       IsVisible="{Binding IsVisible}">
-                <TextBlock.Text>
-                    <MultiBinding StringFormat="{}{0} {1} {2}">
-                        <Binding Path="Lesson.Teacher.Name"/>
-                        <Binding Path="Lesson.Teacher.Surname"/>
-                        <Binding Path="Lesson.Teacher.Patronymic"/>
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
-            <TextBlock 
-                Text="{Binding Lesson.Classroom.Name}"
-                FontSize="12" Foreground="Gray" TextAlignment="Center"
-                IsVisible="{Binding IsVisible}"/>
-            <TextBlock 
-                Text="{Binding Lesson.StudyGroup.Name}"
-                FontSize="12" Foreground="Gray" TextAlignment="Center"
-                IsVisible="{Binding IsVisible}"/>
-            <!-- <TextBlock  -->
-            <!--     Text="{Binding Lesson.LessonNumber.Number }"  -->
-            <!--     FontSize="12" Foreground="Gray" TextAlignment="Center"/> -->
-        </StackPanel>
-        </Grid>
-    </Border>
+    <Button Command="{Binding ClickCommand}"
+            Padding="0"
+            BorderThickness="0"
+            Background="Transparent"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+
+        <Border CornerRadius="6"
+                Background="{Binding Color}"
+                BorderBrush="#E0E0E0"
+                BorderThickness="1"
+                Padding="8"
+                Width="{DynamicResource LessonCardWidth}"
+                Height="{DynamicResource LessonCardHeight}">
+
+            <Border.Styles>
+                <Style Selector="Border:pointerover">
+                    <Setter Property="BorderBrush" Value="#9E9E9E" />
+                    <Setter Property="Background" Value="#F5F5F5" />
+                </Style>
+            </Border.Styles>
+
+            <StackPanel Orientation="Vertical"
+                        HorizontalAlignment="Center"
+                        Spacing="2"
+                        IsVisible="{Binding Lesson.SchoolSubject, Converter={x:Static ObjectConverters.IsNotNull}}">
+
+                <TextBlock Text="{Binding Lesson.SchoolSubject.Name, FallbackValue='', TargetNullValue=''}"
+                           FontWeight="Bold"
+                           FontSize="13"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
+
+                <TextBlock FontSize="11"
+                           Foreground="Gray"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} {1} {2}">
+                            <Binding Path="Lesson.Teacher.Surname" FallbackValue="" TargetNullValue="" />
+                            <Binding Path="Lesson.Teacher.Name" FallbackValue="" TargetNullValue="" />
+                            <Binding Path="Lesson.Teacher.Patronymic" FallbackValue="" TargetNullValue="" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
+                <TextBlock Text="{Binding Lesson.Classroom.Name, StringFormat='Ауд: {0}', FallbackValue='', TargetNullValue=''}"
+                           FontSize="11"
+                           Foreground="Gray"
+                           TextAlignment="Center" />
+
+                <TextBlock Text="{Binding Lesson.StudyGroup.Name, FallbackValue='', TargetNullValue=''}"
+                           FontSize="10"
+                           Foreground="#B0B0B0"
+                           TextAlignment="Center" />
+            </StackPanel>
+        </Border>
+    </Button>
 </UserControl>

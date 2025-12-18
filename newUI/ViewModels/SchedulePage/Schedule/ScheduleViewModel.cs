@@ -22,11 +22,11 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
     private readonly IExportServices exportServices;
+    private readonly NavigationService navigationService;
+    private readonly IScheduleServices scheduleServices;
 
     private ObservableCollection<ScheduleTabViewModel> tabs = new();
     private ScheduleTabViewModel selectedTab;
-    private readonly NavigationService navigationService;
-    private readonly IScheduleServices scheduleServices;
     private ToolbarViewModel toolbar;
 
     public ScheduleViewModel(
@@ -56,16 +56,16 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
         {
             if (CurrentSchedule == null) return;
             await exportServices.GeneratePdfAsync(CurrentSchedule.Id);
-            var vm = new NotificationViewModel("Экспорт в PDF успешно завершен!");
-            await windowManager.ShowDialog<NotificationViewModel, object?>(vm);
+            await windowManager.ShowDialog<NotificationViewModel, object?>(
+                new NotificationViewModel("Экспорт в PDF успешно завершен!"));
         };
 
         Toolbar.RequestExcelExport += async () =>
         {
             if (CurrentSchedule == null) return;
             await exportServices.GenerateExcelAsync(CurrentSchedule.Id);
-            var vm = new NotificationViewModel("Экспорт в Excel успешно завершен!");
-            await windowManager.ShowDialog<NotificationViewModel, object?>(vm);
+            await windowManager.ShowDialog<NotificationViewModel, object?>(
+                new NotificationViewModel("Экспорт в Excel успешно завершен!"));
         };
 
         WeakReferenceMessenger.Default.Register(this);
@@ -73,10 +73,7 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
     public void Receive(ScheduleDeletedMessage message)
     {
-        Avalonia.Threading.Dispatcher.UIThread.Post(() => 
-        {
-            CloseTabById(message.ScheduleId);
-        });
+        Avalonia.Threading.Dispatcher.UIThread.Post(() => CloseTabById(message.ScheduleId));
     }
 
     public bool HasTabs => Tabs?.Count > 0;
@@ -112,6 +109,8 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
                     tab.IsSelected = tab == value;
 
                 OnPropertyChanged(nameof(Buffer));
+                OnPropertyChanged(nameof(CurrentSchedule));
+                OnPropertyChanged(nameof(CurrentScheduleTable));
             }
 
             Toolbar.IsEnabled = selectedTab != null;
@@ -130,28 +129,29 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
     public async Task LoadSchedule(Guid id)
     {
+        // 1. Сначала ищем вкладку, чтобы не делать лишних запросов, если она уже есть
+        var existingTab = Tabs.FirstOrDefault(t => t.Id == id);
+
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
         var schedule = await service.GetScheduleByIdAsync(id);
 
-        var existingTab = Tabs.FirstOrDefault(t => t.Id == id);
-
         if (existingTab != null)
         {
+            // Если вкладка есть, просто обновляем её данные (это не создаст новую вкладку)
             existingTab.Update(schedule);
             SelectedTab = existingTab;
         }
         else
         {
+            // Только если вкладки нет, создаем новую
             var tableViewModel = new LessonTableViewModel(schedule, scopeFactory, windowManager);
-            var tab = new ScheduleTabViewModel(
-                schedule,
-                tableViewModel,
-                scopeFactory,
-                CloseTabById,
-                new LessonBufferViewModel(scopeFactory, windowManager)
-            );
+            var bufferViewModel = new LessonBufferViewModel(scopeFactory, windowManager, id);
 
+            bufferViewModel.RequestTableRefresh += async () => await tableViewModel.RefreshAsync();
+            tableViewModel.LessonMovedToBuffer += draft => bufferViewModel.AddMany(new[] { draft });
+
+            var tab = new ScheduleTabViewModel(schedule, tableViewModel, scopeFactory, CloseTabById, bufferViewModel);
             Tabs.Add(tab);
             SelectedTab = tab;
         }
@@ -176,41 +176,46 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
         var id = CurrentSchedule?.Id;
         if (id == null) return;
 
-        var vm = new LessonEditorViewModel(scopeFactory, id.Value);
-        vm.LessonCreated += async lesson =>
+        var vm = new LessonEditorViewModel(scopeFactory, windowManager, id.Value);
+
+        vm.LessonSaved += async result =>
         {
-            using var scope = scopeFactory.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-            await service.AddLesson(lesson, id.Value);
-            await LoadSchedule(id.Value);
+            if (result.IsDraft && result.LessonDraft != null)
+            {
+                // Здесь можно добавить проверку на дубликат, если нужно
+                Buffer?.AddMany(new[] { result.LessonDraft });
+            }
+            else if (CurrentScheduleTable != null)
+            {
+                await CurrentScheduleTable.RefreshAsync();
+            }
         };
 
-        vm.Window = windowManager.ShowWindow(vm);
+        await windowManager.ShowDialog<LessonEditorViewModel, object?>(vm);
     }
 
-    private async Task SaveScheduleAsync() { }
+    private async Task SaveScheduleAsync() => await Task.CompletedTask;
 
     private async Task OnDeleteClickedAsync()
     {
         if (CurrentSchedule == null) return;
 
-        var confirmVm = new ConfirmDeleteViewModel(
-            $"Вы уверены, что хотите удалить расписание \"{CurrentSchedule.Name}\"?"
-        );
-
+        var confirmVm =
+            new ConfirmDeleteViewModel($"Вы уверены, что хотите удалить расписание \"{CurrentSchedule.Name}\"?");
         var result = await windowManager.ShowDialog<ConfirmDeleteViewModel, bool?>(confirmVm);
-        if (result != true) return;
 
-        var scheduleId = CurrentSchedule.Id;
-        await scheduleServices.DeleteSchedule(CurrentSchedule);
-        
-        CloseTabById(scheduleId);
-        WeakReferenceMessenger.Default.Send(new ScheduleDeletedMessage(scheduleId));
+        if (result == true)
+        {
+            var id = CurrentSchedule.Id;
+            await scheduleServices.DeleteSchedule(CurrentSchedule);
+            CloseTabById(id);
+            WeakReferenceMessenger.Default.Send(new ScheduleDeletedMessage(id));
+        }
     }
 
     private async Task CloseWindowAsync()
     {
-        if (CurrentSchedule == null) return;
-        CloseTabById(CurrentSchedule.Id);
+        if (CurrentSchedule != null) CloseTabById(CurrentSchedule.Id);
+        await Task.CompletedTask;
     }
 }

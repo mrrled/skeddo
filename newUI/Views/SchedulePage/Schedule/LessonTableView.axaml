@@ -5,11 +5,13 @@
              xmlns:converters="clr-namespace:newUI.Converters"
              xmlns:dto="clr-namespace:Application.DtoModels;assembly=Application"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              x:Class="newUI.Views.SchedulePage.Schedule.LessonTableView"
              x:DataType="vm:LessonTableViewModel">
-    
+
     <UserControl.Resources>
-        <converters:GroupWideBackgroundConverter x:Key="GroupWideBackgroundConverter"/>
+        <converters:GroupWideBackgroundConverter x:Key="GroupWideBackgroundConverter" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -29,11 +31,8 @@
                   VerticalScrollBarVisibility="Auto">
 
         <Grid>
-            <!-- Теперь 3 строки! -->
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" /> <!-- 0: Заголовки групп -->
-                <RowDefinition Height="Auto" /> <!-- 1: Заголовки подгрупп -->
-                <RowDefinition Height="*" />    <!-- 2: Строки с уроками -->
+                <RowDefinition Height="Auto" /> <RowDefinition Height="Auto" /> <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -41,9 +40,6 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!-- ===================== -->
-            <!-- Пустая ячейка в углу (занимает 2 верхние строки) -->
-            <!-- ===================== -->
             <Border Grid.Row="0" Grid.Column="0"
                     Grid.RowSpan="2"
                     Width="50"
@@ -52,9 +48,6 @@
                     BorderBrush="Gray"
                     BorderThickness="1" />
 
-            <!-- ===================== -->
-            <!-- Верхний уровень: Заголовки ГРУПП (Row 0) -->
-            <!-- ===================== -->
             <StackPanel Grid.Row="0" Grid.Column="1"
                         Orientation="Horizontal"
                         Height="30">
@@ -75,8 +68,7 @@
                                 BorderThickness="1"
                                 BorderBrush="Gray"
                                 CornerRadius="0"
-                                Width="{Binding ColumnSpan, 
-                                       Converter={StaticResource ColumnSpanToWidthConverter}}"
+                                Width="{Binding ColumnSpan, Converter={StaticResource ColumnSpanToWidthConverter}}"
                                 Height="30"
                                 Background="LightBlue"
                                 HorizontalContentAlignment="Center"
@@ -91,7 +83,6 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- Кнопка добавления StudyGroup -->
                 <Button Width="30"
                         Height="30"
                         Margin="2,0,0,0"
@@ -103,9 +94,6 @@
                 </Button>
             </StackPanel>
 
-            <!-- ===================== -->
-            <!-- Нижний уровень: Заголовки ПОДГРУПП (Row 1) -->
-            <!-- ===================== -->
             <StackPanel Grid.Row="1" Grid.Column="1"
                         Orientation="Horizontal"
                         Height="30">
@@ -139,11 +127,7 @@
                 </ItemsControl>
             </StackPanel>
 
-            <!-- ===================== -->
-            <!-- Заголовки LessonNumber (Row 2) -->
-            <!-- ===================== -->
             <StackPanel Grid.Row="2" Grid.Column="0">
-
                 <ItemsControl ItemsSource="{Binding Rows}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -167,7 +151,6 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- Кнопка добавления LessonNumber -->
                 <Button Width="50"
                         Height="30"
                         Margin="0,2,0,0"
@@ -179,9 +162,6 @@
                 </Button>
             </StackPanel>
 
-            <!-- ===================== -->
-            <!-- Таблица уроков (Row 2, Column 1) -->
-            <!-- ===================== -->
             <ItemsControl Grid.Row="2" Grid.Column="1"
                           ItemsSource="{Binding Rows}">
                 <ItemsControl.ItemTemplate>
@@ -195,30 +175,24 @@
 
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <!-- Условное отображение: если ColumnSpan > 1, то шире -->
                                     <Border BorderBrush="Gray"
-                                             BorderThickness="1"
-                                             Width="{Binding ColumnSpan, 
-                                             Converter={StaticResource ColumnSpanToWidthConverter},
-                                             FallbackValue={StaticResource LessonCardWidth}}"
-                                             Height="{DynamicResource LessonCardHeight}">
-    
-                                        <!-- Используем привязку для Background -->
+                                            BorderThickness="1"
+                                            Width="{Binding ColumnSpan, 
+                                                     Converter={StaticResource ColumnSpanToWidthConverter},
+                                                     FallbackValue={StaticResource LessonCardWidth}}"
+                                            Height="{DynamicResource LessonCardHeight}">
+
                                         <Border.Background>
-                                            <Binding Path="IsGroupWideLesson">
-                                                <Binding.Converter>
-                                                    <converters:GroupWideBackgroundConverter/>
-                                                </Binding.Converter>
-                                            </Binding>
+                                            <Binding Path="IsGroupWideLesson"
+                                                     Converter="{StaticResource GroupWideBackgroundConverter}" />
                                         </Border.Background>
-    
-                                        <!-- Контент -->
-                                        <Interaction.Behaviors>
-                                            <EventTriggerBehavior EventName="PointerPressed">
-                                                <InvokeCommandAction Command="{Binding ClickCommand}" />
-                                            </EventTriggerBehavior>
-                                        </Interaction.Behaviors>
-    
+
+                                        <i:Interaction.Behaviors>
+                                            <ia:EventTriggerBehavior EventName="PointerPressed">
+                                                <ia:InvokeCommandAction Command="{Binding ClickCommand}" />
+                                            </ia:EventTriggerBehavior>
+                                        </i:Interaction.Behaviors>
+
                                         <lessons:LessonCardView />
                                     </Border>
                                 </DataTemplate>
@@ -227,7 +201,6 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-
         </Grid>
     </ScrollViewer>
 </UserControl>

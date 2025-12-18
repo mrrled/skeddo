@@ -2,48 +2,53 @@ using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
+using Application.DtoExtensions; // Для ToLessonDto()
 using Application.IServices;
 using CommunityToolkit.Mvvm.Input;
-using Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
+using Domain.Models;
 
 namespace newUI.ViewModels.SchedulePage.Lessons;
 
 public class LessonCardViewModel : ViewModelBase
 {
     private LessonDto lesson;
-    private readonly IServiceScopeFactory scopeFactory;
-    private readonly IWindowManager windowManager;
+    private bool isVisible;
     private int columnSpan = 1;
     private bool isGroupWideLesson;
-    public bool IsVisible { get; set; }
-    public string Color { get; private set; }
-    public event Action<LessonDto>? LessonClicked;
 
-    private bool isDragging;
-    private bool isDragOver;
-
+    private readonly IServiceScopeFactory scopeFactory;
+    private readonly IWindowManager windowManager;
     private readonly Action? refreshCallback;
 
-    public LessonCardViewModel(
-        IServiceScopeFactory scopeFactory,
-        IWindowManager windowManager, Action? refreshCallback = null, bool isVisible = true)
+    // События
+    public event Action<LessonDto>? LessonUpdated;
+    public event Action<LessonDraftDto>? LessonDowngraded;
+    public event Action<Guid>? LessonDeleted;
+
+    public LessonCardViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager,
+        Action? refreshCallback = null, bool isVisible = true)
     {
         this.scopeFactory = scopeFactory;
         this.windowManager = windowManager;
         this.refreshCallback = refreshCallback;
-        IsVisible = isVisible;
-
+        this.isVisible = isVisible;
         ClickCommand = new AsyncRelayCommand(OnClick);
     }
-    
+
+    public bool IsVisible
+    {
+        get => isVisible;
+        set => SetProperty(ref isVisible, value);
+    }
+
     public int ColumnSpan
     {
         get => columnSpan;
         set => SetProperty(ref columnSpan, value);
     }
-    
+
     public bool IsGroupWideLesson
     {
         get => isGroupWideLesson;
@@ -57,57 +62,59 @@ public class LessonCardViewModel : ViewModelBase
         {
             if (SetProperty(ref lesson, value))
             {
-                Color = WarningToColor(value.WarningType);
+                // При обновлении урока обязательно пересчитываем цвет
                 OnPropertyChanged(nameof(Color));
             }
         }
     }
-    
+
+    // Логика цвета на основе предупреждений
+    public string Color => lesson?.WarningType switch
+    {
+        WarningType.Conflict => "LightCoral", // Ошибка/Конфликт
+        WarningType.Warning => "LemonChiffon", // Предупреждение
+        _ => "White" // Всё ок
+    };
+
     public ICommand ClickCommand { get; }
 
-    public bool IsDragging
+    private async Task OnClick()
     {
-        get => isDragging;
-        set => SetProperty(ref isDragging, value);
-    }
+        if (Lesson == null) return;
 
-    public bool IsDragOver
-    {
-        get => isDragOver;
-        set => SetProperty(ref isDragOver, value);
-    }
+        // Создаем редактор: если Id пустой — режим создания, иначе — редактирования
+        LessonEditorViewModel editVm = Lesson.Id == Guid.Empty
+            ? new LessonEditorViewModel(scopeFactory, windowManager, Lesson.ScheduleId)
+            {
+                SelectedStudyGroup = Lesson.StudyGroup,
+                SelectedLessonNumber = Lesson.LessonNumber
+            }
+            : new LessonEditorViewModel(scopeFactory, windowManager, Lesson);
 
-    private Task OnClick()
-    {
-        if (Lesson != null)
+        // Подписка на сохранение
+        editVm.LessonSaved += result =>
         {
-            LessonClicked?.Invoke(Lesson);
-            EditLesson();
-        }
+            if (result.IsDraft && result.LessonDraft != null)
+            {
+                Lesson = result.LessonDraft.ToLessonDto();
+                LessonDowngraded?.Invoke(result.LessonDraft);
+            }
+            else if (result.Lesson != null)
+            {
+                Lesson = result.Lesson;
+                LessonUpdated?.Invoke(result.Lesson);
+            }
 
-        return Task.CompletedTask;
-    }
-
-    private void EditLesson()
-    {
-        var editVm = new LessonEditorViewModel(scopeFactory, Lesson);
-        editVm.LessonUpdated += updatedLesson =>
-        {
-            Lesson = updatedLesson;
-            OnPropertyChanged(nameof(Lesson));
-            refreshCallback.Invoke();
+            refreshCallback?.Invoke();
         };
 
-        windowManager.ShowDialog<LessonEditorViewModel, LessonDto?>(editVm);
-    }
-
-    private string WarningToColor(WarningType warningType)
-    {
-        return warningType switch
+        // Подписка на удаление
+        editVm.LessonDeleted += id =>
         {
-            WarningType.Conflict => "LightCoral",
-            WarningType.Warning => "LemonChiffon",
-            _ => "Transparent"
+            LessonDeleted?.Invoke(id);
+            refreshCallback?.Invoke();
         };
+
+        await windowManager.ShowDialog<LessonEditorViewModel, object?>(editVm);
     }
 }

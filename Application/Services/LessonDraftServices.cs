@@ -7,7 +7,8 @@ using Domain.Models;
 
 namespace Application.Services;
 
-public class LessonDraftServices(ILessonDraftRepository lessonDraftRepository,
+public class LessonDraftServices(
+    ILessonDraftRepository lessonDraftRepository,
     ILessonRepository lessonRepository,
     IScheduleRepository scheduleRepository,
     ISchoolSubjectRepository schoolSubjectRepository,
@@ -50,7 +51,8 @@ public class LessonDraftServices(ILessonDraftRepository lessonDraftRepository,
         var classroom = lessonDraftDto.Classroom is null
             ? null
             : await classroomRepository.GetClassroomByIdAsync(lessonDraftDto.Classroom.Id);
-        if (lessonDraftDto.SchoolSubject is null || lessonDraftDto.LessonNumber is null || lessonDraftDto.Teacher is null ||
+        if (lessonDraftDto.SchoolSubject is null || lessonDraftDto.LessonNumber is null ||
+            lessonDraftDto.Teacher is null ||
             lessonDraftDto.Classroom is null || lessonDraftDto.StudyGroup is null)
         {
             lessonDraft.SetSchoolSubject(schoolSubject);
@@ -66,7 +68,7 @@ public class LessonDraftServices(ILessonDraftRepository lessonDraftRepository,
 
         var result = lessonFactory.CreateFromDraft(lessonDraft);
         if (result.IsFailure)
-            throw new Exception(result.Error);  //надо нормальный exception выкидывать
+            throw new Exception(result.Error); //надо нормальный exception выкидывать
         var lesson = result.Value;
         await lessonRepository.AddAsync(lesson, scheduleId);
         await lessonDraftRepository.Delete(lessonDraft);
@@ -78,6 +80,17 @@ public class LessonDraftServices(ILessonDraftRepository lessonDraftRepository,
     {
         var lesson = await lessonDraftRepository.GetLessonDraftById(lessonDto.Id);
         await lessonDraftRepository.Delete(lesson);
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task ClearDraftsByScheduleId(Guid scheduleId)
+    {
+        var drafts = await lessonDraftRepository.GetLessonDraftsByScheduleId(scheduleId);
+        foreach (var draft in drafts)
+        {
+            await lessonDraftRepository.Delete(draft);
+        }
+
         await unitOfWork.SaveChangesAsync();
     }
 }

@@ -21,12 +21,14 @@ public class LessonTableViewModel
 {
     public event Action? TableUpdated;
 
+    // Событие для перемещения черновика в буфер (из второго файла)
+    public event Action<LessonDraftDto>? LessonMovedToBuffer;
+
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
 
     private bool isInitialized;
     private bool isLoading;
-
     private ScheduleDto Schedule;
 
     public AvaloniaList<StudyGroupDto> StudyGroups { get; private set; } = new();
@@ -52,7 +54,6 @@ public class LessonTableViewModel
 
         AddStudyGroupCommand = new RelayCommand(OpenAddStudyGroupEditor);
         EditStudyGroupCommand = new RelayCommand<StudyGroupDto>(OpenEditStudyGroupEditor);
-
         AddLessonNumberCommand = new RelayCommand(OpenAddLessonNumberEditor);
         EditLessonNumberCommand = new RelayCommand<LessonNumberDto>(OpenEditLessonNumberEditor);
 
@@ -63,7 +64,7 @@ public class LessonTableViewModel
     {
         await LoadStudyGroupsAsync();
         await LoadLessonNumbersAsync();
-        LoadDataToGrid();
+        await LoadDataToGrid();
         isInitialized = true;
     }
 
@@ -72,20 +73,14 @@ public class LessonTableViewModel
         try
         {
             IsLoading = true;
-
-            if (newSchedule != null)
-                Schedule = newSchedule;
-
-            if (!isInitialized)
-                return;
+            if (newSchedule != null) Schedule = newSchedule;
+            if (!isInitialized) return;
 
             await LoadStudyGroupsAsync();
             await LoadLessonNumbersAsync();
-            LoadDataToGrid();
+            await LoadDataToGrid();
 
             TableUpdated?.Invoke();
-            OnPropertyChanged(nameof(Rows));
-            OnPropertyChanged(nameof(Columns));
         }
         finally
         {
@@ -152,239 +147,160 @@ public class LessonTableViewModel
         LessonNumbers = new AvaloniaList<LessonNumberDto>(numbers);
     }
 
-    private void LoadDataToGrid()
+    private async Task LoadDataToGrid()
     {
-        Rows.Clear();
-        OnPropertyChanged(nameof(Rows));
-        var data = LoadData().Result;
+        // Используем await для корректного порядка выполнения
+        var data = await LoadData();
         LoadDataFromBackend(data);
-
         OnPropertyChanged(nameof(Rows));
         OnPropertyChanged(nameof(Columns));
         DebugRows();
     }
 
-    private async Task<List<(LessonNumberDto RowHeader, Dictionary<ColumnViewModel, LessonCardViewModel?> CellData)>> LoadData()
-{
-    var result = new List<(LessonNumberDto, Dictionary<ColumnViewModel, LessonCardViewModel?>)>();
-    using var scope = scopeFactory.CreateScope();
-
-    var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
-    var currentSchedule = await scheduleService.GetScheduleByIdAsync(Schedule.Id);
-    
-    if (currentSchedule != null) 
-        Schedule = currentSchedule;
-    
-    var lessonDictionary = new Dictionary<(int, Guid, string?), LessonDto>();
-    
-    foreach (var lesson in Schedule.Lessons)
+    private async Task<List<(LessonNumberDto RowHeader, Dictionary<ColumnViewModel, LessonCardViewModel?> CellData)>>
+        LoadData()
     {
-        if (lesson.LessonNumber != null && lesson.StudyGroup != null) 
-        {
-            var subgroupName = lesson.StudySubgroup?.Name;
-            lessonDictionary[(lesson.LessonNumber.Number, lesson.StudyGroup.Id, subgroupName)] = lesson;
-        }
-    }
+        var result = new List<(LessonNumberDto, Dictionary<ColumnViewModel, LessonCardViewModel?>)>();
+        using var scope = scopeFactory.CreateScope();
 
-    foreach (var lessonNumber in LessonNumbers)
-    {
-        var rowData = new Dictionary<ColumnViewModel, LessonCardViewModel?>();
-        var columnIndex = 0;
-        
-        while (columnIndex < FlatColumns.Count)
+        var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
+        var currentSchedule = await scheduleService.GetScheduleByIdAsync(Schedule.Id);
+
+        if (currentSchedule != null)
+            Schedule = currentSchedule;
+
+        var lessonDictionary = new Dictionary<(int, Guid, string?), LessonDto>();
+
+        foreach (var lesson in Schedule.Lessons)
         {
-            var currentColumn = FlatColumns[columnIndex];
-            var currentGroupId = currentColumn.StudyGroup.Id;
-            
-            var specificLessonKey = (lessonNumber.Number, currentGroupId, currentColumn.StudySubgroup?.Name);
-            var groupWideLessonKey = (lessonNumber.Number, currentGroupId, (string?)null);
-            
-            bool hasSpecificLesson = lessonDictionary.TryGetValue(specificLessonKey, out var specificLesson);
-            bool hasGroupWideLesson = lessonDictionary.TryGetValue(groupWideLessonKey, out var groupWideLesson);
-            
-            LessonDto lessonToUse = null;
-            var span = 1;
-            bool isGroupWide = false;
-            
-            if (hasSpecificLesson)
+            if (lesson.LessonNumber != null && lesson.StudyGroup != null)
             {
-                lessonToUse = specificLesson;
+                var subgroupName = lesson.StudySubgroup?.Name;
+                lessonDictionary[(lesson.LessonNumber.Number, lesson.StudyGroup.Id, subgroupName)] = lesson;
             }
-            else if (hasGroupWideLesson)
+        }
+
+        foreach (var lessonNumber in LessonNumbers)
+        {
+            var rowData = new Dictionary<ColumnViewModel, LessonCardViewModel?>();
+            var columnIndex = 0;
+
+            while (columnIndex < FlatColumns.Count)
             {
-                lessonToUse = groupWideLesson;
-                isGroupWide = true;
-                
-                span = 1;
-                while (columnIndex + span < FlatColumns.Count)
+                var currentColumn = FlatColumns[columnIndex];
+                var currentGroupId = currentColumn.StudyGroup.Id;
+
+                var specificLessonKey = (lessonNumber.Number, currentGroupId, currentColumn.StudySubgroup?.Name);
+                var groupWideLessonKey = (lessonNumber.Number, currentGroupId, (string?)null);
+
+                bool hasSpecificLesson = lessonDictionary.TryGetValue(specificLessonKey, out var specificLesson);
+                bool hasGroupWideLesson = lessonDictionary.TryGetValue(groupWideLessonKey, out var groupWideLesson);
+
+                LessonDto? lessonToUse = null;
+                var span = 1;
+                bool isGroupWide = false;
+
+                if (hasSpecificLesson)
                 {
-                    var nextColumn = FlatColumns[columnIndex + span];
-                    if (nextColumn.StudyGroup.Id != currentGroupId)
-                        break;
-                    
-                    var nextSpecificKey = (lessonNumber.Number, nextColumn.StudyGroup.Id, nextColumn.StudySubgroup?.Name);
-                    if (lessonDictionary.ContainsKey(nextSpecificKey))
-                        break;
-                        
-                    span++;
+                    lessonToUse = specificLesson;
                 }
-            }
-            
-            // Создаем ячейку
-            LessonCardViewModel card;
-            
-            if (lessonToUse != null)
-            {
-                card = new LessonCardViewModel(scopeFactory, windowManager, Refresh)
+                else if (hasGroupWideLesson)
                 {
-                    Lesson = lessonToUse,
-                    ColumnSpan = span,
-                    IsGroupWideLesson = isGroupWide
-                };
-            }
-            else
-            {
-                card = new LessonCardViewModel(scopeFactory, windowManager, Refresh, isVisible: false)
-                {
-                    Lesson = new LessonDto
+                    lessonToUse = groupWideLesson;
+                    isGroupWide = true;
+
+                    // Расчет Span для общей лекции группы
+                    while (columnIndex + span < FlatColumns.Count)
                     {
-                        StudyGroup = currentColumn.StudyGroup,
-                        StudySubgroup = currentColumn.StudySubgroup,
-                        LessonNumber = lessonNumber
-                    },
-                    ColumnSpan = 1,
-                    IsGroupWideLesson = false
+                        var nextColumn = FlatColumns[columnIndex + span];
+                        if (nextColumn.StudyGroup.Id != currentGroupId) break;
+
+                        var nextSpecificKey = (lessonNumber.Number, nextColumn.StudyGroup.Id,
+                            nextColumn.StudySubgroup?.Name);
+                        if (lessonDictionary.ContainsKey(nextSpecificKey)) break;
+
+                        span++;
+                    }
+                }
+
+                LessonCardViewModel card =
+                    new LessonCardViewModel(scopeFactory, windowManager, Refresh, isVisible: lessonToUse != null)
+                    {
+                        Lesson = lessonToUse ?? new LessonDto
+                        {
+                            StudyGroup = currentColumn.StudyGroup,
+                            StudySubgroup = currentColumn.StudySubgroup,
+                            LessonNumber = lessonNumber,
+                            ScheduleId = Schedule.Id
+                        },
+                        ColumnSpan = span,
+                        IsGroupWideLesson = isGroupWide
+                    };
+
+                // Подписка на понижение до черновика (Мердж из 2 файла)
+                card.LessonDowngraded += draft =>
+                {
+                    LessonMovedToBuffer?.Invoke(draft);
+                    _ = RefreshAsync();
                 };
+
+                rowData[currentColumn] = card;
+                columnIndex += span;
             }
-            
-            card.LessonClicked += OnLessonClicked;
-            rowData[currentColumn] = card;
-            
-            columnIndex += span;
+
+            result.Add((lessonNumber, rowData));
         }
-        
-        result.Add((lessonNumber, rowData));
-    }
-    
-    return result;
-}
 
-    private void Refresh()
-    {
-        RefreshAsync().Wait();
+        return result;
     }
 
-    private void OnLessonClicked(LessonDto lesson)
-    {
-        Console.WriteLine($"Lesson clicked: {lesson.Id}");
-    }
+    private void Refresh() => _ = RefreshAsync();
 
-    // -------------------------
-    // StudyGroup Editor
-    // -------------------------
-
+    // Методы редакторов (без изменений, соответствуют обоим файлам)
     private async void OpenAddStudyGroupEditor()
     {
         var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory);
-
-        vm.StudyGroupSaved += async _ => { await RefreshAsync(); };
-
-        vm.StudyGroupDeleted += async _ => { await RefreshAsync(); };
-
+        vm.StudyGroupSaved += async _ => await RefreshAsync();
+        vm.StudyGroupDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
     }
 
     private async void OpenEditStudyGroupEditor(StudyGroupDto studyGroup)
     {
         var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory, studyGroup);
-
-        vm.StudyGroupSaved += async _ => { await RefreshAsync(); };
-
-        vm.StudyGroupDeleted += async _ => { await RefreshAsync(); };
-
+        vm.StudyGroupSaved += async _ => await RefreshAsync();
+        vm.StudyGroupDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
     }
 
-    // -------------------------
-    // LessonNumber Editor
-    // -------------------------
-
     private async void OpenAddLessonNumberEditor()
     {
-        var nextNumber = GetNextLessonNumber();
-
-        var vm = new LessonNumberEditorViewModel(
-            windowManager,
-            scopeFactory,
-            nextNumber,
-            Schedule.Id);
-
-        vm.LessonNumberSaved += async _ => { await RefreshAsync(); };
-
-        vm.LessonNumberDeleted += async _ => { await RefreshAsync(); };
-
+        var vm = new LessonNumberEditorViewModel(windowManager, scopeFactory, GetNextLessonNumber(), Schedule.Id);
+        vm.LessonNumberSaved += async _ => await RefreshAsync();
+        vm.LessonNumberDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<LessonNumberEditorViewModel, LessonNumberDto>(vm);
     }
 
     private async void OpenEditLessonNumberEditor(LessonNumberDto lessonNumber)
     {
-        var vm = new LessonNumberEditorViewModel(
-            windowManager,
-            scopeFactory,
-            lessonNumber,
-            Schedule.Id);
-
-        vm.LessonNumberSaved += async _ => { await RefreshAsync(); };
-
-        vm.LessonNumberDeleted += async _ => { await RefreshAsync(); };
-
+        var vm = new LessonNumberEditorViewModel(windowManager, scopeFactory, lessonNumber, Schedule.Id);
+        vm.LessonNumberSaved += async _ => await RefreshAsync();
+        vm.LessonNumberDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<LessonNumberEditorViewModel, LessonNumberDto>(vm);
     }
 
     protected override LessonCardViewModel CreateEmptyCell()
     {
-        return new LessonCardViewModel(
-            scopeFactory,
-            windowManager,
-            Refresh,
-            isVisible: false)
+        return new LessonCardViewModel(scopeFactory, windowManager, Refresh, isVisible: false)
         {
-            Lesson = new LessonDto()
+            Lesson = new LessonDto { Id = Guid.Empty, ScheduleId = Schedule.Id }
         };
     }
 
-    private int GetNextLessonNumber()
-    {
-        if (!LessonNumbers.Any())
-            return 1;
+    private int GetNextLessonNumber() => !LessonNumbers.Any() ? 1 : LessonNumbers.Max(x => x.Number) + 1;
 
-        return LessonNumbers.Max(x => x.Number) + 1;
-    }
-    
-    public void DebugRows()
-    {
-        Console.WriteLine($"=== ДЕБАГ ROWS ===");
-        Console.WriteLine($"Rows.Count: {Rows.Count}");
-    
-        foreach (var row in Rows)
-        {
-            Console.WriteLine($"Row {row.RowHeader.Number}, Cells: {row.Cells.Count}");
-        
-            foreach (var cell in row.Cells)
-            {
-                var card = cell as LessonCardViewModel;
-                if (card != null)
-                {
-                    Console.WriteLine($"  - Visible: {card.IsVisible}, " +
-                                      $"Span: {card.ColumnSpan}, " +
-                                      $"GroupWide: {card.IsGroupWideLesson}");
-                }
-            }
-        }
-    }
-
-    //костыль - не трогать
-    public override List<TableDataRow<LessonCardViewModel, ColumnViewModel, LessonNumberDto>> 
+    // Костыль из первого файла для поддержки сложной структуры колонок
+    public override List<TableDataRow<LessonCardViewModel, ColumnViewModel, LessonNumberDto>>
         CreateRows(List<(LessonNumberDto RowHeader, Dictionary<ColumnViewModel, LessonCardViewModel?> CellData)> data,
             List<ColumnViewModel> newColumns)
     {
@@ -401,14 +317,21 @@ public class LessonTableViewModel
                     cells.Add(cellData);
                 }
             }
+
             var row = new TableDataRow<LessonCardViewModel, ColumnViewModel, LessonNumberDto>(lessonNumber, columns);
             for (var i = 0; i < cells.Count; i++)
             {
                 row.SetCell(columns[i], cells[i]);
             }
-            
+
             newRows.Add(row);
         }
+
         return newRows;
+    }
+
+    public void DebugRows()
+    {
+        Console.WriteLine($"=== ДЕБАГ ROWS: {Rows.Count} ===");
     }
 }
