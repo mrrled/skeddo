@@ -11,6 +11,7 @@ using newUI.ViewModels.SchedulePage.Lessons;
 using Application.DtoModels;
 using Application.IServices;
 using newUI.ViewModels.SchedulePage.StudyGroups;
+using newUI.ViewModels.SchedulePage.LessonNumbers;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
@@ -34,6 +35,7 @@ public class LessonTableViewModel
     public IRelayCommand AddStudyGroupCommand { get; }
     public IRelayCommand AddLessonNumberCommand { get; }
     public IRelayCommand<StudyGroupDto> EditStudyGroupCommand { get; }
+    public IRelayCommand<LessonNumberDto> EditLessonNumberCommand { get; }
 
     public LessonTableViewModel(
         ScheduleDto schedule,
@@ -46,7 +48,9 @@ public class LessonTableViewModel
 
         AddStudyGroupCommand = new RelayCommand(OpenAddStudyGroupEditor);
         EditStudyGroupCommand = new RelayCommand<StudyGroupDto>(OpenEditStudyGroupEditor);
-        AddLessonNumberCommand = new RelayCommand(AddRow);
+
+        AddLessonNumberCommand = new RelayCommand(OpenAddLessonNumberEditor);
+        EditLessonNumberCommand = new RelayCommand<LessonNumberDto>(OpenEditLessonNumberEditor);
 
         _ = InitializeAsync();
     }
@@ -191,54 +195,58 @@ public class LessonTableViewModel
     }
 
     // -------------------------
-    // StudyGroup Editor logic
+    // StudyGroup Editor
     // -------------------------
 
     private async void OpenAddStudyGroupEditor()
     {
-        using var scope = scopeFactory.CreateScope();
         var vm = new StudyGroupEditorViewModel(scopeFactory);
 
-        vm.StudyGroupSaved += async studyGroup =>
-        {
-            StudyGroups.Add(studyGroup);
-            await RefreshAsync();
-        };
+        vm.StudyGroupSaved += async _ => { await RefreshAsync(); };
 
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
     }
 
     private async void OpenEditStudyGroupEditor(StudyGroupDto studyGroup)
     {
-        using var scope = scopeFactory.CreateScope();
         var vm = new StudyGroupEditorViewModel(scopeFactory, studyGroup);
 
-        vm.StudyGroupSaved += async updatedGroup =>
-        {
-            var existing = StudyGroups.FirstOrDefault(x => x.Id == updatedGroup.Id);
-            if (existing != null)
-                existing.Name = updatedGroup.Name;
-
-            await RefreshAsync();
-        };
+        vm.StudyGroupSaved += async _ => { await RefreshAsync(); };
 
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
     }
 
     // -------------------------
-    // LessonNumber (+) — без изменений
+    // LessonNumber Editor
     // -------------------------
 
-    private void AddRow()
+    private async void OpenAddLessonNumberEditor()
     {
-        var newLessonNumber = new LessonNumberDto
+        var nextNumber = GetNextLessonNumber();
+
+        var vm = new LessonNumberEditorViewModel(
+            scopeFactory,
+            nextNumber,
+            Schedule.Id);
+
+        vm.LessonNumberSaved += async _ =>
         {
-            Number = LessonNumbers.Count + 1
+            await RefreshAsync();
         };
 
-        LessonNumbers.Add(newLessonNumber);
-        LoadDataToGrid();
-        TableUpdated?.Invoke();
+        await windowManager.ShowDialog<LessonNumberEditorViewModel, LessonNumberDto>(vm);
+    }
+
+    private async void OpenEditLessonNumberEditor(LessonNumberDto lessonNumber)
+    {
+        var vm = new LessonNumberEditorViewModel(
+            scopeFactory,
+            lessonNumber,
+            Schedule.Id);
+
+        vm.LessonNumberSaved += async _ => { await RefreshAsync(); };
+
+        await windowManager.ShowDialog<LessonNumberEditorViewModel, LessonNumberDto>(vm);
     }
 
     protected override LessonCardViewModel CreateEmptyCell()
@@ -248,5 +256,13 @@ public class LessonTableViewModel
             windowManager,
             Refresh,
             isVisible: false);
+    }
+    
+    private int GetNextLessonNumber()
+    {
+        if (!LessonNumbers.Any())
+            return 1;
+
+        return LessonNumbers.Max(x => x.Number) + 1;
     }
 }

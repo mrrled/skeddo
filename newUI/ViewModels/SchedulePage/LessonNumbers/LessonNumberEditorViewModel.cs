@@ -20,26 +20,43 @@ public class LessonNumberEditorViewModel : ViewModelBase
         set => SetProperty(ref lessonNumberNumber, value);
     }
 
+    public bool IsReadOnly => true;
+
     private readonly IServiceScopeFactory scopeFactory;
     private readonly LessonNumberDto? editingLessonNumber;
+    private readonly Guid scheduleId;
 
     public ICommand SaveCommand { get; }
 
-    // Для создания нового
-    public LessonNumberEditorViewModel(IServiceScopeFactory scopeFactory)
+    // Создание
+    public LessonNumberEditorViewModel(
+        IServiceScopeFactory scopeFactory,
+        int nextNumber,
+        Guid scheduleId)
     {
         this.scopeFactory = scopeFactory;
+        this.scheduleId = scheduleId;
+
+        LessonNumberNumber = nextNumber;
+
         SaveCommand = new RelayCommandAsync(SaveAsync);
-        HeaderText = "Добавление учебной группы";
+        HeaderText = "Добавление номера занятия";
     }
 
-    // Для редактирования существующего
-    public LessonNumberEditorViewModel(IServiceScopeFactory scopeFactory, LessonNumberDto lessonNumberToEdit)
-        : this(scopeFactory)
+    // Редактирование
+    public LessonNumberEditorViewModel(
+        IServiceScopeFactory scopeFactory,
+        LessonNumberDto lessonNumberToEdit,
+        Guid scheduleId)
     {
+        this.scopeFactory = scopeFactory;
+        this.scheduleId = scheduleId;
+
         editingLessonNumber = lessonNumberToEdit;
         LessonNumberNumber = lessonNumberToEdit.Number;
-        HeaderText = "Редактирование учебной группы";
+
+        SaveCommand = new RelayCommandAsync(SaveAsync);
+        HeaderText = "Редактирование номера занятия";
     }
 
     private async Task SaveAsync()
@@ -47,29 +64,30 @@ public class LessonNumberEditorViewModel : ViewModelBase
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<ILessonNumberServices>();
 
-        LessonNumberDto lessonNumber;
         if (editingLessonNumber == null)
         {
-            // // Создание нового
-            // var createLessonNumber = new CreateLessonNumberDto { Number = LessonNumberNumber };
-            // lessonNumber = await service.AddLessonNumber(createLessonNumber);
+            var newLessonNumber = new LessonNumberDto
+            {
+                Number = LessonNumberNumber
+            };
 
-            // временно
-            lessonNumber = new LessonNumberDto { Number = LessonNumberNumber };
-            // временно
+            await service.AddLessonNumber(newLessonNumber, scheduleId);
+            LessonNumberSaved?.Invoke(newLessonNumber);
         }
         else
         {
-            // // Редактирование существующего
-            // lessonNumber = new LessonNumberDto { Id = editingLessonNumber.Id, Number = LessonNumberNumber };
-            // await service.EditLessonNumber(lessonNumber);
+            var oldLessonNumber = editingLessonNumber;
 
-            // временно
-            lessonNumber = new LessonNumberDto { Id = editingLessonNumber.Id, Number = LessonNumberNumber };
-            // временно
+            var newLessonNumber = new LessonNumberDto
+            {
+                Number = LessonNumberNumber,
+                Time = oldLessonNumber.Time
+            };
+
+            await service.EditLessonNumber(oldLessonNumber, newLessonNumber, scheduleId);
+            LessonNumberSaved?.Invoke(newLessonNumber);
         }
 
-        LessonNumberSaved?.Invoke(lessonNumber);
         Window?.Close();
     }
 }

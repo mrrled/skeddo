@@ -43,6 +43,8 @@
                                     HorizontalContentAlignment="Center"
                                     VerticalContentAlignment="Center">
                                 <TextBlock Text="{Binding Name}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
                                            FontWeight="Bold" />
                             </Button>
                         </DataTemplate>
@@ -55,18 +57,26 @@
 
             <StackPanel Grid.Row="1" Grid.Column="0">
                 <ItemsControl ItemsSource="{Binding Rows}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderBrush="Gray" BorderThickness="1"
-                                    Width="50" Height="{DynamicResource LessonCardHeight}"
-                                    Background="LightGray">
-                                <TextBlock Text="{Binding RowHeader.Number}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontWeight="Bold" />
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
+                    <ItemsControl ItemsSource="{Binding Rows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditLessonNumberCommand}"
+                                        CommandParameter="{Binding RowHeader}"
+                                        Padding="0"
+                                        BorderThickness="1"
+                                        BorderBrush="Gray"
+                                        CornerRadius="0"
+                                        Width="50"
+                                        Height="{DynamicResource LessonCardHeight}"
+                                        Background="LightGray">
+                                    <TextBlock Text="{Binding RowHeader.Number}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               FontWeight="Bold" />
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </ItemsControl>
 
                 <Button Content="+" Width="50" Height="30" Margin="0,2,0,0"
