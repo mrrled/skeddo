@@ -6,7 +6,9 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using newUI.Messages;
 using newUI.Services;
 using newUI.ViewModels.MainPage.ScheduleList;
 using newUI.ViewModels.SchedulePage.Lessons;
@@ -15,7 +17,7 @@ using newUI.ViewModels.Shared;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
-public class ScheduleViewModel : ViewModelBase
+public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessage>
 {
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
@@ -53,10 +55,7 @@ public class ScheduleViewModel : ViewModelBase
         Toolbar.RequestPdfExport += async () =>
         {
             if (CurrentSchedule == null) return;
-
             await exportServices.GeneratePdfAsync(CurrentSchedule.Id);
-
-            // Показываем уведомление
             var vm = new NotificationViewModel("Экспорт в PDF успешно завершен!");
             await windowManager.ShowDialog<NotificationViewModel, object?>(vm);
         };
@@ -64,13 +63,20 @@ public class ScheduleViewModel : ViewModelBase
         Toolbar.RequestExcelExport += async () =>
         {
             if (CurrentSchedule == null) return;
-
             await exportServices.GenerateExcelAsync(CurrentSchedule.Id);
-
-            // Показываем уведомление
             var vm = new NotificationViewModel("Экспорт в Excel успешно завершен!");
             await windowManager.ShowDialog<NotificationViewModel, object?>(vm);
         };
+
+        WeakReferenceMessenger.Default.Register(this);
+    }
+
+    public void Receive(ScheduleDeletedMessage message)
+    {
+        Avalonia.Threading.Dispatcher.UIThread.Post(() => 
+        {
+            CloseTabById(message.ScheduleId);
+        });
     }
 
     public bool HasTabs => Tabs?.Count > 0;
@@ -182,10 +188,7 @@ public class ScheduleViewModel : ViewModelBase
         vm.Window = windowManager.ShowWindow(vm);
     }
 
-    private async Task SaveScheduleAsync()
-    {
-        // полный чилл, ничего не делаем
-    }
+    private async Task SaveScheduleAsync() { }
 
     private async Task OnDeleteClickedAsync()
     {
@@ -198,14 +201,16 @@ public class ScheduleViewModel : ViewModelBase
         var result = await windowManager.ShowDialog<ConfirmDeleteViewModel, bool?>(confirmVm);
         if (result != true) return;
 
+        var scheduleId = CurrentSchedule.Id;
         await scheduleServices.DeleteSchedule(CurrentSchedule);
-        CloseTabById(CurrentSchedule.Id);
+        
+        CloseTabById(scheduleId);
+        WeakReferenceMessenger.Default.Send(new ScheduleDeletedMessage(scheduleId));
     }
 
     private async Task CloseWindowAsync()
     {
         if (CurrentSchedule == null) return;
-
         CloseTabById(CurrentSchedule.Id);
     }
 }
