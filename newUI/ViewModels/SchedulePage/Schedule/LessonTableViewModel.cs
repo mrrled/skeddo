@@ -15,23 +15,21 @@ using newUI.ViewModels.SchedulePage.LessonNumbers;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
-public class LessonTableViewModel
-    : DynamicGridViewModel<LessonCardViewModel, StudyGroupDto, LessonNumberDto>
+public class LessonTableViewModel : DynamicGridViewModel<LessonCardViewModel, StudyGroupDto, LessonNumberDto>
 {
     public event Action? TableUpdated;
-    
+    public event Action<LessonDraftDto>? LessonMovedToBuffer;
+
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
 
     private bool isInitialized;
     private bool isLoading;
-
     private ScheduleDto Schedule;
 
     public AvaloniaList<StudyGroupDto> StudyGroups { get; private set; } = new();
     public AvaloniaList<LessonNumberDto> LessonNumbers { get; private set; } = new();
 
-    // Команды
     public IRelayCommand AddStudyGroupCommand { get; }
     public IRelayCommand AddLessonNumberCommand { get; }
     public IRelayCommand<StudyGroupDto> EditStudyGroupCommand { get; }
@@ -48,7 +46,6 @@ public class LessonTableViewModel
 
         AddStudyGroupCommand = new RelayCommand(OpenAddStudyGroupEditor);
         EditStudyGroupCommand = new RelayCommand<StudyGroupDto>(OpenEditStudyGroupEditor);
-
         AddLessonNumberCommand = new RelayCommand(OpenAddLessonNumberEditor);
         EditLessonNumberCommand = new RelayCommand<LessonNumberDto>(OpenEditLessonNumberEditor);
 
@@ -59,7 +56,7 @@ public class LessonTableViewModel
     {
         await LoadStudyGroupsAsync();
         await LoadLessonNumbersAsync();
-        LoadDataToGrid();
+        await LoadDataToGrid();
         isInitialized = true;
     }
 
@@ -68,20 +65,14 @@ public class LessonTableViewModel
         try
         {
             IsLoading = true;
-
-            if (newSchedule != null)
-                Schedule = newSchedule;
-
-            if (!isInitialized)
-                return;
+            if (newSchedule != null) Schedule = newSchedule;
+            if (!isInitialized) return;
 
             await LoadStudyGroupsAsync();
             await LoadLessonNumbersAsync();
-            LoadDataToGrid();
+            await LoadDataToGrid();
 
             TableUpdated?.Invoke();
-            OnPropertyChanged(nameof(Rows));
-            OnPropertyChanged(nameof(Columns));
         }
         finally
         {
@@ -111,29 +102,25 @@ public class LessonTableViewModel
         LessonNumbers = new AvaloniaList<LessonNumberDto>(numbers);
     }
 
-    private void LoadDataToGrid()
+    private async Task LoadDataToGrid()
     {
-        var data = LoadData().Result;
+        var data = await LoadData();
         LoadDataFromBackend(data);
-
         OnPropertyChanged(nameof(Rows));
         OnPropertyChanged(nameof(Columns));
     }
 
-    private async Task<List<(LessonNumberDto RowHeader,
-        Dictionary<StudyGroupDto, LessonCardViewModel?> CellData)>> LoadData()
+    private async Task<List<(LessonNumberDto RowHeader, Dictionary<StudyGroupDto, LessonCardViewModel?> CellData)>>
+        LoadData()
     {
         var result = new List<(LessonNumberDto, Dictionary<StudyGroupDto, LessonCardViewModel?>)>();
         using var scope = scopeFactory.CreateScope();
 
         var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
         var currentSchedule = await scheduleService.GetScheduleByIdAsync(Schedule.Id);
-    
-        if (currentSchedule != null) 
-            Schedule = currentSchedule;
+        if (currentSchedule != null) Schedule = currentSchedule;
 
         var lessonDictionary = new Dictionary<(int, string), LessonDto>();
-
         foreach (var lesson in Schedule.Lessons)
         {
             if (lesson.LessonNumber != null && lesson.StudyGroup != null)
@@ -143,37 +130,27 @@ public class LessonTableViewModel
         foreach (var lessonNumber in LessonNumbers)
         {
             var rowData = new Dictionary<StudyGroupDto, LessonCardViewModel?>();
-
             foreach (var studyGroup in StudyGroups)
             {
                 LessonCardViewModel card;
-
-                if (lessonDictionary.TryGetValue(
-                        (lessonNumber.Number, studyGroup.Name),
-                        out var lesson))
+                if (lessonDictionary.TryGetValue((lessonNumber.Number, studyGroup.Name), out var lesson))
                 {
-                    card = new LessonCardViewModel(scopeFactory, windowManager, Refresh)
+                    card = new LessonCardViewModel(scopeFactory, windowManager, Refresh) { Lesson = lesson };
+                    card.LessonDowngraded += draft =>
                     {
-                        Lesson = lesson
+                        LessonMovedToBuffer?.Invoke(draft);
+                        _ = RefreshAsync();
                     };
                 }
                 else
                 {
-                    card = new LessonCardViewModel(
-                        scopeFactory,
-                        windowManager,
-                        Refresh,
-                        isVisible: false)
+                    card = new LessonCardViewModel(scopeFactory, windowManager, Refresh)
                     {
                         Lesson = new LessonDto
-                        {
-                            StudyGroup = studyGroup,
-                            LessonNumber = lessonNumber
-                        }
+                            { StudyGroup = studyGroup, LessonNumber = lessonNumber, ScheduleId = Schedule.Id }
                     };
                 }
 
-                card.LessonClicked += OnLessonClicked;
                 rowData[studyGroup] = card;
             }
 
@@ -183,116 +160,47 @@ public class LessonTableViewModel
         return result;
     }
 
-    private void Refresh()
-    {
-        RefreshAsync().Wait();
-    }
-
-    private void OnLessonClicked(LessonDto lesson)
-    {
-        Console.WriteLine($"Lesson clicked: {lesson.Id}");
-    }
-
-    // -------------------------
-    // StudyGroup Editor
-    // -------------------------
+    private void Refresh() => _ = RefreshAsync();
 
     private async void OpenAddStudyGroupEditor()
     {
         var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory);
-
-        vm.StudyGroupSaved += async _ =>
-        {
-            await RefreshAsync();
-        };
-
-        vm.StudyGroupDeleted += async _ =>
-        {
-            await RefreshAsync();
-        };
-
+        vm.StudyGroupSaved += async _ => await RefreshAsync();
+        vm.StudyGroupDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
     }
 
     private async void OpenEditStudyGroupEditor(StudyGroupDto studyGroup)
     {
         var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory, studyGroup);
-
-        vm.StudyGroupSaved += async _ =>
-        {
-            await RefreshAsync();
-        };
-
-        vm.StudyGroupDeleted += async _ =>
-        {
-            await RefreshAsync();
-        };
-
+        vm.StudyGroupSaved += async _ => await RefreshAsync();
+        vm.StudyGroupDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
     }
 
-    // -------------------------
-    // LessonNumber Editor
-    // -------------------------
-
     private async void OpenAddLessonNumberEditor()
     {
-        var nextNumber = GetNextLessonNumber();
-
-        var vm = new LessonNumberEditorViewModel(
-            windowManager,
-            scopeFactory,
-            nextNumber,
-            Schedule.Id);
-
-        vm.LessonNumberSaved += async _ =>
-        {
-            await RefreshAsync();
-        };
-
-        vm.LessonNumberDeleted += async _ =>
-        {
-            await RefreshAsync();
-        };
-
+        var vm = new LessonNumberEditorViewModel(windowManager, scopeFactory, GetNextLessonNumber(), Schedule.Id);
+        vm.LessonNumberSaved += async _ => await RefreshAsync();
+        vm.LessonNumberDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<LessonNumberEditorViewModel, LessonNumberDto>(vm);
     }
 
     private async void OpenEditLessonNumberEditor(LessonNumberDto lessonNumber)
     {
-        var vm = new LessonNumberEditorViewModel(
-            windowManager,
-            scopeFactory,
-            lessonNumber,
-            Schedule.Id);
-
-        vm.LessonNumberSaved += async _ =>
-        {
-            await RefreshAsync();
-        };
-
-        vm.LessonNumberDeleted += async _ =>
-        {
-            await RefreshAsync();
-        };
-
+        var vm = new LessonNumberEditorViewModel(windowManager, scopeFactory, lessonNumber, Schedule.Id);
+        vm.LessonNumberSaved += async _ => await RefreshAsync();
+        vm.LessonNumberDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<LessonNumberEditorViewModel, LessonNumberDto>(vm);
     }
 
     protected override LessonCardViewModel CreateEmptyCell()
     {
-        return new LessonCardViewModel(
-            scopeFactory,
-            windowManager,
-            Refresh,
-            isVisible: false);
+        return new LessonCardViewModel(scopeFactory, windowManager, Refresh, isVisible: true)
+        {
+            Lesson = new LessonDto { Id = Guid.Empty }
+        };
     }
-    
-    private int GetNextLessonNumber()
-    {
-        if (!LessonNumbers.Any())
-            return 1;
 
-        return LessonNumbers.Max(x => x.Number) + 1;
-    }
+    private int GetNextLessonNumber() => !LessonNumbers.Any() ? 1 : LessonNumbers.Max(x => x.Number) + 1;
 }

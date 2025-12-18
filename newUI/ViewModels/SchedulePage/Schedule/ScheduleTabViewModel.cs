@@ -3,6 +3,7 @@ using System.Windows.Input;
 using Application.DtoModels;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using newUI.ViewModels.SchedulePage.Lessons;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
@@ -61,8 +62,7 @@ public class ScheduleTabViewModel : ViewModelBase
         Schedule = newSchedule;
         Title = newSchedule.Name;
         TableViewModel.RefreshAsync(newSchedule).Wait();
-
-        LessonBuffer.Clear();
+        
         LessonBuffer.AddMany(newSchedule.LessonDrafts);
 
         OnPropertyChanged(nameof(LessonBuffer));

@@ -4,7 +4,6 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using CommunityToolkit.Mvvm.Input;
-using Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
 
@@ -13,29 +12,28 @@ namespace newUI.ViewModels.SchedulePage.Lessons;
 public class LessonCardViewModel : ViewModelBase
 {
     private LessonDto lesson;
+    private bool isVisible;
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
-    public bool IsVisible { get; set; }
-    public string Color { get; private set; }
-    public event Action<LessonDto>? LessonClicked;
-
-    private bool isDragging;
-    private bool isDragOver;
-
     private readonly Action? refreshCallback;
 
-    public LessonCardViewModel(
-        IServiceScopeFactory scopeFactory,
-        IWindowManager windowManager, Action? refreshCallback = null, bool isVisible = true)
+    public event Action<LessonDto>? LessonUpdated;
+    public event Action<LessonDraftDto>? LessonDowngraded;
+
+    public LessonCardViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager,
+        Action? refreshCallback = null, bool isVisible = true)
     {
         this.scopeFactory = scopeFactory;
         this.windowManager = windowManager;
         this.refreshCallback = refreshCallback;
-        IsVisible = isVisible;
-
+        this.isVisible = isVisible;
         ClickCommand = new AsyncRelayCommand(OnClick);
-        // StartDragCommand = new RelayCommand(StartDrag);
-        // DropCommand = new RelayCommand<LessonCardViewModel>(OnDrop);
+    }
+
+    public bool IsVisible
+    {
+        get => isVisible;
+        set => SetProperty(ref isVisible, value);
     }
 
     public LessonDto Lesson
@@ -45,93 +43,65 @@ public class LessonCardViewModel : ViewModelBase
         {
             if (SetProperty(ref lesson, value))
             {
-                Color = WarningToColor(value.WarningType);
                 OnPropertyChanged(nameof(Color));
             }
         }
     }
-    
-    // public ICommand StartDragCommand { get; }
-    // public ICommand DropCommand { get; }
 
-    public ICommand StartDragCommand { get; }
-    public ICommand DropCommand { get; }
+    public string Color => lesson?.WarningType switch
+    {
+        Domain.Models.WarningType.Conflict => "LightCoral",
+        Domain.Models.WarningType.Warning => "LemonChiffon",
+        _ => "White"
+    };
+
     public ICommand ClickCommand { get; }
 
-    public bool IsDragging
+    private async Task OnClick()
     {
-        get => isDragging;
-        set => SetProperty(ref isDragging, value);
-    }
+        if (Lesson == null) return;
 
-    public bool IsDragOver
-    {
-        get => isDragOver;
-        set => SetProperty(ref isDragOver, value);
-    }
+        bool isCreation = Lesson.Id == Guid.Empty;
+        LessonEditorViewModel editVm;
 
-    private Task OnClick()
-    {
-        if (Lesson != null)
+        if (isCreation)
         {
-            LessonClicked?.Invoke(Lesson);
-            EditLesson();
+            editVm = new LessonEditorViewModel(scopeFactory, Lesson.ScheduleId)
+            {
+                SelectedStudyGroup = Lesson.StudyGroup,
+                SelectedLessonNumber = Lesson.LessonNumber
+            };
+
+            editVm.LessonCreated += async createDto =>
+            {
+                using var scope = scopeFactory.CreateScope();
+                var result = await scope.ServiceProvider.GetRequiredService<ILessonServices>()
+                    .AddLesson(createDto, Lesson.ScheduleId);
+
+                if (!result.IsDraft) LessonUpdated?.Invoke(result.Lesson!);
+                refreshCallback?.Invoke();
+            };
+        }
+        else
+        {
+            editVm = new LessonEditorViewModel(scopeFactory, Lesson);
+            editVm.LessonResultUpdated += (result) =>
+            {
+                if (result.IsDraft && result.LessonDraft != null)
+                {
+                    Lesson = result.LessonDraft.ToLessonDto();
+                    LessonDowngraded?.Invoke(result.LessonDraft);
+                }
+                else if (result.Lesson != null)
+                {
+                    // Сигнал о том, что объект перестал быть черновиком (для буфера)
+                    LessonUpdated?.Invoke(result.Lesson);
+                }
+
+                refreshCallback?.Invoke();
+            };
         }
 
-        return Task.CompletedTask;
-    }
-
-    private void EditLesson()
-    {
-        var editVm = new LessonEditorViewModel(scopeFactory, Lesson);
-        editVm.LessonUpdated += updatedLesson =>
-        {
-            Lesson = updatedLesson;
-            OnPropertyChanged(nameof(Lesson));
-            refreshCallback.Invoke();
-        };
-
-        windowManager.ShowDialog<LessonEditorViewModel, LessonDto?>(editVm);
-    }
-
-    private string WarningToColor(WarningType warningType)
-    {
-        return warningType switch
-    // private void StartDrag()
-    // {
-    //     IsDragging = true;
-    //     Console.WriteLine($"Starting drag for lesson: {Lesson?.Id}");
-    // }
-
-    // private void OnDrop(LessonCardViewModel target)
-    // {
-    //     if (target != null && target != this)
-    //     {
-    //         SwapLessons(target);
-    //     }
-    // }
-
-    // private void SwapLessons(LessonCardViewModel target)
-    // {
-    //     (Lesson.LessonNumber, target.Lesson.LessonNumber) = (target.Lesson.LessonNumber, Lesson.LessonNumber);
-    //     (Lesson.StudyGroup, target.Lesson.StudyGroup) = (target.Lesson.StudyGroup, Lesson.StudyGroup);
-
-    //     OnPropertyChanged(nameof(Lesson));
-    //     target.OnPropertyChanged(nameof(Lesson));
-
-    //     SaveSwappedLessons(target);
-    // }
-
-    // private async void SaveSwappedLessons(LessonCardViewModel target)
-    // {
-    //     using var scope = scopeFactory.CreateScope();
-    //     var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-
-    //     if (Lesson != null && target.Lesson != null)
-        {
-            WarningType.Conflict => "LightCoral",
-            WarningType.Warning => "LemonChiffon",
-            _ => "White"
-        };
+        await windowManager.ShowDialog<LessonEditorViewModel, object?>(editVm);
     }
 }

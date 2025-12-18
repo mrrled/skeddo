@@ -162,17 +162,6 @@
                                             BorderThickness="1"
                                             Width="{DynamicResource LessonCardWidth}"
                                             Height="{DynamicResource LessonCardHeight}">
-                                        <Interaction.Behaviors>
-                                            <!-- Клик для редактирования -->
-                                            <EventTriggerBehavior EventName="PointerPressed">
-                                                <InvokeCommandAction Command="{Binding ClickCommand}" />
-                                            </EventTriggerBehavior>
-
-                                            <!-- Двойной клик -->
-                                            <!-- <EventTriggerBehavior EventName="DoubleTapped"> -->
-                                            <!--     <InvokeCommandAction Command="{Binding DoubleClickCommand}"/> -->
-                                            <!-- </EventTriggerBehavior> -->
-                                        </Interaction.Behaviors>
                                         <lessons:LessonCardView />
                                     </Border>
                                 </DataTemplate>
