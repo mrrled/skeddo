@@ -28,6 +28,9 @@ public abstract class DynamicGridViewModel<TCell, TColumn, TRow> : ViewModelBase
 
     public void LoadDataFromBackend(List<(TRow RowHeader, Dictionary<TColumn, TCell?> CellData)> data)
     {
+        Columns.Clear();
+        Rows.Clear();
+        
         var newColumns = ExtractColumns(data);
         var newRows = CreateRows(data, newColumns);
         
@@ -48,7 +51,7 @@ public abstract class DynamicGridViewModel<TCell, TColumn, TRow> : ViewModelBase
         return newcColumns.ToList();
     }
     
-    private List<TableDataRow<TCell, TColumn, TRow>> CreateRows(
+    public virtual List<TableDataRow<TCell, TColumn, TRow>> CreateRows(
         List<(TRow RowHeader, Dictionary<TColumn, TCell?> CellData)> data,
         List<TColumn> newColumns)
     {

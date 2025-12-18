@@ -49,5 +49,6 @@
         <sys:Double x:Key="LessonCardHeight">120</sys:Double>
 
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:ColumnSpanToWidthConverter x:Key="ColumnSpanToWidthConverter" />
     </Application.Resources>
 </Application>

@@ -49,46 +49,4 @@ public class TableDataRow<TCell, TColumn, TRow> : ViewModelBase where TCell : Vi
             cells.Add(cell);
         }
     }
-    
-    public TCell? GetCell(TColumn column)
-    {
-        if (columnIndexMap.TryGetValue(column, out int index))
-        {
-            return cells[index];
-        }
-        return default;
-    }
-    
-    public void UpdateColumnOrder(IReadOnlyList<TColumn> columns)
-    {
-        var newCells = new ObservableCollection<TCell>();
-        var newIndexMap = new Dictionary<TColumn, int>();
-        
-        for (int i = 0; i < columns.Count; i++)
-        {
-            var column = columns[i];
-            newIndexMap[column] = i;
-            
-            if (columnIndexMap.TryGetValue(column, out int oldIndex))
-            {
-                newCells.Add(cells[oldIndex]);
-            }
-            else
-            {
-                newCells.Add(default(TCell));
-            }
-        }
-        
-        cells.Clear();
-        foreach (var cell in newCells)
-        {
-            cells.Add(cell);
-        }
-        
-        columnIndexMap.Clear();
-        foreach (var kvp in newIndexMap)
-        {
-            columnIndexMap[kvp.Key] = kvp.Value;
-        }
-    }
 }

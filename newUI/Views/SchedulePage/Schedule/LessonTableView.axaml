@@ -2,12 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:newUI.ViewModels.SchedulePage.Schedule"
              xmlns:lessons="clr-namespace:newUI.Views.SchedulePage.Lessons"
+             xmlns:converters="clr-namespace:newUI.Converters"
              xmlns:dto="clr-namespace:Application.DtoModels;assembly=Application"
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="newUI.Views.SchedulePage.Schedule.LessonTableView"
              x:DataType="vm:LessonTableViewModel">
+    
+    <UserControl.Resources>
+        <converters:GroupWideBackgroundConverter x:Key="GroupWideBackgroundConverter"/>
+    </UserControl.Resources>
 
-    <!-- Локальные стили ТОЛЬКО для этого контрола -->
     <UserControl.Styles>
         <Style Selector="Button.IconButton">
             <Setter Property="Background" Value="Transparent" />
@@ -25,9 +29,11 @@
                   VerticalScrollBarVisibility="Auto">
 
         <Grid>
+            <!-- Теперь 3 строки! -->
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" /> <!-- 0: Заголовки групп -->
+                <RowDefinition Height="Auto" /> <!-- 1: Заголовки подгрупп -->
+                <RowDefinition Height="*" />    <!-- 2: Строки с уроками -->
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -35,22 +41,25 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!-- Пустая ячейка в левом верхнем углу -->
+            <!-- ===================== -->
+            <!-- Пустая ячейка в углу (занимает 2 верхние строки) -->
+            <!-- ===================== -->
             <Border Grid.Row="0" Grid.Column="0"
+                    Grid.RowSpan="2"
                     Width="50"
-                    Height="30"
+                    Height="60"
                     Background="LightGray"
                     BorderBrush="Gray"
                     BorderThickness="1" />
 
             <!-- ===================== -->
-            <!-- Заголовки StudyGroup -->
+            <!-- Верхний уровень: Заголовки ГРУПП (Row 0) -->
             <!-- ===================== -->
-            <StackPanel Grid.Row="0"
-                        Grid.Column="1"
-                        Orientation="Horizontal">
+            <StackPanel Grid.Row="0" Grid.Column="1"
+                        Orientation="Horizontal"
+                        Height="30">
 
-                <ItemsControl ItemsSource="{Binding Columns}">
+                <ItemsControl ItemsSource="{Binding GroupHeaders}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" />
@@ -66,7 +75,8 @@
                                 BorderThickness="1"
                                 BorderBrush="Gray"
                                 CornerRadius="0"
-                                Width="{DynamicResource LessonCardWidth}"
+                                Width="{Binding ColumnSpan, 
+                                       Converter={StaticResource ColumnSpanToWidthConverter}}"
                                 Height="30"
                                 Background="LightBlue"
                                 HorizontalContentAlignment="Center"
@@ -94,10 +104,45 @@
             </StackPanel>
 
             <!-- ===================== -->
-            <!-- Заголовки LessonNumber -->
+            <!-- Нижний уровень: Заголовки ПОДГРУПП (Row 1) -->
             <!-- ===================== -->
-            <StackPanel Grid.Row="1"
-                        Grid.Column="0">
+            <StackPanel Grid.Row="1" Grid.Column="1"
+                        Orientation="Horizontal"
+                        Height="30">
+
+                <ItemsControl ItemsSource="{Binding FlatColumns}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Padding="0"
+                                    BorderThickness="1"
+                                    BorderBrush="Gray"
+                                    CornerRadius="0"
+                                    Width="{DynamicResource LessonCardWidth}"
+                                    Height="30"
+                                    Background="LightCyan"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center">
+
+                                <TextBlock Text="{Binding DisplayName}"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- ===================== -->
+            <!-- Заголовки LessonNumber (Row 2) -->
+            <!-- ===================== -->
+            <StackPanel Grid.Row="2" Grid.Column="0">
 
                 <ItemsControl ItemsSource="{Binding Rows}">
                     <ItemsControl.ItemTemplate>
@@ -135,18 +180,10 @@
             </StackPanel>
 
             <!-- ===================== -->
-            <!-- Таблица уроков -->
+            <!-- Таблица уроков (Row 2, Column 1) -->
             <!-- ===================== -->
-            <ItemsControl Grid.Row="1"
-                          Grid.Column="1"
+            <ItemsControl Grid.Row="2" Grid.Column="1"
                           ItemsSource="{Binding Rows}">
-
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <ItemsControl ItemsSource="{Binding Cells}">
@@ -158,21 +195,30 @@
 
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
+                                    <!-- Условное отображение: если ColumnSpan > 1, то шире -->
                                     <Border BorderBrush="Gray"
-                                            BorderThickness="1"
-                                            Width="{DynamicResource LessonCardWidth}"
-                                            Height="{DynamicResource LessonCardHeight}">
+                                             BorderThickness="1"
+                                             Width="{Binding ColumnSpan, 
+                                             Converter={StaticResource ColumnSpanToWidthConverter},
+                                             FallbackValue={StaticResource LessonCardWidth}}"
+                                             Height="{DynamicResource LessonCardHeight}">
+    
+                                        <!-- Используем привязку для Background -->
+                                        <Border.Background>
+                                            <Binding Path="IsGroupWideLesson">
+                                                <Binding.Converter>
+                                                    <converters:GroupWideBackgroundConverter/>
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </Border.Background>
+    
+                                        <!-- Контент -->
                                         <Interaction.Behaviors>
-                                            <!-- Клик для редактирования -->
                                             <EventTriggerBehavior EventName="PointerPressed">
                                                 <InvokeCommandAction Command="{Binding ClickCommand}" />
                                             </EventTriggerBehavior>
-
-                                            <!-- Двойной клик -->
-                                            <!-- <EventTriggerBehavior EventName="DoubleTapped"> -->
-                                            <!--     <InvokeCommandAction Command="{Binding DoubleClickCommand}"/> -->
-                                            <!-- </EventTriggerBehavior> -->
                                         </Interaction.Behaviors>
+    
                                         <lessons:LessonCardView />
                                     </Border>
                                 </DataTemplate>

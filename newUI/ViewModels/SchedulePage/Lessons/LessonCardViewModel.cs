@@ -15,6 +15,8 @@ public class LessonCardViewModel : ViewModelBase
     private LessonDto lesson;
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IWindowManager windowManager;
+    private int columnSpan = 1;
+    private bool isGroupWideLesson;
     public bool IsVisible { get; set; }
     public string Color { get; private set; }
     public event Action<LessonDto>? LessonClicked;
@@ -34,8 +36,18 @@ public class LessonCardViewModel : ViewModelBase
         IsVisible = isVisible;
 
         ClickCommand = new AsyncRelayCommand(OnClick);
-        // StartDragCommand = new RelayCommand(StartDrag);
-        // DropCommand = new RelayCommand<LessonCardViewModel>(OnDrop);
+    }
+    
+    public int ColumnSpan
+    {
+        get => columnSpan;
+        set => SetProperty(ref columnSpan, value);
+    }
+    
+    public bool IsGroupWideLesson
+    {
+        get => isGroupWideLesson;
+        set => SetProperty(ref isGroupWideLesson, value);
     }
 
     public LessonDto Lesson
@@ -51,11 +63,6 @@ public class LessonCardViewModel : ViewModelBase
         }
     }
     
-    // public ICommand StartDragCommand { get; }
-    // public ICommand DropCommand { get; }
-
-    public ICommand StartDragCommand { get; }
-    public ICommand DropCommand { get; }
     public ICommand ClickCommand { get; }
 
     public bool IsDragging
@@ -97,41 +104,10 @@ public class LessonCardViewModel : ViewModelBase
     private string WarningToColor(WarningType warningType)
     {
         return warningType switch
-    // private void StartDrag()
-    // {
-    //     IsDragging = true;
-    //     Console.WriteLine($"Starting drag for lesson: {Lesson?.Id}");
-    // }
-
-    // private void OnDrop(LessonCardViewModel target)
-    // {
-    //     if (target != null && target != this)
-    //     {
-    //         SwapLessons(target);
-    //     }
-    // }
-
-    // private void SwapLessons(LessonCardViewModel target)
-    // {
-    //     (Lesson.LessonNumber, target.Lesson.LessonNumber) = (target.Lesson.LessonNumber, Lesson.LessonNumber);
-    //     (Lesson.StudyGroup, target.Lesson.StudyGroup) = (target.Lesson.StudyGroup, Lesson.StudyGroup);
-
-    //     OnPropertyChanged(nameof(Lesson));
-    //     target.OnPropertyChanged(nameof(Lesson));
-
-    //     SaveSwappedLessons(target);
-    // }
-
-    // private async void SaveSwappedLessons(LessonCardViewModel target)
-    // {
-    //     using var scope = scopeFactory.CreateScope();
-    //     var service = scope.ServiceProvider.GetRequiredService<ILessonServices>();
-
-    //     if (Lesson != null && target.Lesson != null)
         {
             WarningType.Conflict => "LightCoral",
             WarningType.Warning => "LemonChiffon",
-            _ => "White"
+            _ => "Transparent"
         };
     }
 }

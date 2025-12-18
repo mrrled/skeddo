@@ -19,4 +19,6 @@ public class StudyGroupDto : IComparable<StudyGroupDto>
     {
         return Id.GetHashCode();
     }
+    
+    public int ColumnSpan => StudySubgroups?.Count > 0 ? StudySubgroups.Count : 1;
 }
