@@ -48,5 +48,10 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
         var dbo = await context.LessonNumbers
             .FirstAsync(x => x.ScheduleId == scheduleId && x.Number == lessonNumber.Number);
         context.LessonNumbers.Remove(dbo);
+        var numbers = await context.LessonNumbers
+            .Where(x => x.ScheduleId == scheduleId && x.Number != lessonNumber.Number).ToListAsync();
+        var sorted = numbers.OrderBy(x => x.Number).ToList();
+        for (var i = 1; i <= numbers.Count; i++)
+            sorted[i - 1].Number = i;
     }
 }
