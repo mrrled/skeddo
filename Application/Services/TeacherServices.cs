@@ -13,7 +13,7 @@ public class TeacherServices(
     ISchoolSubjectRepository schoolSubjectRepository,
     IStudyGroupRepository studyGroupRepository,
     IUnitOfWork  unitOfWork,
-    ILogger logger
+    ILogger<TeacherServices> logger
     ) : BaseService(unitOfWork, logger), ITeacherServices
 {
     public async Task<List<TeacherDto>> FetchTeachersFromBackendAsync()

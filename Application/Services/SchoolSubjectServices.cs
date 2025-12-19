@@ -11,7 +11,7 @@ namespace Application.Services;
 public class SchoolSubjectServices(
     ISchoolSubjectRepository schoolSubjectRepository,
     IUnitOfWork unitOfWork,
-    ILogger logger) : BaseService(unitOfWork, logger), ISchoolSubjectServices
+    ILogger<SchoolSubjectServices> logger) : BaseService(unitOfWork, logger), ISchoolSubjectServices
 {
     public async Task<List<SchoolSubjectDto>> FetchSchoolSubjectsFromBackendAsync()
     {

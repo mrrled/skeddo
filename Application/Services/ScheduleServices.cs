@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWork unitOfWork, ILogger logger)
+public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWork unitOfWork, ILogger<ScheduleServices> logger)
     : BaseService(unitOfWork, logger), IScheduleServices
 {
     public async Task<List<ScheduleDto>> FetchSchedulesFromBackendAsync()

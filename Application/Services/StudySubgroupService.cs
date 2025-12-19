@@ -11,7 +11,7 @@ public class StudySubgroupService(
     IStudyGroupRepository studyGroupRepository,
     IStudySubgroupRepository studySubgroupRepository,
     IUnitOfWork unitOfWork,
-    ILogger logger) : BaseService(unitOfWork, logger), IStudySubgroupService
+    ILogger<StudySubgroupService> logger) : BaseService(unitOfWork, logger), IStudySubgroupService
 {
     public async Task<Result> AddStudySubgroup(StudySubgroupDto studySubgroupDto)
     {

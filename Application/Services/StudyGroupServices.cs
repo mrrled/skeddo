@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUnitOfWork unitOfWork, ILogger logger) : BaseService(unitOfWork, logger), IStudyGroupServices
+public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUnitOfWork unitOfWork, ILogger<StudyGroupServices> logger) : BaseService(unitOfWork, logger), IStudyGroupServices
 {
     public async Task<List<StudyGroupDto>> FetchStudyGroupsFromBackendAsync()
     {

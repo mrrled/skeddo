@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class ClassroomServices(IClassroomRepository classroomRepository, IUnitOfWork unitOfWork, ILogger logger)
+public class ClassroomServices(IClassroomRepository classroomRepository, IUnitOfWork unitOfWork, ILogger<ClassroomServices> logger)
     : BaseService(unitOfWork, logger), IClassroomServices
 {
     public async Task<List<ClassroomDto>> FetchClassroomsFromBackendAsync()

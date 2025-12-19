@@ -12,7 +12,7 @@ public class LessonNumberServices(
     ILessonNumberRepository lessonNumberRepository,
     IScheduleRepository scheduleRepository,
     IUnitOfWork unitOfWork,
-    ILogger logger) : BaseService(unitOfWork, logger), ILessonNumberServices
+    ILogger<LessonNumberServices> logger) : BaseService(unitOfWork, logger), ILessonNumberServices
 {
     public async Task<List<LessonNumberDto>> GetLessonNumbersByScheduleId(Guid scheduleId)
     {

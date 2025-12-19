@@ -18,7 +18,7 @@ public class LessonDraftServices(
     IClassroomRepository classroomRepository,
     ILessonFactory lessonFactory,
     IUnitOfWork unitOfWork,
-    ILogger logger) : BaseService(unitOfWork, logger), ILessonDraftServices
+    ILogger<LessonDraftServices> logger) : BaseService(unitOfWork, logger), ILessonDraftServices
 {
     public async Task<List<LessonDraftDto>> GetLessonDraftsByScheduleId(Guid scheduleId)
     {
