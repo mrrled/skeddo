@@ -112,7 +112,6 @@ public class LessonDraftServices(
         {
             await lessonDraftRepository.Delete(draft);
         }
-
         await unitOfWork.SaveChangesAsync();
     }
 }

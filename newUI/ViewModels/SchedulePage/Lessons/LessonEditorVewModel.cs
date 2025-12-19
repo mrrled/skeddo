@@ -196,11 +196,12 @@ public class LessonEditorViewModel : ViewModelBase
 
         if (editingLesson == null || editingLesson.Id == Guid.Empty)
         {
-            var res = await scope.ServiceProvider.GetRequiredService<ILessonServices>().AddLesson(new CreateLessonDto
+            var res = (await scope.ServiceProvider.GetRequiredService<ILessonServices>().AddLesson(new CreateLessonDto
             {
                 ScheduleId = scheduleId, Teacher = SelectedTeacher, Classroom = SelectedClassroom,
-                StudyGroup = SelectedStudyGroup, StudySubgroup = SelectedStudySubgroup, SchoolSubject = SelectedSubject, LessonNumber = SelectedLessonNumber
-            }, scheduleId);
+                StudyGroup = SelectedStudyGroup, StudySubgroup = SelectedStudySubgroup, SchoolSubject = SelectedSubject,
+                LessonNumber = SelectedLessonNumber
+            }, scheduleId)).Value;   //TODO: показ ошибки
             result = res.IsDraft
                 ? EditLessonResult.Downgraded(res.LessonDraft!)
                 : EditLessonResult.Success(res.Lesson!);
@@ -216,8 +217,8 @@ public class LessonEditorViewModel : ViewModelBase
 
             try
             {
-                result = await scope.ServiceProvider.GetRequiredService<ILessonServices>()
-                    .EditLesson(editingLesson, scheduleId);
+                result = (await scope.ServiceProvider.GetRequiredService<ILessonServices>()
+                    .EditLesson(editingLesson, scheduleId)).Value;  //TODO: показ ошибки
             }
             catch
             {
@@ -227,8 +228,8 @@ public class LessonEditorViewModel : ViewModelBase
                     StudyGroup = SelectedStudyGroup, SchoolSubject = SelectedSubject,
                     LessonNumber = SelectedLessonNumber
                 };
-                result = await scope.ServiceProvider.GetRequiredService<ILessonDraftServices>()
-                    .EditDraftLesson(draft, scheduleId);
+                result = (await scope.ServiceProvider.GetRequiredService<ILessonDraftServices>()
+                    .EditDraftLesson(draft, scheduleId)).Value; //TODO: показ ошибки
             }
         }
 

@@ -59,11 +59,6 @@ public class Lesson(
         StudyGroup = studyGroup;
         return Result.Success();
     }
-    
-    public void SetStudySubgroup(StudySubgroup? subgroup)
-    {
-        StudySubgroup = subgroup;
-    }
 
     public Result SetClassroom(Classroom? classroom)
     {

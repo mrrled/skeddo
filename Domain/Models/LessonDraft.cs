@@ -56,11 +56,6 @@ public class LessonDraft(
         StudyGroup = studyGroup;
     }
     
-    public void SetStudySubgroup(StudySubgroup? subgroup)
-    {
-        StudySubgroup = subgroup;
-    }
-
     public void SetClassroom(Classroom? classroom)
     {
         Classroom = classroom;

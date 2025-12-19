@@ -44,14 +44,14 @@ public class Schedule(
         lesson.SetStudySubgroup(studySubgroup);
         var editedLessons = UpdateAllLessons();
         editedLessons.Add(lesson);
-        return editedLessons;
+        return Result<List<Lesson>>.Success(editedLessons);
     }
 
-    public static Schedule CreateSchedule(Guid id, string? name)
+    public static Result<Schedule> CreateSchedule(Guid id, string? name)
     {
-        if (name is null)
-            throw new ArgumentNullException();
-        return new Schedule(id, name);
+        if (string.IsNullOrWhiteSpace(name))
+            return Result<Schedule>.Failure("Название расписания не может быть пустым.");
+        return Result<Schedule>.Success(new Schedule(id, name));
     }
 
     public Result SetName(string? name)
