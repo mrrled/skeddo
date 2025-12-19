@@ -68,12 +68,11 @@ public class LessonCardViewModel : ViewModelBase
         }
     }
 
-    // Логика цвета на основе предупреждений
     public string Color => lesson?.WarningType switch
     {
-        WarningType.Conflict => "LightCoral", // Ошибка/Конфликт
-        WarningType.Warning => "LemonChiffon", // Предупреждение
-        _ => "White" // Всё ок
+        WarningType.Conflict => "LightCoral",
+        WarningType.Warning => "LemonChiffon",
+        _ => "Transparent" 
     };
 
     public ICommand ClickCommand { get; }
