@@ -52,7 +52,7 @@ public class ClassroomEditorViewModel : ViewModelBase
         {
             // Создание нового
             var createClassroom = new CreateClassroomDto { Name = ClassroomName };
-            classroom = await service.AddClassroom(createClassroom);
+            classroom = (await service.AddClassroom(createClassroom)).Value; //TODO: показ ошибки
         }
         else
         {

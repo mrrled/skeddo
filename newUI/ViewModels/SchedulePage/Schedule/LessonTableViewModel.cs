@@ -164,7 +164,7 @@ public class LessonTableViewModel
         using var scope = scopeFactory.CreateScope();
 
         var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
-        var currentSchedule = await scheduleService.GetScheduleByIdAsync(Schedule.Id);
+        var currentSchedule = (await scheduleService.GetScheduleByIdAsync(Schedule.Id)).Value; //TODO: показ ошибки
         if (currentSchedule != null)
             Schedule = currentSchedule;
 

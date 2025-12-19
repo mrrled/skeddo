@@ -52,7 +52,7 @@ public class ScheduleEditorViewModel : ViewModelBase
         {
             // Создание нового
             var createSchedule = new CreateScheduleDto { Name = ScheduleName };
-            schedule = await service.AddSchedule(createSchedule);
+            schedule = (await service.AddSchedule(createSchedule)).Value; //TODO: показ ошибки
         }
         else
         {

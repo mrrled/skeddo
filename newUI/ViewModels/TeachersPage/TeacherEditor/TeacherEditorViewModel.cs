@@ -75,7 +75,7 @@ public class TeacherEditorViewModel : ViewModelBase
                 Name = TeacherName,
                 Patronymic = TeacherPatronymic
             };
-            teacher = await service.AddTeacher(createTeacher);
+            teacher = (await service.AddTeacher(createTeacher)).Value; //TODO: показ ошибки
         }
         else
         {

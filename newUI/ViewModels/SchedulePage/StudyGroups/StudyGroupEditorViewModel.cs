@@ -63,7 +63,7 @@ public class StudyGroupEditorViewModel : ViewModelBase
         if (editingStudyGroup == null)
         {
             var createStudyGroup = new CreateStudyGroupDto { Name = StudyGroupName };
-            studyGroup = await service.AddStudyGroup(createStudyGroup);
+            studyGroup = (await service.AddStudyGroup(createStudyGroup)).Value; //TODO: показ ошибки
         }
         else
         {

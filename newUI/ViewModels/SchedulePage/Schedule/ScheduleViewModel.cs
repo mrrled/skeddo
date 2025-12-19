@@ -134,7 +134,7 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
-        var schedule = await service.GetScheduleByIdAsync(id);
+        var schedule = (await service.GetScheduleByIdAsync(id)).Value; //TODO: показ ошибки
 
         if (existingTab != null)
         {
