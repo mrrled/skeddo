@@ -117,7 +117,10 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
                 throw new InvalidOperationException();
             lessonDbo.LessonNumberId = lessonNumber.Id;
             if (lesson.StudySubgroup is null)
+            {
+                lessonDbo.StudySubgroupId = null;
                 continue;
+            }
             var studySubgroup = await context.StudySubgroups
                 .FirstOrDefaultAsync(x => x.Name == lesson.StudySubgroup.Name
                                           && x.StudyGroup.Id == lesson.StudyGroup.Id);
