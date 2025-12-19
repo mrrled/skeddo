@@ -123,7 +123,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
                                           && x.StudyGroup.Id == lesson.StudyGroup.Id);
             if (studySubgroup is null)
                 throw new InvalidOperationException();
-            lessonDbo.StudySubgroupId = studySubgroup.Id;
+            lessonDbo.StudySubgroupId = studySubgroup?.Id;
         }
     }
 }

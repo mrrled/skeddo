@@ -23,18 +23,38 @@ public class LessonEditorViewModel : ViewModelBase
     private readonly LessonDto? editingLesson;
     private readonly Guid scheduleId;
     private readonly bool isPureCreation;
+    private bool showSubgroups;
 
     public bool IsEditMode => !isPureCreation;
+    public bool CanSeeSubgroups => StudySubgroups != null && StudySubgroups.Any();
+
+    public bool ShowSubgroups
+    {
+        get => showSubgroups;
+        set
+        {
+            if (SetProperty(ref showSubgroups, value))
+            {
+                if (value == false)
+                {
+                    SelectedStudySubgroup = null;
+                }
+                OnPropertyChanged(nameof(SelectedStudySubgroup));
+            }
+        }
+    }
 
     public AvaloniaList<TeacherDto> Teachers { get; } = new();
     public AvaloniaList<ClassroomDto> Classrooms { get; } = new();
     public AvaloniaList<StudyGroupDto> StudyGroups { get; } = new();
+    public AvaloniaList<StudySubgroupDto>? StudySubgroups { get; private set; } = new();
     public AvaloniaList<SchoolSubjectDto> Subjects { get; } = new();
     public AvaloniaList<LessonNumberDto> TimeSlots { get; } = new();
 
     private TeacherDto? selectedTeacher;
     private ClassroomDto? selectedClassroom;
     private StudyGroupDto? selectedStudyGroup;
+    private StudySubgroupDto? selectedStudySubgroup = null;
     private SchoolSubjectDto? selectedSubject;
     private LessonNumberDto? selectedLessonNumber;
 
@@ -53,7 +73,21 @@ public class LessonEditorViewModel : ViewModelBase
     public StudyGroupDto? SelectedStudyGroup
     {
         get => selectedStudyGroup;
-        set => SetProperty(ref selectedStudyGroup, value);
+        set
+        {
+            if (SetProperty(ref selectedStudyGroup, value))
+            {
+                StudySubgroups = value is null ? null : new AvaloniaList<StudySubgroupDto>(value.StudySubgroups);
+                OnPropertyChanged(nameof(StudySubgroups));
+                OnPropertyChanged(nameof(CanSeeSubgroups));
+            }
+        }
+    }
+
+    public StudySubgroupDto? SelectedStudySubgroup
+    {
+        get => selectedStudySubgroup;
+        set => SetProperty(ref selectedStudySubgroup, value);
     }
 
     public SchoolSubjectDto? SelectedSubject
@@ -70,7 +104,6 @@ public class LessonEditorViewModel : ViewModelBase
         get => selectedLessonNumber;
         set => SetProperty(ref selectedLessonNumber, value);
     }
-
     public ICommand SaveCommand { get; }
     public ICommand DeleteCommand { get; }
 
@@ -79,9 +112,9 @@ public class LessonEditorViewModel : ViewModelBase
         this.scopeFactory = scopeFactory;
         this.windowManager = windowManager;
         this.scheduleId = scheduleId;
-        this.isPureCreation = true;
-        this.HeaderText = "Добавление урока";
-        this.SaveCommand = new AsyncRelayCommand(SaveAsync, CanSave);
+        isPureCreation = true;
+        HeaderText = "Добавление урока";
+        SaveCommand = new AsyncRelayCommand(SaveAsync, CanSave);
         _ = LoadDataAsync();
     }
 
@@ -95,10 +128,15 @@ public class LessonEditorViewModel : ViewModelBase
         selectedTeacher = lesson.Teacher;
         selectedClassroom = lesson.Classroom;
         selectedStudyGroup = lesson.StudyGroup;
+        selectedStudySubgroup = lesson.StudySubgroup;
         selectedSubject = lesson.SchoolSubject;
         selectedLessonNumber = lesson.LessonNumber;
-
         DeleteCommand = new AsyncRelayCommand(DeleteAsync);
+        
+        if (lesson.StudySubgroup != null)
+        {
+            showSubgroups = true;
+        }
     }
 
     private bool CanSave() => SelectedSubject != null;
@@ -133,7 +171,19 @@ public class LessonEditorViewModel : ViewModelBase
         if (selectedTeacher != null) SelectedTeacher = Teachers.FirstOrDefault(x => x.Id == selectedTeacher.Id);
         if (selectedClassroom != null) SelectedClassroom = Classrooms.FirstOrDefault(x => x.Id == selectedClassroom.Id);
         if (selectedStudyGroup != null)
+        {
             SelectedStudyGroup = StudyGroups.FirstOrDefault(x => x.Id == selectedStudyGroup.Id);
+            if (selectedStudySubgroup != null && StudySubgroups != null)
+            {
+                SelectedStudySubgroup = StudySubgroups.FirstOrDefault(x => 
+                    x?.Name == selectedStudySubgroup?.Name);
+
+                if (SelectedStudySubgroup != null)
+                {
+                    ShowSubgroups = true;
+                }
+            }
+        }
         if (selectedSubject != null) SelectedSubject = Subjects.FirstOrDefault(x => x.Id == selectedSubject.Id);
         if (selectedLessonNumber != null)
             SelectedLessonNumber = TimeSlots.FirstOrDefault(x => x.Number == selectedLessonNumber.Number);
@@ -149,7 +199,7 @@ public class LessonEditorViewModel : ViewModelBase
             var res = await scope.ServiceProvider.GetRequiredService<ILessonServices>().AddLesson(new CreateLessonDto
             {
                 ScheduleId = scheduleId, Teacher = SelectedTeacher, Classroom = SelectedClassroom,
-                StudyGroup = SelectedStudyGroup, SchoolSubject = SelectedSubject, LessonNumber = SelectedLessonNumber
+                StudyGroup = SelectedStudyGroup, StudySubgroup = SelectedStudySubgroup, SchoolSubject = SelectedSubject, LessonNumber = SelectedLessonNumber
             }, scheduleId);
             result = res.IsDraft
                 ? EditLessonResult.Downgraded(res.LessonDraft!)
@@ -160,6 +210,7 @@ public class LessonEditorViewModel : ViewModelBase
             editingLesson.Teacher = SelectedTeacher;
             editingLesson.Classroom = SelectedClassroom;
             editingLesson.StudyGroup = SelectedStudyGroup;
+            editingLesson.StudySubgroup = SelectedStudySubgroup;
             editingLesson.SchoolSubject = SelectedSubject;
             editingLesson.LessonNumber = SelectedLessonNumber;
 

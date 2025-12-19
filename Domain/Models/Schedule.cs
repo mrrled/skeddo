@@ -24,7 +24,7 @@ public class Schedule(
     }
 
     public List<Lesson> EditLesson(Guid id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher,
-        StudyGroup? studyGroup,
+        StudyGroup? studyGroup, StudySubgroup? studySubgroup,
         Classroom? classroom, string? comment = null)
     {
         var lesson = Lessons.FirstOrDefault(x => x.Id == id);
@@ -34,6 +34,7 @@ public class Schedule(
         lesson.SetLessonNumber(lessonNumber);
         lesson.SetTeacher(teacher);
         lesson.SetStudyGroup(studyGroup);
+        lesson.SetStudySubgroup(studySubgroup);
         lesson.SetClassroom(classroom);
         lesson.SetComment(comment);
         var editedLessons = UpdateAllLessons();
@@ -71,8 +72,12 @@ public class Schedule(
             for (var j = i + 1; j < lessons.Count; j++)
             {
                 var lesson2 = lessons[j];
+                var lessonGroupConflict =
+                    lesson1.StudyGroup == lesson2.StudyGroup
+                    && (lesson1.StudySubgroup?.Name == lesson2.StudySubgroup?.Name);
+                        // || (lesson1.StudySubgroup == null ^ lesson2.StudySubgroup == null));
                 if (lesson1.LessonNumber == lesson2.LessonNumber &&
-                    lesson1.StudyGroup == lesson2.StudyGroup)
+                    lessonGroupConflict)
                 {
                     lesson1.SetWarningType(WarningType.Conflict);
                     lesson2.SetWarningType(WarningType.Conflict);

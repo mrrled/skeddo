@@ -83,6 +83,27 @@
                 </ComboBox>
             </Border>
         </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding CanSeeSubgroups}">
+            <TextBlock Text="" Classes="Label" />
+            <CheckBox Content="Указать подгруппу"
+                      IsChecked="{Binding ShowSubgroups}"
+                      Margin="0,5,0,0" />
+        </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding ShowSubgroups}">
+            <TextBlock Text="Подгруппа:" Classes="Label" />
+            <Border Classes="InputWrapper">
+                <ComboBox ItemsSource="{Binding StudySubgroups}" SelectedItem="{Binding SelectedStudySubgroup}"
+                          HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </Border>
+        </StackPanel>
 
         <StackPanel Orientation="Horizontal" Spacing="10">
             <TextBlock Text="Кабинет:" Classes="Label" />

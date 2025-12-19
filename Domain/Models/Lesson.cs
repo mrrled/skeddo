@@ -55,6 +55,11 @@ public class Lesson(
             throw new ArgumentNullException(nameof(studyGroup));
         StudyGroup = studyGroup;
     }
+    
+    public void SetStudySubgroup(StudySubgroup? subgroup)
+    {
+        StudySubgroup = subgroup;
+    }
 
     public void SetClassroom(Classroom? classroom)
     {

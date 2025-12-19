@@ -87,6 +87,9 @@ public class LessonServices(
         var studyGroup = lessonDto.StudyGroup is null
             ? null
             : await studyGroupRepository.GetStudyGroupByIdAsync(lessonDto.StudyGroup.Id);
+        var studySubgroup = lessonDto.StudySubgroup is null
+            ? null
+            : studyGroup?.StudySubgroups.FirstOrDefault(x => x.Name == lessonDto.StudySubgroup.Name);
         var classroom = lessonDto.Classroom is null
             ? null
             : await classroomRepository.GetClassroomByIdAsync(lessonDto.Classroom.Id);
@@ -98,6 +101,7 @@ public class LessonServices(
             draft.SetLessonNumber(lessonNumber);
             draft.SetTeacher(teacher);
             draft.SetStudyGroup(studyGroup);
+            draft.SetStudySubgroup(studySubgroup);
             draft.SetClassroom(classroom);
             draft.SetComment(lessonDto.Comment);
             await lessonDraftRepository.AddAsync(draft, schedule.Id);
@@ -112,6 +116,7 @@ public class LessonServices(
             lessonNumber,
             teacher,
             studyGroup,
+            studySubgroup,
             classroom,
             lessonDto.Comment
         );
