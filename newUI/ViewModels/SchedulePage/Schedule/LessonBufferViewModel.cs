@@ -59,7 +59,9 @@ public class LessonBufferViewModel : ViewModelBase
     {
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<ILessonDraftServices>();
-        await service.ClearDraftsByScheduleId(scheduleId);
+        var result = await service.ClearDraftsByScheduleId(scheduleId);
+        if (result.IsFailure)
+            return; //TODO: показ ошибки
         await RefreshAsync();
     }
 }

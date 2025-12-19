@@ -36,15 +36,17 @@ public class LessonDraftServices(
 
     public async Task<Result<EditLessonResult>> EditDraftLesson(LessonDraftDto lessonDraftDto, Guid scheduleId)
     {
+        if (lessonDraftDto.SchoolSubject is null)
+            return Result<EditLessonResult>.Failure("Нельзя убрать предмет у урока.");
         var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId);
         if (schedule is null)
             return Result<EditLessonResult>.Failure("Расписание не найдено.");
         var lessonDraft = schedule.LessonDrafts.FirstOrDefault(x => x.Id == lessonDraftDto.Id);
         if (lessonDraft is null)
             return Result<EditLessonResult>.Failure("Урок не найден.");
-        var schoolSubject = lessonDraftDto.SchoolSubject is null
-            ? null
-            : await schoolSubjectRepository.GetSchoolSubjectByIdAsync(lessonDraftDto.SchoolSubject.Id);
+        var schoolSubject = await schoolSubjectRepository.GetSchoolSubjectByIdAsync(lessonDraftDto.SchoolSubject.Id);
+        if (schoolSubject is null)
+            return Result<EditLessonResult>.Failure("Предмет не найден.");
         var lessonNumberCreateResult = lessonDraftDto.LessonNumber is null
             ? null
             : LessonNumber.CreateLessonNumber(lessonDraftDto.LessonNumber.Number, lessonDraftDto.LessonNumber.Time);
@@ -64,9 +66,7 @@ public class LessonDraftServices(
         var classroom = lessonDraftDto.Classroom is null
             ? null
             : await classroomRepository.GetClassroomByIdAsync(lessonDraftDto.Classroom.Id);
-        if (lessonDraftDto.SchoolSubject is null || lessonDraftDto.LessonNumber is null ||
-            lessonDraftDto.Teacher is null ||
-            lessonDraftDto.Classroom is null || lessonDraftDto.StudyGroup is null)
+        if (lessonDraftDto.SchoolSubject is null || lessonDraftDto.LessonNumber is null || lessonDraftDto.StudyGroup is null)
         {
             lessonDraft.SetStudySubgroup(studySubgroupCreateResult?.Value);
             lessonDraft.SetSchoolSubject(schoolSubject);
@@ -105,13 +105,13 @@ public class LessonDraftServices(
         return await TrySaveChangesAsync("Не удалось удалить урок. Попробуйте позже.");
     }
 
-    public async Task ClearDraftsByScheduleId(Guid scheduleId)
+    public async Task<Result> ClearDraftsByScheduleId(Guid scheduleId)
     {
         var drafts = await lessonDraftRepository.GetLessonDraftsByScheduleId(scheduleId);
         foreach (var draft in drafts)
         {
             await lessonDraftRepository.Delete(draft);
         }
-        await unitOfWork.SaveChangesAsync();
+        return await TrySaveChangesAsync("Не удалось очистить буфер. Попробуйте позже.");
     }
 }
