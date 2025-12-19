@@ -35,13 +35,13 @@ public class Schedule(
         var updateResult = Result.Combine(
             lesson.SetSchoolSubject(subject),
             lesson.SetLessonNumber(lessonNumber),
-            lesson.SetTeacher(teacher),
-            lesson.SetStudyGroup(studyGroup),
-            lesson.SetClassroom(classroom));
+            lesson.SetStudyGroup(studyGroup));
         if (updateResult.IsFailure)
             return Result<List<Lesson>>.Failure(updateResult.Error);
         lesson.SetComment(comment);
         lesson.SetStudySubgroup(studySubgroup);
+        lesson.SetTeacher(teacher);
+        lesson.SetClassroom(classroom);
         var editedLessons = UpdateAllLessons();
         editedLessons.Add(lesson);
         return Result<List<Lesson>>.Success(editedLessons);
@@ -103,7 +103,7 @@ public class Schedule(
                 if (lesson1.LessonNumber != lesson2.LessonNumber)
                     continue;
 
-                var sameTeacher = lesson1.Teacher.Id == lesson2.Teacher.Id;
+                var sameTeacher = lesson1.Teacher?.Id == lesson2.Teacher?.Id;
                 var sameClassroom = lesson1.Classroom == lesson2.Classroom;
 
                 if (sameTeacher ^ sameClassroom)

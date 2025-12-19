@@ -5,9 +5,9 @@ public class Lesson(
     Guid scheduleId,
     SchoolSubject schoolSubject,
     LessonNumber lessonNumber,
-    Teacher teacher,
+    Teacher? teacher,
     StudyGroup studyGroup,
-    Classroom classroom,
+    Classroom? classroom,
     StudySubgroup? studySubgroup = null,
     string? comment = null,
     WarningType warningType = WarningType.Normal
@@ -16,10 +16,10 @@ public class Lesson(
     public Guid ScheduleId { get; private set; } = scheduleId;
     public SchoolSubject SchoolSubject { get; private set; } = schoolSubject;
     public LessonNumber LessonNumber { get; private set; } = lessonNumber;
-    public Teacher Teacher { get; private set; } = teacher;
+    public Teacher? Teacher { get; private set; } = teacher;
     public StudyGroup StudyGroup { get; private set; } = studyGroup;
     public StudySubgroup? StudySubgroup { get; private set; } = studySubgroup;
-    public Classroom Classroom { get; private set; } = classroom;
+    public Classroom? Classroom { get; private set; } = classroom;
     public string? Comment { get; private set; } = comment;
     public WarningType WarningType { get; private set; } = warningType;
     
@@ -44,12 +44,9 @@ public class Lesson(
         return Result.Success();
     }
 
-    public Result SetTeacher(Teacher? teacher)
+    public void SetTeacher(Teacher? teacher)
     {
-        if (teacher is null)
-            return Result.Failure("Урок не может быть без учителя");
         Teacher = teacher;
-        return Result.Success();
     }
 
     public Result SetStudyGroup(StudyGroup? studyGroup)
@@ -60,12 +57,9 @@ public class Lesson(
         return Result.Success();
     }
 
-    public Result SetClassroom(Classroom? classroom)
+    public void SetClassroom(Classroom? classroom)
     {
-        if (classroom is null)
-            return Result.Failure("Урок не может быть без аудитории");
         Classroom = classroom;
-        return Result.Success();
     }
 
     public void SetStudySubgroup(StudySubgroup? studySubgroup)

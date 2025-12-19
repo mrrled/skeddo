@@ -8,12 +8,8 @@ public class LessonFactory : ILessonFactory
     {
         if (lessonDraft.StudyGroup is null)
             return Result<Lesson>.Failure("StudyGroup cannot be empty");
-        if (lessonDraft.Teacher is null)
-            return Result<Lesson>.Failure("Teacher cannot be empty");
         if (lessonDraft.LessonNumber is null)
             return Result<Lesson>.Failure("LessonNumber cannot be empty");
-        if (lessonDraft.Classroom is null)
-            return Result<Lesson>.Failure("Classroom cannot be empty");
         var lesson = new Lesson(lessonDraft.Id,
             lessonDraft.ScheduleId,
             lessonDraft.SchoolSubject,

@@ -38,8 +38,6 @@ public class LessonServices(
         var classroom = lessonDto.Classroom is null
             ? null
             : await classroomRepository.GetClassroomByIdAsync(lessonDto.Classroom.Id);
-        if (classroom is null)
-            return Result<CreateLessonResult>.Failure("Аудитория не найдена.");
         var schoolSubject = await schoolSubjectRepository.GetSchoolSubjectByIdAsync(lessonDto.SchoolSubject.Id);
         if (schoolSubject is null)
             return Result<CreateLessonResult>.Failure("Предмет не найден.");
@@ -114,8 +112,7 @@ public class LessonServices(
         var classroom = lessonDto.Classroom is null
             ? null
             : await classroomRepository.GetClassroomByIdAsync(lessonDto.Classroom.Id);
-        if (lessonDto.SchoolSubject is null || lessonDto.LessonNumber is null || lessonDto.Teacher is null ||
-            lessonDto.Classroom is null || lessonDto.StudyGroup is null)
+        if (lessonDto.SchoolSubject is null || lessonDto.LessonNumber is null || lessonDto.StudyGroup is null)
         {
             var draft = LessonDraft.CreateFromLesson(lesson);
             draft.SetSchoolSubject(schoolSubject);
