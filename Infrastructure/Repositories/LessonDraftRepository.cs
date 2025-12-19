@@ -72,8 +72,38 @@ public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepo
             .Include(x => x.LessonNumber)
             .Include(x => x.StudySubgroup)
             .FirstOrDefaultAsync(x => x.Id == lessonDraft.Id);
+
         if (lessonDraftDbo is null)
             throw new InvalidOperationException($"Lesson draft with id {lessonDraft.Id} not found.");
+
+        // 1. Сначала выполняем общий маппинг
         DboMapper.Mapper.Map(lessonDraft, lessonDraftDbo);
+
+        // 2. ВРУЧНУЮ обновляем LessonNumberId
+        // Находим Id записи в справочнике по номеру урока и расписанию
+        if (lessonDraft.LessonNumber != null)
+        {
+            var lessonNumberDbo = await context.LessonNumbers
+                .FirstOrDefaultAsync(x => x.ScheduleId == lessonDraft.ScheduleId
+                                          && x.Number == lessonDraft.LessonNumber.Number);
+            lessonDraftDbo.LessonNumberId = lessonNumberDbo?.Id;
+        }
+        else
+        {
+            lessonDraftDbo.LessonNumberId = null;
+        }
+
+        // 3. ВРУЧНУЮ обновляем StudySubgroupId
+        if (lessonDraft.StudySubgroup != null && lessonDraft.StudyGroup != null)
+        {
+            var studySubgroupDbo = await context.StudySubgroups
+                .FirstOrDefaultAsync(x => x.StudyGroupId == lessonDraft.StudyGroup.Id
+                                          && x.Name == lessonDraft.StudySubgroup.Name);
+            lessonDraftDbo.StudySubgroupId = studySubgroupDbo?.Id;
+        }
+        else
+        {
+            lessonDraftDbo.StudySubgroupId = null;
+        }
     }
 }

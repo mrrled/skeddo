@@ -39,6 +39,7 @@ public class LessonEditorViewModel : ViewModelBase
                 {
                     SelectedStudySubgroup = null;
                 }
+
                 OnPropertyChanged(nameof(SelectedStudySubgroup));
             }
         }
@@ -69,6 +70,12 @@ public class LessonEditorViewModel : ViewModelBase
         get => selectedClassroom;
         set => SetProperty(ref selectedClassroom, value);
     }
+
+    public TeacherDto? OriginalTeacher { get; private set; }
+    public ClassroomDto? OriginalClassroom { get; private set; }
+    public StudyGroupDto? OriginalStudyGroup { get; private set; }
+    public SchoolSubjectDto? OriginalSubject { get; private set; }
+    public LessonNumberDto? OriginalLessonNumber { get; private set; }
 
     public StudyGroupDto? SelectedStudyGroup
     {
@@ -104,6 +111,7 @@ public class LessonEditorViewModel : ViewModelBase
         get => selectedLessonNumber;
         set => SetProperty(ref selectedLessonNumber, value);
     }
+
     public ICommand SaveCommand { get; }
     public ICommand DeleteCommand { get; }
 
@@ -132,7 +140,7 @@ public class LessonEditorViewModel : ViewModelBase
         selectedSubject = lesson.SchoolSubject;
         selectedLessonNumber = lesson.LessonNumber;
         DeleteCommand = new AsyncRelayCommand(DeleteAsync);
-        
+
         if (lesson.StudySubgroup != null)
         {
             showSubgroups = true;
@@ -175,7 +183,7 @@ public class LessonEditorViewModel : ViewModelBase
             SelectedStudyGroup = StudyGroups.FirstOrDefault(x => x.Id == selectedStudyGroup.Id);
             if (selectedStudySubgroup != null && StudySubgroups != null)
             {
-                SelectedStudySubgroup = StudySubgroups.FirstOrDefault(x => 
+                SelectedStudySubgroup = StudySubgroups.FirstOrDefault(x =>
                     x?.Name == selectedStudySubgroup?.Name);
 
                 if (SelectedStudySubgroup != null)
@@ -184,56 +192,99 @@ public class LessonEditorViewModel : ViewModelBase
                 }
             }
         }
+
         if (selectedSubject != null) SelectedSubject = Subjects.FirstOrDefault(x => x.Id == selectedSubject.Id);
-        if (selectedLessonNumber != null)
-            SelectedLessonNumber = TimeSlots.FirstOrDefault(x => x.Number == selectedLessonNumber.Number);
+        if (selectedLessonNumber != null) SelectedLessonNumber = TimeSlots.FirstOrDefault(x => x.Number == selectedLessonNumber.Number);
     }
 
     private async Task SaveAsync()
     {
         using var scope = scopeFactory.CreateScope();
-        EditLessonResult result;
+        EditLessonResult? result = null;
 
-        if (editingLesson == null || editingLesson.Id == Guid.Empty)
+        if (isPureCreation || editingLesson == null || editingLesson.Id == Guid.Empty)
         {
-            var res = (await scope.ServiceProvider.GetRequiredService<ILessonServices>().AddLesson(new CreateLessonDto
+            // СОЗДАНИЕ НОВОГО
+            var createDto = new CreateLessonDto
             {
-                ScheduleId = scheduleId, Teacher = SelectedTeacher, Classroom = SelectedClassroom,
-                StudyGroup = SelectedStudyGroup, StudySubgroup = SelectedStudySubgroup, SchoolSubject = SelectedSubject,
-                LessonNumber = SelectedLessonNumber
-            }, scheduleId)).Value;   //TODO: показ ошибки
-            result = res.IsDraft
-                ? EditLessonResult.Downgraded(res.LessonDraft!)
-                : EditLessonResult.Success(res.Lesson!);
+                ScheduleId = scheduleId,
+                Teacher = SelectedTeacher,
+                Classroom = SelectedClassroom,
+                StudyGroup = SelectedStudyGroup,
+                StudySubgroup = SelectedStudySubgroup,
+                SchoolSubject = SelectedSubject,
+                LessonNumber = SelectedLessonNumber,
+                Comment = ""
+            };
+
+            var response = await scope.ServiceProvider.GetRequiredService<ILessonServices>()
+                .AddLesson(createDto, scheduleId);
+
+            if (response != null && response.IsSuccess)
+            {
+                var res = response.Value;
+                result = res.IsDraft
+                    ? EditLessonResult.Downgraded(res.LessonDraft!)
+                    : EditLessonResult.Success(res.Lesson!);
+            }
+            else if (response != null)
+            {
+                // Если ошибка (например, не выбрали Предмет)
+                // Здесь можно вывести уведомление пользователю
+                return;
+            }
         }
         else
         {
-            editingLesson.Teacher = SelectedTeacher;
-            editingLesson.Classroom = SelectedClassroom;
-            editingLesson.StudyGroup = SelectedStudyGroup;
-            editingLesson.StudySubgroup = SelectedStudySubgroup;
-            editingLesson.SchoolSubject = SelectedSubject;
-            editingLesson.LessonNumber = SelectedLessonNumber;
+            // РЕДАКТИРОВАНИЕ
+            var lessonDto = new LessonDto
+            {
+                Id = editingLesson.Id,
+                ScheduleId = scheduleId,
+                Teacher = SelectedTeacher,
+                Classroom = SelectedClassroom,
+                StudyGroup = SelectedStudyGroup,
+                StudySubgroup = SelectedStudySubgroup,
+                SchoolSubject = SelectedSubject,
+                LessonNumber = SelectedLessonNumber
+            };
 
-            try
+            var lessonResponse = await scope.ServiceProvider.GetRequiredService<ILessonServices>()
+                .EditLesson(lessonDto, scheduleId);
+
+            if (lessonResponse != null && lessonResponse.IsSuccess)
             {
-                result = (await scope.ServiceProvider.GetRequiredService<ILessonServices>()
-                    .EditLesson(editingLesson, scheduleId)).Value;  //TODO: показ ошибки
+                result = lessonResponse.Value;
             }
-            catch
+            else
             {
-                var draft = new LessonDraftDto
+                var draftDto = new LessonDraftDto
                 {
-                    Id = editingLesson.Id, Teacher = SelectedTeacher, Classroom = SelectedClassroom,
-                    StudyGroup = SelectedStudyGroup, SchoolSubject = SelectedSubject,
+                    Id = editingLesson.Id,
+                    ScheduleId = scheduleId,
+                    Teacher = SelectedTeacher,
+                    Classroom = SelectedClassroom,
+                    StudyGroup = SelectedStudyGroup,
+                    StudySubgroup = SelectedStudySubgroup,
+                    SchoolSubject = SelectedSubject,
                     LessonNumber = SelectedLessonNumber
                 };
-                result = (await scope.ServiceProvider.GetRequiredService<ILessonDraftServices>()
-                    .EditDraftLesson(draft, scheduleId)).Value; //TODO: показ ошибки
+
+                var draftResponse = await scope.ServiceProvider.GetRequiredService<ILessonDraftServices>()
+                    .EditDraftLesson(draftDto, scheduleId);
+
+                if (draftResponse != null && draftResponse.IsSuccess)
+                {
+                    result = draftResponse.Value;
+                }
             }
         }
 
-        LessonSaved?.Invoke(result);
+        if (result != null)
+        {
+            LessonSaved?.Invoke(result);
+        }
+
         Window?.Close();
     }
 
@@ -246,15 +297,14 @@ public class LessonEditorViewModel : ViewModelBase
             if (idToDelete != Guid.Empty)
             {
                 using var scope = scopeFactory.CreateScope();
-                try
-                {
-                    await scope.ServiceProvider.GetRequiredService<ILessonServices>()
-                        .DeleteLesson(editingLesson!, scheduleId);
-                }
-                catch
+                var lessonDto = new LessonDto { Id = idToDelete, ScheduleId = scheduleId };
+                var res = await scope.ServiceProvider.GetRequiredService<ILessonServices>()
+                    .DeleteLesson(lessonDto, scheduleId);
+
+                if (res == null || !res.IsSuccess)
                 {
                     await scope.ServiceProvider.GetRequiredService<ILessonDraftServices>()
-                        .DeleteLessonDraft(new LessonDraftDto { Id = idToDelete }, scheduleId);
+                        .DeleteLessonDraft(new LessonDraftDto { Id = idToDelete, ScheduleId = scheduleId }, scheduleId);
                 }
             }
 

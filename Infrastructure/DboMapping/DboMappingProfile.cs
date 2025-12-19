@@ -24,7 +24,8 @@ public class DboMappingProfile : Profile
             .ForMember(dest => dest.ScheduleId, opt => opt.Ignore())
             .ForMember(dest => dest.Schedule, opt => opt.Ignore())
             .ForMember(dest => dest.Id, opt => opt.Ignore());
-        CreateMap<LessonNumberDbo, LessonNumber>();
+        CreateMap<LessonNumberDbo, LessonNumber>()
+            .ConstructUsing(src => new LessonNumber(src.Number, src.Time));
         CreateMap<TeacherDbo, Teacher>()
             .ConstructUsing((src, ctx) => new Teacher(
                 src.Id,
@@ -73,14 +74,15 @@ public class DboMappingProfile : Profile
         CreateMap<LessonDraftDbo, LessonDraft>()
             .ConstructUsing((src, ctx) => new LessonDraft(
                 src.Id,
-                ctx.Mapper.Map<Guid>(src.ScheduleId),
+                src.ScheduleId ?? Guid.Empty,
                 ctx.Mapper.Map<SchoolSubject>(src.SchoolSubject),
                 ctx.Mapper.Map<LessonNumber>(src.LessonNumber),
                 ctx.Mapper.Map<Teacher>(src.Teacher),
                 ctx.Mapper.Map<StudyGroup>(src.StudyGroup),
-                ctx.Mapper.Map<Classroom>(src.Classroom)
+                ctx.Mapper.Map<Classroom>(src.Classroom),
+                ctx.Mapper.Map<StudySubgroup>(src.StudySubgroup)
             ))
-            .ForAllMembers(opt => opt.Ignore());;
+            .ForAllMembers(opt => opt.Ignore());
         CreateMap<LessonDraft, LessonDraftDbo>()
             .ForMember(dest => dest.LessonNumberId, opt => opt.Ignore())
             .ForMember(dest => dest.LessonNumber, opt => opt.Ignore())

@@ -34,6 +34,8 @@ public class LessonBufferViewModel : ViewModelBase
     public void AddMany(IEnumerable<LessonDraftDto> drafts)
     {
         LessonCards.Clear();
+        if (drafts == null) return;
+
         foreach (var draft in drafts)
         {
             var card = new LessonCardViewModel(scopeFactory, windowManager, async () => await RefreshAsync())
@@ -41,10 +43,21 @@ public class LessonBufferViewModel : ViewModelBase
                 Lesson = draft.ToLessonDto(),
                 IsVisible = true
             };
+
+            card.LessonUpdated += async _ =>
+            {
+                RequestTableRefresh?.Invoke(); // Обновить таблицу (урок добавился)
+                await RefreshAsync(); // Обновить буфер (черновик исчез)
+            };
+
+            card.LessonDeleted += async _ =>
+            {
+                RequestTableRefresh?.Invoke();
+                await RefreshAsync();
+            };
+
             LessonCards.Add(card);
         }
-
-        RequestTableRefresh?.Invoke();
     }
 
     public async Task RefreshAsync()
@@ -52,7 +65,12 @@ public class LessonBufferViewModel : ViewModelBase
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<ILessonDraftServices>();
         var drafts = await service.GetLessonDraftsByScheduleId(scheduleId);
-        AddMany(drafts);
+
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            AddMany(drafts);
+            OnPropertyChanged(nameof(LessonCards));
+        });
     }
 
     private async Task ClearBufferAsync()

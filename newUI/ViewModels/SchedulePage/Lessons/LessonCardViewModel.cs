@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
-using Application.DtoExtensions; // Для ToLessonDto()
+using Application.DtoExtensions;
 using Application.IServices;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +13,7 @@ namespace newUI.ViewModels.SchedulePage.Lessons;
 
 public class LessonCardViewModel : ViewModelBase
 {
-    private LessonDto lesson;
+    private LessonDto? lesson;
     private bool isVisible;
     private int columnSpan = 1;
     private bool isGroupWideLesson;
@@ -22,7 +22,6 @@ public class LessonCardViewModel : ViewModelBase
     private readonly IWindowManager windowManager;
     private readonly Action? refreshCallback;
 
-    // События
     public event Action<LessonDto>? LessonUpdated;
     public event Action<LessonDraftDto>? LessonDowngraded;
     public event Action<Guid>? LessonDeleted;
@@ -55,14 +54,13 @@ public class LessonCardViewModel : ViewModelBase
         set => SetProperty(ref isGroupWideLesson, value);
     }
 
-    public LessonDto Lesson
+    public LessonDto? Lesson
     {
         get => lesson;
         set
         {
             if (SetProperty(ref lesson, value))
             {
-                // При обновлении урока обязательно пересчитываем цвет
                 OnPropertyChanged(nameof(Color));
             }
         }
@@ -72,7 +70,7 @@ public class LessonCardViewModel : ViewModelBase
     {
         WarningType.Conflict => "LightCoral",
         WarningType.Warning => "LemonChiffon",
-        _ => "Transparent" 
+        _ => "Transparent"
     };
 
     public ICommand ClickCommand { get; }
@@ -81,18 +79,26 @@ public class LessonCardViewModel : ViewModelBase
     {
         if (Lesson == null) return;
 
-        // Создаем редактор: если Id пустой — режим создания, иначе — редактирования
-        LessonEditorViewModel editVm = Lesson.Id == Guid.Empty
-            ? new LessonEditorViewModel(scopeFactory, windowManager, Lesson.ScheduleId)
+        LessonEditorViewModel editVm;
+
+        if (Lesson.Id == Guid.Empty)
+        {
+            editVm = new LessonEditorViewModel(scopeFactory, windowManager, Lesson.ScheduleId)
             {
                 SelectedStudyGroup = Lesson.StudyGroup,
-                SelectedLessonNumber = Lesson.LessonNumber
-            }
-            : new LessonEditorViewModel(scopeFactory, windowManager, Lesson);
+                SelectedLessonNumber = Lesson.LessonNumber,
+                SelectedStudySubgroup = Lesson.StudySubgroup
+            };
+        }
+        else
+        {
+            editVm = new LessonEditorViewModel(scopeFactory, windowManager, Lesson);
+        }
 
-        // Подписка на сохранение
         editVm.LessonSaved += result =>
         {
+            if (result == null) return;
+
             if (result.IsDraft && result.LessonDraft != null)
             {
                 Lesson = result.LessonDraft.ToLessonDto();
@@ -104,10 +110,10 @@ public class LessonCardViewModel : ViewModelBase
                 LessonUpdated?.Invoke(result.Lesson);
             }
 
+            // Это вызывает Buffer.RefreshAsync()
             refreshCallback?.Invoke();
         };
 
-        // Подписка на удаление
         editVm.LessonDeleted += id =>
         {
             LessonDeleted?.Invoke(id);

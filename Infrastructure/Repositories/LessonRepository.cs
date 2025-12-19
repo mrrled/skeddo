@@ -78,16 +78,19 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
     public async Task UpdateAsync(Lesson lesson)
     {
         var lessonDbo = await context.Lessons
-            .Include(x => x.Teacher)
-            .Include(x => x.Classroom)
-            .Include(x => x.StudyGroup)
-            .Include(x => x.SchoolSubject)
-            .Include(x => x.LessonNumber)
-            .Include(x => x.StudySubgroup)
             .FirstOrDefaultAsync(x => x.Id == lesson.Id);
+
         if (lessonDbo is null)
             throw new InvalidOperationException($"Lesson with id {lesson.Id} not found.");
+
         DboMapper.Mapper.Map(lesson, lessonDbo);
+
+        // Добавляем ручную привязку номера урока
+        var lessonNumberDbo = await context.LessonNumbers
+            .FirstOrDefaultAsync(x => x.ScheduleId == lesson.ScheduleId
+                                      && x.Number == lesson.LessonNumber.Number);
+
+        lessonDbo.LessonNumberId = lessonNumberDbo?.Id ?? lessonDbo.LessonNumberId;
     }
 
     public async Task Delete(Lesson lesson)
@@ -122,6 +125,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
                 lessonDbo.StudySubgroupId = null;
                 continue;
             }
+
             var studySubgroup = await context.StudySubgroups
                 .FirstOrDefaultAsync(x => x.Name == lesson.StudySubgroup.Name
                                           && x.StudyGroup.Id == lesson.StudyGroup.Id);

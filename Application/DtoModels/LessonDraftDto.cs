@@ -18,10 +18,14 @@ public class LessonDraftDto
     {
         return new LessonDto
         {
+            Id = this.Id,
+            ScheduleId = this.ScheduleId,
             SchoolSubject = this.SchoolSubject,
             LessonNumber = this.LessonNumber,
             Teacher = this.Teacher,
             StudyGroup = this.StudyGroup,
+            StudySubgroup = this.StudySubgroup,
+            Classroom = this.Classroom,
             Comment = this.Comment
         };
     }

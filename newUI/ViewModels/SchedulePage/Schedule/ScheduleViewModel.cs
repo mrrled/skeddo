@@ -222,12 +222,14 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
         vm.LessonSaved += async result =>
         {
-            if (result.IsDraft && result.LessonDraft != null)
+            // Всегда обновляем буфер, чтобы новый черновик появился там
+            if (Buffer != null)
             {
-                // Здесь можно добавить проверку на дубликат, если нужно
-                Buffer?.AddMany(new[] { result.LessonDraft });
+                await Buffer.RefreshAsync();
             }
-            else if (CurrentScheduleTable != null)
+
+            // Если это полноценный урок, обновляем таблицу
+            if (!result.IsDraft && CurrentScheduleTable != null)
             {
                 await CurrentScheduleTable.RefreshAsync();
             }
