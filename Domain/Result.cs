@@ -3,7 +3,7 @@
 public class Result
 {
     public bool IsSuccess { get; }
-    public string? Error { get; }
+    public string Error { get; }
     public bool IsFailure => !IsSuccess;
 
     private Result(bool isSuccess, string error)
@@ -11,7 +11,7 @@ public class Result
         IsSuccess = isSuccess;
         Error = error;
     }
-    public static Result Success() => new(true, null);
+    public static Result Success() => new(true, string.Empty);
     public static Result Failure(string error) => new(false, error);
     
     public static Result Combine(params Result[] results)

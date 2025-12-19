@@ -8,7 +8,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWork unitOfWork, ILogger logger) : BaseService(unitOfWork, logger), IScheduleServices
+public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWork unitOfWork, ILogger logger)
+    : BaseService(unitOfWork, logger), IScheduleServices
 {
     public async Task<List<ScheduleDto>> FetchSchedulesFromBackendAsync()
     {
@@ -22,9 +23,12 @@ public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWor
         var scheduleCreateResult = Schedule.CreateSchedule(id, scheduleDto.Name);
         if (scheduleCreateResult.IsFailure)
             return Result<ScheduleDto>.Failure(scheduleCreateResult.Error);
-        await scheduleRepository.AddAsync(scheduleCreateResult.Value, 1);
+        var addResult = await ExecuteRepositoryTask(() => scheduleRepository.AddAsync(scheduleCreateResult.Value, 1),
+            "Ошибка при добавлении расписания. Попробуйте позже.");
+        if (addResult.IsFailure)
+            return Result<ScheduleDto>.Failure(addResult.Error);
         return await TrySaveChangesAsync(scheduleCreateResult.Value.ToScheduleDto(),
-            "Не удалось сохранить расписание.  Попробуйте позже.");
+            "Не удалось сохранить расписание. Попробуйте позже.");
     }
 
     public async Task<Result> EditSchedule(ScheduleDto scheduleDto)
@@ -36,9 +40,13 @@ public class ScheduleServices(IScheduleRepository scheduleRepository, IUnitOfWor
         {
             var renameResult = schedule.SetName(scheduleDto.Name);
             if (renameResult.IsFailure)
-                return Result.Failure(renameResult.Error);
+                return renameResult;
         }
-        await scheduleRepository.UpdateAsync(schedule);
+
+        var updateResult = await ExecuteRepositoryTask(() => scheduleRepository.UpdateAsync(schedule),
+            "Ошибка при изменении расписания. Попробуйте позже.");
+        if (updateResult.IsFailure)
+            return updateResult;
         return await TrySaveChangesAsync("Не удалось изменить расписание. Попробуйте позже.");
     }
 

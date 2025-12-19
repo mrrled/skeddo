@@ -14,7 +14,7 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
             .Include(x => x.LessonNumbers)
             .FirstOrDefaultAsync(x => x.Id == scheduleId);
         if (schedule is null)
-            throw new NullReferenceException();
+            throw new InvalidOperationException($"Schedule with id {scheduleId} not found.");
         return schedule.LessonNumbers.ToLessonNumbers();
     }
 
@@ -27,7 +27,7 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
             .Where(x => x.Id == scheduleId)
             .FirstOrDefaultAsync();
         if (schedule is null)
-            throw new NullReferenceException();
+            throw new InvalidOperationException($"Schedule with id {scheduleId} not found.");
         await context.LessonNumbers.AddAsync(lessonNumberDbo);
     }
 
@@ -36,7 +36,8 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
         var lessonNumberDbo = await context.LessonNumbers
             .FirstOrDefaultAsync(x => x.ScheduleId == scheduleId && x.Number == oldLessonNumber.Number);
         if (lessonNumberDbo is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(
+                $"Lesson number with number {oldLessonNumber.Number} and schedule id {scheduleId} not found.");
         var newLessonNumberDbo = newLessonNumber.ToLessonNumberDbo();
         newLessonNumberDbo.ScheduleId = scheduleId;
         DboMapper.Mapper.Map(newLessonNumberDbo, lessonNumberDbo);
@@ -44,8 +45,8 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
 
     public async Task Delete(LessonNumber lessonNumber, Guid scheduleId)
     {
-        await context.LessonNumbers
-            .Where(x => x.ScheduleId == scheduleId && x.Number == lessonNumber.Number)
-            .ExecuteDeleteAsync();
+        var dbo = await context.LessonNumbers
+            .FirstAsync(x => x.ScheduleId == scheduleId && x.Number == lessonNumber.Number);
+        context.LessonNumbers.Remove(dbo);
     }
 }

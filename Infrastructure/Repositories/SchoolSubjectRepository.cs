@@ -19,9 +19,7 @@ public class SchoolSubjectRepository(ScheduleDbContext context) : ISchoolSubject
     public async Task<SchoolSubject?> GetSchoolSubjectByIdAsync(Guid schoolSubjectId)
     {
         var schoolSubjectDbo = await context.SchoolSubjects.FirstOrDefaultAsync(s => s.Id == schoolSubjectId);
-        if (schoolSubjectDbo is null)
-            return null;
-        return schoolSubjectDbo.ToSchoolSubject();
+        return schoolSubjectDbo?.ToSchoolSubject();
     }
 
     public async Task<List<SchoolSubject>> GetSchoolSubjectListByIdsAsync(List<Guid> schoolSubjectIds)
@@ -39,7 +37,7 @@ public class SchoolSubjectRepository(ScheduleDbContext context) : ISchoolSubject
             .Where(x => x.Id == scheduleGroupId)
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Schedule group with id {scheduleGroupId} not found.");
         schoolSubjectDbo.ScheduleGroupId = scheduleGroupId;
         await context.SchoolSubjects.AddAsync(schoolSubjectDbo);
     }
@@ -48,12 +46,13 @@ public class SchoolSubjectRepository(ScheduleDbContext context) : ISchoolSubject
     {
         var schoolSubjectDbo = await context.SchoolSubjects.FirstOrDefaultAsync(x => x.Id == schoolSubject.Id);
         if (schoolSubjectDbo is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Schedule with id {schoolSubject.Id} not found.");
         DboMapper.Mapper.Map(schoolSubject, schoolSubjectDbo);
     }
 
     public async Task Delete(SchoolSubject schoolSubject)
     {
-        await context.SchoolSubjects.Where(x => x.Id == schoolSubject.Id).ExecuteDeleteAsync();
+        var dbo = await context.SchoolSubjects.FirstAsync(x => x.Id == schoolSubject.Id);
+        context.Remove(dbo);
     }
 }

@@ -43,7 +43,10 @@ public class TeacherServices(
             teacherDto.Patronymic, schoolSubjects, studyGroups);
         if (teacherCreateResult.IsFailure)
             return Result<TeacherDto>.Failure(teacherCreateResult.Error);
-        await teacherRepository.AddAsync(teacherCreateResult.Value, 1);
+        var addResult = await ExecuteRepositoryTask(() => teacherRepository.AddAsync(teacherCreateResult.Value, 1),
+            "Ошибка при добавлении учителя. Попробуйте позже.");
+        if (addResult.IsFailure)
+            return Result<TeacherDto>.Failure(addResult.Error);
         return await TrySaveChangesAsync(teacherCreateResult.Value.ToTeacherDto(),
             "Не удалось сохранить учителя. Попробуйте позже.");
     }
@@ -73,7 +76,10 @@ public class TeacherServices(
         teacher.SetDescription(teacherDto.Description);
         teacher.SetSchoolSubjects(schoolSubjects);
         teacher.SetStudyGroups(studyGroups);
-        await teacherRepository.UpdateAsync(teacher);
+        var updateResult = await ExecuteRepositoryTask(() => teacherRepository.UpdateAsync(teacher),
+            "Ошибка при изменении учителя. Попробуйте позже.");
+        if (updateResult.IsFailure)
+            return updateResult;
         return await TrySaveChangesAsync("Не удалось изменить учителя. Попробуйте позже.");
     }
 

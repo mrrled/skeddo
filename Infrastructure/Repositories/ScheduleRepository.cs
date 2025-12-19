@@ -37,7 +37,7 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
             .ToListAsync();
         return scheduleDbos.ToSchedules();
     }
-    
+
     public async Task<Schedule?> GetScheduleByIdAsync(Guid scheduleId)
     {
         var scheduleDbo = await context.Schedules
@@ -64,17 +64,15 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
             .Include(s => s.LessonDrafts)
             .ThenInclude(l => l.Classroom)
             .FirstOrDefaultAsync(s => s.Id == scheduleId);
-        if (scheduleDbo is null)
-            return null;
-        return scheduleDbo.ToSchedule();
+        return scheduleDbo?.ToSchedule();
     }
-    
+
     public async Task AddAsync(Schedule schedule, int scheduleGroupId)
     {
         var scheduleDbo = schedule.ToScheduleDbo();
         var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync(x => x.Id == scheduleGroupId);
         if (scheduleGroup is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Schedule group with id {scheduleGroupId} not found.");
         scheduleDbo.ScheduleGroupId = scheduleGroupId;
         await context.AddAsync(scheduleDbo);
     }
@@ -84,7 +82,7 @@ public class ScheduleRepository(ScheduleDbContext context) : IScheduleRepository
         var scheduleDbo = await context.Schedules
             .FirstOrDefaultAsync(x => x.Id == schedule.Id);
         if (scheduleDbo is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Schedule with id {schedule.Id} not found.");
         DboMapper.Mapper.Map(schedule, scheduleDbo);
     }
 

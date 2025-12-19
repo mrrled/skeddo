@@ -46,7 +46,7 @@ public class LessonServices(
         var lessonNumberCreateResult = lessonDto.LessonNumber is null
             ? null
             : LessonNumber.CreateLessonNumber(lessonDto.LessonNumber.Number, lessonDto.LessonNumber.Time);
-        if (lessonNumberCreateResult.IsFailure)
+        if (lessonNumberCreateResult is not null && lessonNumberCreateResult.IsFailure)
             return Result<CreateLessonResult>.Failure(lessonNumberCreateResult.Error);
         var studyGroup = lessonDto.StudyGroup is null
             ? null
@@ -54,17 +54,17 @@ public class LessonServices(
         var studySubgroupCreateResult = lessonDto.StudySubgroup is null || studyGroup is null
             ? null
             : StudySubgroup.CreateStudySubgroup(studyGroup, lessonDto.StudySubgroup.Name);
-        if (studySubgroupCreateResult.IsFailure)
+        if (studySubgroupCreateResult is not null && studySubgroupCreateResult.IsFailure)
             return Result<CreateLessonResult>.Failure(studySubgroupCreateResult.Error);
         var lessonId = Guid.NewGuid();
         var draft = new LessonDraft(lessonId,
             lessonDto.ScheduleId,
             schoolSubject,
-            lessonNumberCreateResult.Value,
+            lessonNumberCreateResult?.Value,
             teacher,
             studyGroup,
             classroom,
-            studySubgroupCreateResult.Value,
+            studySubgroupCreateResult?.Value,
             lessonDto.Comment);
         var result = lessonFactory.CreateFromDraft(draft);
         if (result.IsSuccess)
@@ -72,11 +72,14 @@ public class LessonServices(
             var editedLessons = schedule.AddLesson(result.Value);
             await lessonRepository.AddAsync(result.Value, scheduleId);
             await lessonRepository.UpdateRangeAsync(editedLessons);
-            await unitOfWork.SaveChangesAsync();
-            return Result<CreateLessonResult>.Success(CreateLessonResult.Success(result.Value.ToLessonDto()));
+            return await TrySaveChangesAsync(CreateLessonResult.Success(result.Value.ToLessonDto()),
+                "Не удалось сохранить урок. Попробуйте позже.");
         }
 
-        await lessonDraftRepository.AddAsync(draft, scheduleId);
+        var addResult = await ExecuteRepositoryTask(() => lessonDraftRepository.AddAsync(draft, scheduleId),
+            "Ошибка при добавлении урока. Попробуйте позже.");
+        if (addResult.IsFailure)
+            return Result<CreateLessonResult>.Failure(addResult.Error);
         return await TrySaveChangesAsync(CreateLessonResult.Downgraded(draft.ToLessonDraftDto()),
             "Не удалось сохранить урок. Попробуйте позже.");
     }
@@ -84,6 +87,8 @@ public class LessonServices(
     public async Task<Result<EditLessonResult>> EditLesson(LessonDto lessonDto, Guid scheduleId)
     {
         var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId);
+        if (schedule is null)
+            return Result<EditLessonResult>.Failure("Расписание не найдено.");
         var lesson = schedule.Lessons.FirstOrDefault(x => x.Id == lessonDto.Id);
         if (lesson is null)
             return Result<EditLessonResult>.Failure("Урок не найден.");
@@ -93,8 +98,8 @@ public class LessonServices(
         var lessonNumberCreateResult = lessonDto.LessonNumber is null
             ? null
             : LessonNumber.CreateLessonNumber(lessonDto.LessonNumber.Number, lessonDto.LessonNumber.Time);
-        if (lessonNumberCreateResult.IsFailure)
-            return  Result<EditLessonResult>.Failure(lessonNumberCreateResult.Error);
+        if (lessonNumberCreateResult is not null && lessonNumberCreateResult.IsFailure)
+            return Result<EditLessonResult>.Failure(lessonNumberCreateResult.Error);
         var teacher = lessonDto.Teacher is null
             ? null
             : await teacherRepository.GetTeacherByIdAsync(lessonDto.Teacher.Id);
@@ -104,7 +109,7 @@ public class LessonServices(
         var studySubgroupCreateResult = lessonDto.StudySubgroup is null || studyGroup is null
             ? null
             : StudySubgroup.CreateStudySubgroup(studyGroup, lessonDto.StudySubgroup.Name);
-        if (studySubgroupCreateResult.IsFailure)
+        if (studySubgroupCreateResult is not null && studySubgroupCreateResult.IsFailure)
             return Result<EditLessonResult>.Failure(studySubgroupCreateResult.Error);
         var classroom = lessonDto.Classroom is null
             ? null
@@ -114,12 +119,16 @@ public class LessonServices(
         {
             var draft = LessonDraft.CreateFromLesson(lesson);
             draft.SetSchoolSubject(schoolSubject);
-            draft.SetLessonNumber(lessonNumberCreateResult.Value);
+            draft.SetLessonNumber(lessonNumberCreateResult?.Value);
             draft.SetTeacher(teacher);
             draft.SetStudyGroup(studyGroup);
             draft.SetClassroom(classroom);
             draft.SetComment(lessonDto.Comment);
-            await lessonDraftRepository.AddAsync(draft, schedule.Id);
+            draft.SetStudySubgroup(studySubgroupCreateResult?.Value);
+            var addResult = await ExecuteRepositoryTask(() => lessonDraftRepository.AddAsync(draft, schedule.Id),
+                "Ошибка при добавлении урока. Попробуйте позже.");
+            if (addResult.IsFailure)
+                return Result<EditLessonResult>.Failure(addResult.Error);
             await lessonRepository.Delete(lesson);
             return await TrySaveChangesAsync(EditLessonResult.Downgraded(draft.ToLessonDraftDto()),
                 "Не удалось изменить урок. Попробуйте позже.");
@@ -128,15 +137,20 @@ public class LessonServices(
         var editedLessonResult = schedule.EditLesson(
             lessonDto.Id,
             schoolSubject,
-            lessonNumberCreateResult.Value,
+            lessonNumberCreateResult?.Value,
             teacher,
             studyGroup,
             classroom,
+            studySubgroupCreateResult?.Value,
             lessonDto.Comment
         );
         if (editedLessonResult.IsFailure)
             return Result<EditLessonResult>.Failure(editedLessonResult.Error);
-        await lessonRepository.UpdateRangeAsync(editedLessonResult.Value);
+        var updateResult = await ExecuteRepositoryTask(
+            () => lessonRepository.UpdateRangeAsync(editedLessonResult.Value),
+            "Ошибка при изменении урока. Попробуйте позже.");
+        if (updateResult.IsFailure)
+            return Result<EditLessonResult>.Failure(updateResult.Error);
         return await TrySaveChangesAsync(EditLessonResult.Success(lesson.ToLessonDto()),
             "Не удалось изменить урок. Попробуйте позже.");
     }

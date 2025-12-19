@@ -8,7 +8,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class SchoolSubjectServices(ISchoolSubjectRepository schoolSubjectRepository, IUnitOfWork unitOfWork, ILogger logger) : BaseService(unitOfWork, logger), ISchoolSubjectServices
+public class SchoolSubjectServices(
+    ISchoolSubjectRepository schoolSubjectRepository,
+    IUnitOfWork unitOfWork,
+    ILogger logger) : BaseService(unitOfWork, logger), ISchoolSubjectServices
 {
     public async Task<List<SchoolSubjectDto>> FetchSchoolSubjectsFromBackendAsync()
     {
@@ -22,7 +25,11 @@ public class SchoolSubjectServices(ISchoolSubjectRepository schoolSubjectReposit
         var schoolSubjectCreateResult = SchoolSubject.CreateSchoolSubject(schoolSubjectId, schoolSubjectDto.Name);
         if (schoolSubjectCreateResult.IsFailure)
             return Result<SchoolSubjectDto>.Failure(schoolSubjectCreateResult.Error);
-        await schoolSubjectRepository.AddAsync(schoolSubjectCreateResult.Value, 1);
+        var addResult = await ExecuteRepositoryTask(
+            () => schoolSubjectRepository.AddAsync(schoolSubjectCreateResult.Value, 1),
+            "Ошибка при добавлении предмета. Попробуйте позже.");
+        if (addResult.IsFailure)
+            return Result<SchoolSubjectDto>.Failure(addResult.Error);
         return await TrySaveChangesAsync(schoolSubjectCreateResult.Value.ToSchoolSubjectDto(),
             "Не удалось сохранить предмет. Попробуйте позже.");
     }
@@ -36,9 +43,13 @@ public class SchoolSubjectServices(ISchoolSubjectRepository schoolSubjectReposit
         {
             var renameResult = schoolSubject.SetName(schoolSubjectDto.Name);
             if (renameResult.IsFailure)
-                return Result.Failure(renameResult.Error);
+                return renameResult;
         }
-        await schoolSubjectRepository.UpdateAsync(schoolSubject);
+
+        var updateResult = await ExecuteRepositoryTask(() => schoolSubjectRepository.UpdateAsync(schoolSubject),
+            "Ошибка при изменении предмета. Попробуйте позже.");
+        if (updateResult.IsFailure)
+            return updateResult;
         return await TrySaveChangesAsync("Не удалось изменить предмет. Попробуйте позже.");
     }
 

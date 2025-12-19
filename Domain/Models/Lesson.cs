@@ -73,6 +73,11 @@ public class Lesson(
         return Result.Success();
     }
 
+    public void SetStudySubgroup(StudySubgroup? studySubgroup)
+    {
+        StudySubgroup = studySubgroup;
+    }
+
     public void SetComment(string? comment)
     {
         Comment = comment;

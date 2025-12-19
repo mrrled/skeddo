@@ -28,20 +28,31 @@ public class LessonNumberServices(
         var lessonNumberCreateResult = LessonNumber.CreateLessonNumber(lessonNumberDto.Number, lessonNumberDto.Time);
         if (lessonNumberCreateResult.IsFailure)
             return Result.Failure(lessonNumberCreateResult.Error);
-        await lessonNumberRepository.AddAsync(lessonNumberCreateResult.Value, scheduleId);
+        var addResult = await ExecuteRepositoryTask(
+            () => lessonNumberRepository.AddAsync(lessonNumberCreateResult.Value, scheduleId),
+            "Ошибка при добавлении номера урока. Попробуйте позже.");
+        if (addResult.IsFailure)
+            return addResult;
         return await TrySaveChangesAsync("Не удалось сохранить номер урока. Попробуйте позже.");
     }
 
     public async Task<Result> EditLessonNumber(LessonNumberDto oldLessonNumberDto, LessonNumberDto newLessonNumberDto,
         Guid scheduleId)
     {
-        var oldLessonNumberCreateResult = LessonNumber.CreateLessonNumber(oldLessonNumberDto.Number, oldLessonNumberDto.Time);
+        var oldLessonNumberCreateResult =
+            LessonNumber.CreateLessonNumber(oldLessonNumberDto.Number, oldLessonNumberDto.Time);
         if (oldLessonNumberCreateResult.IsFailure)
             return Result.Failure(oldLessonNumberCreateResult.Error);
-        var newLessonNumberCreateResult = LessonNumber.CreateLessonNumber(newLessonNumberDto.Number, newLessonNumberDto.Time);
+        var newLessonNumberCreateResult =
+            LessonNumber.CreateLessonNumber(newLessonNumberDto.Number, newLessonNumberDto.Time);
         if (newLessonNumberCreateResult.IsFailure)
             return Result.Failure(newLessonNumberCreateResult.Error);
-        await lessonNumberRepository.UpdateAsync(oldLessonNumberCreateResult.Value, newLessonNumberCreateResult.Value, scheduleId);
+        var updateResult = await ExecuteRepositoryTask(
+            () => lessonNumberRepository.UpdateAsync(oldLessonNumberCreateResult.Value,
+                newLessonNumberCreateResult.Value, scheduleId),
+            "Ошибка при изменении номера урока. Попробуйте позже.");
+        if (updateResult.IsFailure)
+            return updateResult;
         return await TrySaveChangesAsync("Не удалось изменить номер урока. Попробуйте позже.");
     }
 

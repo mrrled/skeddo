@@ -25,11 +25,13 @@ public class Schedule(
 
     public Result<List<Lesson>> EditLesson(Guid id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher,
         StudyGroup? studyGroup,
-        Classroom? classroom, string? comment = null)
+        Classroom? classroom,
+        StudySubgroup? studySubgroup,
+        string? comment = null)
     {
         var lesson = Lessons.FirstOrDefault(x => x.Id == id);
         if (lesson is null)
-            throw new ArgumentException($"There is no lesson with id {id}");
+            return Result<List<Lesson>>.Failure("Урок не найден.");
         var updateResult = Result.Combine(
             lesson.SetSchoolSubject(subject),
             lesson.SetLessonNumber(lessonNumber),
@@ -39,6 +41,7 @@ public class Schedule(
         if (updateResult.IsFailure)
             return Result<List<Lesson>>.Failure(updateResult.Error);
         lesson.SetComment(comment);
+        lesson.SetStudySubgroup(studySubgroup);
         var editedLessons = UpdateAllLessons();
         editedLessons.Add(lesson);
         return editedLessons;

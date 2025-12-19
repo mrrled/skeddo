@@ -17,12 +17,8 @@ public class ClassroomRepository(ScheduleDbContext context) : IClassroomReposito
     public async Task<Classroom?> GetClassroomByIdAsync(Guid classroomId)
     {
         var scheduleGroup = await context.ScheduleGroups.Include(x => x.Classrooms).FirstOrDefaultAsync();
-        if (scheduleGroup is null)
-            return null;
-        var classroomDbo = scheduleGroup.Classrooms.FirstOrDefault(x => x.Id == classroomId);
-        if (classroomDbo is null)
-            return null;
-        return classroomDbo.ToClassroom();
+        var classroomDbo = scheduleGroup?.Classrooms.FirstOrDefault(x => x.Id == classroomId);
+        return classroomDbo?.ToClassroom();
     }
 
     public async Task AddAsync(Classroom classroom, int scheduleGroupId)
@@ -32,7 +28,7 @@ public class ClassroomRepository(ScheduleDbContext context) : IClassroomReposito
             .Where(x => x.Id == scheduleGroupId)
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Schedule group with Id {scheduleGroupId} not found.");
         classroomDbo.ScheduleGroupId = scheduleGroupId;
         await context.AddAsync(classroomDbo);
     }
@@ -41,12 +37,13 @@ public class ClassroomRepository(ScheduleDbContext context) : IClassroomReposito
     {
         var classroomDbo = await context.Classrooms.FirstOrDefaultAsync(x => x.Id == classroom.Id);
         if (classroomDbo is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Classroom with Id {classroom.Id} not found.");
         DboMapper.Mapper.Map(classroom, classroomDbo);
     }
 
     public async Task Delete(Classroom classroom)
     {
-        await context.Classrooms.Where(x => x.Id == classroom.Id).ExecuteDeleteAsync();
+        var dbo = await context.Classrooms.FirstAsync(x => x.Id == classroom.Id);
+        context.Classrooms.Remove(dbo);
     }
 }

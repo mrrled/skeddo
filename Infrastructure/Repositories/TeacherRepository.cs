@@ -22,9 +22,7 @@ public class TeacherRepository(ScheduleDbContext context) : ITeacherRepository
     public async Task<Teacher?> GetTeacherByIdAsync(Guid id)
     {
         var teacher = await context.Teachers.FirstOrDefaultAsync(x => x.Id == id);
-        if (teacher is null)
-            return null;
-        return teacher.ToTeacher();
+        return teacher?.ToTeacher();
     }
 
     public async Task AddAsync(Teacher teacher, int scheduleGroupId)
@@ -32,7 +30,7 @@ public class TeacherRepository(ScheduleDbContext context) : ITeacherRepository
         var teacherDbo = teacher.ToTeacherDbo();
         var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync();
         if (scheduleGroup is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Schedule group with id {scheduleGroupId} not found.");
         teacherDbo.ScheduleGroupId = scheduleGroupId;
         context.Teachers.Add(teacherDbo);
     }
@@ -41,12 +39,13 @@ public class TeacherRepository(ScheduleDbContext context) : ITeacherRepository
     {
         var teacherDbo = await context.Teachers.FirstOrDefaultAsync(x => x.Id == teacher.Id);
         if (teacherDbo is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Teacher with id {teacher.Id} not found.");
         DboMapper.Mapper.Map(teacher, teacherDbo);
     }
 
     public async Task Delete(Teacher teacher)
     {
-        await context.Teachers.Where(x => x.Id == teacher.Id).ExecuteDeleteAsync();
+        var dbo = await context.Teachers.FirstAsync(x => x.Id == teacher.Id);
+        context.Teachers.Remove(dbo);
     }
 }

@@ -22,9 +22,7 @@ public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupReposi
         var studyGroupDbo = await context.StudyGroups
             .Include(x => x.StudySubgroups)
             .FirstOrDefaultAsync(s => s.Id == studyGroupId);
-        if (studyGroupDbo is null)
-            return null;
-        return studyGroupDbo.ToStudyGroup();
+        return studyGroupDbo?.ToStudyGroup();
     }
 
     public async Task<List<StudyGroup>> GetStudyGroupListByIdsAsync(List<Guid> studyGroupIds)
@@ -43,7 +41,7 @@ public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupReposi
             .Where(x => x.Id == scheduleGroupId)
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Schedule with id {scheduleGroupId} not found.");
         studyGroupDbo.ScheduleGroupId = scheduleGroupId;
         await context.StudyGroups.AddAsync(studyGroupDbo);
     }
@@ -52,7 +50,7 @@ public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupReposi
     {
         var studyGroupDbo = await context.StudyGroups.FirstOrDefaultAsync(x => x.Id == studyGroup.Id);
         if (studyGroupDbo is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Study group with id {studyGroup.Id} not found.");
         DboMapper.Mapper.Map(studyGroup, studyGroupDbo);
     }
 

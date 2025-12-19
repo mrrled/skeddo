@@ -33,9 +33,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.LessonNumber)
             .Include(x => x.StudySubgroup)
             .FirstOrDefaultAsync(x => x.Id == id);
-        if (lessonDbo is null)
-            return null;
-        return lessonDbo.ToLesson();
+        return lessonDbo?.ToLesson();
     }
 
     public async Task<List<Lesson>> GetLessonsByIdsAsync(List<Guid> lessonIds)
@@ -44,6 +42,7 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.Teacher)
             .Include(x => x.Classroom)
             .Include(x => x.StudyGroup)
+            .ThenInclude(x => x.StudySubgroups)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
             .Include(x => x.StudySubgroup)
@@ -55,16 +54,16 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
     public async Task AddAsync(Lesson lesson, Guid scheduleId)
     {
         var lessonDbo = lesson.ToLessonDbo();
-        var lessonNumber =
-            await context.LessonNumbers.FirstOrDefaultAsync(x =>
-                x.ScheduleId == scheduleId && x.Number == lesson.LessonNumber.Number);
-        if (lessonNumber is null)
-            throw new InvalidOperationException();
         var schedule = await context.Schedules
             .Where(x => x.Id == scheduleId)
             .FirstOrDefaultAsync();
         if (schedule is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Schedule with id {scheduleId} not found.");
+        var lessonNumber =
+            await context.LessonNumbers.FirstOrDefaultAsync(x =>
+                x.ScheduleId == scheduleId && x.Number == lesson.LessonNumber.Number);
+        if (lessonNumber is null)
+            throw new InvalidOperationException($"Lesson number with number {lesson.LessonNumber.Number} not found.");
         var studySubgroup = lesson.StudySubgroup is null
             ? null
             : await context.StudySubgroups.FirstOrDefaultAsync(x =>
@@ -87,13 +86,14 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
             .Include(x => x.StudySubgroup)
             .FirstOrDefaultAsync(x => x.Id == lesson.Id);
         if (lessonDbo is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Lesson with id {lesson.Id} not found.");
         DboMapper.Mapper.Map(lesson, lessonDbo);
     }
 
     public async Task Delete(Lesson lesson)
     {
-        await context.Lessons.Where(x => x.Id == lesson.Id).ExecuteDeleteAsync();
+        var lessonDbo = await context.Lessons.FirstAsync(x => x.Id == lesson.Id);
+        context.Lessons.Remove(lessonDbo);
     }
 
     public async Task UpdateRangeAsync(List<Lesson> lessons)
@@ -114,7 +114,8 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
                     .FirstOrDefaultAsync(x => x.Number == lesson.LessonNumber.Number
                                               && x.ScheduleId == lesson.ScheduleId);
             if (lessonNumber is null)
-                throw new InvalidOperationException();
+                throw new InvalidOperationException(
+                    $"Lesson number with number {lesson.LessonNumber.Number} not found.");
             lessonDbo.LessonNumberId = lessonNumber.Id;
             if (lesson.StudySubgroup is null)
             {
@@ -125,8 +126,8 @@ public class LessonRepository(ScheduleDbContext context) : ILessonRepository
                 .FirstOrDefaultAsync(x => x.Name == lesson.StudySubgroup.Name
                                           && x.StudyGroup.Id == lesson.StudyGroup.Id);
             if (studySubgroup is null)
-                throw new InvalidOperationException();
-            lessonDbo.StudySubgroupId = studySubgroup?.Id;
+                throw new InvalidOperationException($"Study subgroup with name {lesson.StudySubgroup.Name} not found.");
+            lessonDbo.StudySubgroupId = studySubgroup.Id;
         }
     }
 }

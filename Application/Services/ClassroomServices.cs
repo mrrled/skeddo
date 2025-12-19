@@ -4,12 +4,12 @@ using Application.IServices;
 using Domain;
 using Domain.Models;
 using Domain.IRepositories;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class ClassroomServices(IClassroomRepository classroomRepository, IUnitOfWork unitOfWork, ILogger logger) : BaseService(unitOfWork, logger), IClassroomServices
+public class ClassroomServices(IClassroomRepository classroomRepository, IUnitOfWork unitOfWork, ILogger logger)
+    : BaseService(unitOfWork, logger), IClassroomServices
 {
     public async Task<List<ClassroomDto>> FetchClassroomsFromBackendAsync()
     {
@@ -23,7 +23,10 @@ public class ClassroomServices(IClassroomRepository classroomRepository, IUnitOf
         var classroomResult = Classroom.CreateClassroom(classroomId, classroomDto.Name, classroomDto.Description);
         if (classroomResult.IsFailure)
             return Result<ClassroomDto>.Failure(classroomResult.Error);
-        await classroomRepository.AddAsync(classroomResult.Value, 1);
+        var addResult = await ExecuteRepositoryTask(() => classroomRepository.AddAsync(classroomResult.Value, 1),
+            "Ошибка при добавлении аудитории. Попробуйте позже.");
+        if (addResult.IsFailure)
+            return Result<ClassroomDto>.Failure(addResult.Error);
         return await TrySaveChangesAsync(classroomResult.Value.ToClassroomDto(),
             "Не удалось сохранить аудиторию. Попробуйте позже.");
     }
@@ -39,9 +42,13 @@ public class ClassroomServices(IClassroomRepository classroomRepository, IUnitOf
             if (renameResult.IsFailure)
                 return renameResult;
         }
+
         if (classroomDto.Description != classroom.Description)
             classroom.SetDescription(classroomDto.Description);
-        await classroomRepository.UpdateAsync(classroom);
+        var updateResult = await ExecuteRepositoryTask(() => classroomRepository.UpdateAsync(classroom),
+            "Ошибка изменении аудитории. Попробуйте позже");
+        if (updateResult.IsFailure)
+            return updateResult;
         return await TrySaveChangesAsync("Не удалось изменить аудиторию. Попробуйте позже.");
     }
 

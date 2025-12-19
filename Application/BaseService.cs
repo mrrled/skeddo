@@ -46,5 +46,28 @@ public abstract class BaseService(IUnitOfWork unitOfWork, ILogger logger)
             return Result<T>.Failure("Внутренняя ошибка сервера.");
         }
     }
-    
+
+    protected async Task<Result> ExecuteRepositoryTask(Func<Task> task, string errorMessage)
+    {
+        try
+        {
+            await task();
+            return Result.Success();
+        }
+        catch (InvalidOperationException ex)
+        {
+            Logger.LogWarning(ex, "Entity not found");
+            return Result.Failure("Запись не найдена в базе данных.");
+        }
+        catch (DbUpdateException ex)
+        {
+            Logger.LogError(ex, "DB Update Error: {Msg}", errorMessage);
+            return Result.Failure(errorMessage);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogCritical(ex, "Infrastructure error");
+            return Result.Failure(errorMessage);
+        }
+    }
 }

@@ -15,11 +15,12 @@ public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepo
             .Where(x => x.Id == scheduleId)
             .FirstOrDefaultAsync();
         if (schedule is null)
-            throw new InvalidOperationException();
-        var lessonNumber = lessonDraft.LessonNumber is null ? null :
-            await context.LessonNumbers.FirstOrDefaultAsync(x =>
+            throw new InvalidOperationException($"Schedule with id {scheduleId} not found.");
+        var lessonNumber = lessonDraft.LessonNumber is null
+            ? null
+            : await context.LessonNumbers.FirstOrDefaultAsync(x =>
                 x.ScheduleId == scheduleId && x.Number == lessonDraft.LessonNumber.Number);
-        var studySubgroup = lessonDraft.StudySubgroup is null
+        var studySubgroup = lessonDraft.StudySubgroup is null || lessonDraft.StudyGroup is null
             ? null
             : await context.StudySubgroups.FirstOrDefaultAsync(x =>
                 x.StudyGroup.Id == lessonDraft.StudyGroup.Id && x.Name == lessonDraft.StudySubgroup.Name);
@@ -37,6 +38,7 @@ public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepo
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
+            .Include(x => x.StudySubgroup)
             .ToListAsync();
         return lessonDraftDbos.ToLessonDrafts();
     }
@@ -49,15 +51,15 @@ public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepo
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
+            .Include(x => x.StudySubgroup)
             .FirstOrDefaultAsync(x => x.Id == id);
-        if (lessonDraftDbo is null)
-            return null;
-        return lessonDraftDbo.ToLessonDraft();
+        return lessonDraftDbo?.ToLessonDraft();
     }
 
     public async Task Delete(LessonDraft lessonDraft)
     {
-        await context.LessonDrafts.Where(x => x.Id == lessonDraft.Id).ExecuteDeleteAsync();
+        var dbo = await context.LessonDrafts.FirstAsync(x => x.Id == lessonDraft.Id);
+        context.LessonDrafts.Remove(dbo);
     }
 
     public async Task Update(LessonDraft lessonDraft)
@@ -68,9 +70,10 @@ public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepo
             .Include(x => x.StudyGroup)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
+            .Include(x => x.StudySubgroup)
             .FirstOrDefaultAsync(x => x.Id == lessonDraft.Id);
         if (lessonDraftDbo is null)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Lesson draft with id {lessonDraft.Id} not found.");
         DboMapper.Mapper.Map(lessonDraft, lessonDraftDbo);
     }
 }

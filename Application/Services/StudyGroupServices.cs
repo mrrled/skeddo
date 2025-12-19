@@ -22,7 +22,11 @@ public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUni
         var studyGroupCreateResult = StudyGroup.CreateStudyGroup(studyGroupId, studyGroupDto.Name);
         if (studyGroupCreateResult.IsFailure)
             return Result<StudyGroupDto>.Failure(studyGroupCreateResult.Error);
-        await studyGroupRepository.AddAsync(studyGroupCreateResult.Value, 1);
+        var addResult = await ExecuteRepositoryTask(
+            () => studyGroupRepository.AddAsync(studyGroupCreateResult.Value, 1),
+            "Ошибка при добавлении учебной группы. Попробуйте позже.");
+        if (addResult.IsFailure)
+            return Result<StudyGroupDto>.Failure(addResult.Error);
         return await TrySaveChangesAsync(studyGroupCreateResult.Value.ToStudyGroupDto(),
             "Не удалось сохранить учебную группу. Попробуйте позже.");
     }
@@ -36,9 +40,13 @@ public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUni
         {
             var renameResult = studyGroup.SetName(studyGroupDto.Name);
             if (renameResult.IsFailure)
-                return Result.Failure(renameResult.Error);
+                return renameResult;
         }
-        await studyGroupRepository.UpdateAsync(studyGroup);
+
+        var updateResult = await ExecuteRepositoryTask(() => studyGroupRepository.UpdateAsync(studyGroup),
+            "Ошибка при изменении учебной группы. Попробуйте позже.");
+        if (updateResult.IsFailure)
+            return updateResult;
         return await TrySaveChangesAsync("Не удалось изменить учебную группу. Попробуйте позже.");
     }
 
