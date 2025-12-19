@@ -34,7 +34,8 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
         IWindowManager windowManager,
         IExportServices exportServices,
         NavigationService navigationService,
-        IScheduleServices scheduleServices)
+        IScheduleServices scheduleServices,
+        IFileService fileService)
     {
         this.scopeFactory = scopeFactory;
         this.windowManager = windowManager;
@@ -54,18 +55,59 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
         Toolbar.RequestPdfExport += async () =>
         {
-            if (CurrentSchedule == null) return;
-            await exportServices.GeneratePdfAsync(CurrentSchedule.Id);
-            await windowManager.ShowDialog<NotificationViewModel, object?>(
-                new NotificationViewModel("Экспорт в PDF успешно завершен!"));
+            
+            if (CurrentSchedule == null)
+                return;
+            var file = await fileService.SaveFileAsync(
+                "Сохранить PDF-расписание", 
+                ".pdf", 
+                $"Расписание_{CurrentSchedule.Name}.pdf"
+            );
+
+            if (file == null) return;
+
+            try 
+            {
+                await using (var stream = await file.OpenWriteAsync())
+                {
+                    await exportServices.GeneratePdfAsync(CurrentSchedule.Id, stream);
+                }
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel("Экспорт в PDF успешно завершен!"));
+            }
+            catch (Exception ex)
+            {
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel($"Ошибка при сохранении: {ex.Message}"));
+            }
         };
 
         Toolbar.RequestExcelExport += async () =>
         {
-            if (CurrentSchedule == null) return;
-            await exportServices.GenerateExcelAsync(CurrentSchedule.Id);
-            await windowManager.ShowDialog<NotificationViewModel, object?>(
-                new NotificationViewModel("Экспорт в Excel успешно завершен!"));
+            if (CurrentSchedule == null)
+                return;
+            var file = await fileService.SaveFileAsync(
+                "Сохранить Excel-расписание", 
+                ".xlsx",
+                $"Расписание_{CurrentSchedule.Name}.xlsx"
+            );
+
+            if (file == null) return;
+
+            try 
+            {
+                await using (var stream = await file.OpenWriteAsync())
+                {
+                    await exportServices.GenerateExcelAsync(CurrentSchedule.Id, stream);
+                }
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel("Экспорт в Excel успешно завершен!"));
+            }
+            catch (Exception ex)
+            {
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel($"Ошибка при сохранении: {ex.Message}"));
+            }
         };
 
         WeakReferenceMessenger.Default.Register(this);

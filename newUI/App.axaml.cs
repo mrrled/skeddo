@@ -92,6 +92,7 @@ public partial class App : Avalonia.Application
             context.Database.Migrate();
         }
 
+        var fileService = new FileService();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
@@ -155,6 +156,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<ITeacherServices, TeacherServices>();
         services.AddScoped<ILessonDraftServices, LessonDraftServices>();
         services.AddScoped<IStudySubgroupService, StudySubgroupService>();
+        services.AddSingleton<IFileService, FileService>();
     }
 
     private void RegisterRepositories(ServiceCollection services)

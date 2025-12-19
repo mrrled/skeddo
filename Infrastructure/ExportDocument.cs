@@ -135,7 +135,7 @@ public class ExportDocument : IDocument
         });
     }
 
-    public void CreateExcelReport(string path)
+    public void CreateExcelReport(Stream fileStream)
     {
         using (var workbook = new XLWorkbook())
         {
@@ -255,7 +255,7 @@ public class ExportDocument : IDocument
             rng.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
             rng.Style.Fill.BackgroundColor = XLColor.White;
             ws.Columns().AdjustToContents();
-            workbook.SaveAs(path);
+            workbook.SaveAs(fileStream);
         }
     }
 

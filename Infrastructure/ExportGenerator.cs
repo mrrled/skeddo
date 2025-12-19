@@ -9,23 +9,18 @@ public class ExportGenerator(
     ILessonNumberRepository lessonNumberRepository,
     IStudyGroupRepository studyGroupRepository)
 {
-    public async Task GeneratePdfAsync(Guid scheduleId)
+    public async Task GeneratePdfAsync(Guid scheduleId, Stream fileStream)
     {
         QuestPDF.Settings.License = LicenseType.Community;
 
         var generator = await GetExportDocumentAsync(scheduleId);
-
-        var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        var pathFile = Path.Combine(currentDirectory, "schedule.pdf");
-        generator.GeneratePdf(pathFile);
+        generator.GeneratePdf(fileStream);
     }
 
-    public async Task GenerateExcelAsync(Guid scheduleId)
+    public async Task GenerateExcelAsync(Guid scheduleId, Stream fileStream)
     {
         var generator = await GetExportDocumentAsync(scheduleId);
-        var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        var pathFile = Path.Combine(currentDirectory, "schedule.xlsx");
-        generator.CreateExcelReport(pathFile);
+        generator.CreateExcelReport(fileStream);
     }
 
     private async Task<ExportDocument> GetExportDocumentAsync(Guid scheduleId)
