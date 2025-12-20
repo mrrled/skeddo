@@ -77,7 +77,8 @@ public partial class App : Avalonia.Application
         
         services.AddDbContext<ScheduleDbContext>(options =>
         {
-            options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
+                .EnableSensitiveDataLogging();
         });
         
         services.AddScoped<IUnitOfWork, UnitOfWork>();

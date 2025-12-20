@@ -91,7 +91,9 @@ public class DboMappingProfile : Profile
             .ForMember(dest => dest.StudyGroup, opt => opt.Ignore())
             .ForMember(dest => dest.Classroom, opt => opt.Ignore())
             .ForMember(dest => dest.Teacher, opt => opt.Ignore())
-            .ForMember(dest => dest.Schedule, opt => opt.Ignore());
+            .ForMember(dest => dest.Schedule, opt => opt.Ignore())
+            .ForMember(dest => dest.StudySubgroup, opt => opt.Ignore())
+            .ForMember(dest => dest.StudySubgroupId, opt => opt.Ignore());
         CreateMap<ScheduleDbo, Schedule>();
         CreateMap<Schedule, ScheduleDbo>()
             .ForMember(dest => dest.ScheduleGroupId, opt => opt.Ignore())
