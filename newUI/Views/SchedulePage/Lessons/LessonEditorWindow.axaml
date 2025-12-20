@@ -35,6 +35,30 @@
             <Setter Property="Height" Value="38" />
             <Setter Property="Padding" Value="5, 0" />
         </Style>
+        <Style Selector="Button.ClearBtnStack">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" /> 
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Content" Value="✕" />
+            <Setter Property="Foreground" Value="#9E9E9E" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.1" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.ClearBtnStack:pointerover /template/ ContentPresenter">
+            <!-- Делаем фон при наведении идеально круглым -->
+            <Setter Property="Background" Value="#F5F5F5" />
+            <Setter Property="Foreground" Value="#E53935" />
+            <Setter Property="CornerRadius" Value="12" /> <!-- Половина от Width/Height -->
+        </Style>
     </Window.Styles>
 
     <StackPanel Margin="25" Spacing="12">
@@ -42,11 +66,20 @@
                    FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"
                    Margin="0,0,0,10" />
 
-        <StackPanel Orientation="Horizontal" Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="0">
             <TextBlock Text="Предмет:" Classes="Label" />
+            <Panel Width="30" VerticalAlignment="Center">
+                <Button Classes="ClearBtnStack"
+                        Command="{Binding ClearSubjectCommand}"
+                        IsVisible="{Binding SelectedSubject, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            </Panel>
+
             <Border Classes="InputWrapper">
-                <ComboBox ItemsSource="{Binding Subjects}" SelectedItem="{Binding SelectedSubject}"
-                          HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                <ComboBox ItemsSource="{Binding Subjects}" 
+                          SelectedItem="{Binding SelectedSubject}"
+                          HorizontalAlignment="Stretch" 
+                          BorderThickness="0" 
+                          Background="Transparent">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Name}" />
@@ -56,8 +89,13 @@
             </Border>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="0">
             <TextBlock Text="Учитель:" Classes="Label" />
+            <Panel Width="30" VerticalAlignment="Center">
+                <Button Classes="ClearBtnStack"
+                        Command="{Binding ClearTeacherCommand}"
+                        IsVisible="{Binding SelectedTeacher, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            </Panel>
             <Border Classes="InputWrapper">
                 <ComboBox ItemsSource="{Binding Teachers}" SelectedItem="{Binding SelectedTeacher}"
                           HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
@@ -70,8 +108,13 @@
             </Border>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="0">
             <TextBlock Text="Группа:" Classes="Label" />
+            <Panel Width="30" VerticalAlignment="Center">
+                <Button Classes="ClearBtnStack"
+                        Command="{Binding ClearStudyGroupCommand}"
+                        IsVisible="{Binding SelectedStudyGroup, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            </Panel>
             <Border Classes="InputWrapper">
                 <ComboBox ItemsSource="{Binding StudyGroups}" SelectedItem="{Binding SelectedStudyGroup}"
                           HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
@@ -105,8 +148,13 @@
             </Border>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="0">
             <TextBlock Text="Кабинет:" Classes="Label" />
+            <Panel Width="30" VerticalAlignment="Center">
+                <Button Classes="ClearBtnStack"
+                        Command="{Binding ClearClassroomCommand}"
+                        IsVisible="{Binding SelectedClassroom, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            </Panel>
             <Border Classes="InputWrapper">
                 <ComboBox ItemsSource="{Binding Classrooms}" SelectedItem="{Binding SelectedClassroom}"
                           HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
@@ -119,8 +167,13 @@
             </Border>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="0">
             <TextBlock Text="№ Урока:" Classes="Label" />
+            <Panel Width="30" VerticalAlignment="Center">
+                <Button Classes="ClearBtnStack"
+                        Command="{Binding ClearLessonNumberCommand}"
+                        IsVisible="{Binding SelectedLessonNumber, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            </Panel>
             <Border Classes="InputWrapper">
                 <ComboBox ItemsSource="{Binding TimeSlots}" SelectedItem="{Binding SelectedLessonNumber}"
                           HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">

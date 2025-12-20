@@ -114,6 +114,11 @@ public class LessonEditorViewModel : ViewModelBase
 
     public ICommand SaveCommand { get; }
     public ICommand DeleteCommand { get; }
+    public ICommand ClearTeacherCommand { get; }
+    public ICommand ClearClassroomCommand { get; }
+    public ICommand ClearStudyGroupCommand { get; }
+    public ICommand ClearSubjectCommand { get; }
+    public ICommand ClearLessonNumberCommand { get; }
 
     public LessonEditorViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager, Guid scheduleId)
     {
@@ -124,6 +129,15 @@ public class LessonEditorViewModel : ViewModelBase
         HeaderText = "Добавление урока";
         SaveCommand = new AsyncRelayCommand(SaveAsync, CanSave);
         _ = LoadDataAsync();
+        ClearTeacherCommand = new RelayCommand(() => SelectedTeacher = null);
+        ClearClassroomCommand = new RelayCommand(() => SelectedClassroom = null);
+        ClearStudyGroupCommand = new RelayCommand(() => {
+            SelectedStudyGroup = null;
+            SelectedStudySubgroup = null;
+            ShowSubgroups = false;
+        });
+        ClearSubjectCommand = new RelayCommand(() => SelectedSubject = null);
+        ClearLessonNumberCommand = new RelayCommand(() => SelectedLessonNumber = null);
     }
 
     public LessonEditorViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager, LessonDto lesson)
