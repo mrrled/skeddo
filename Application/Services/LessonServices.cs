@@ -143,6 +143,9 @@ public class LessonServices(
         );
         if (editedLessonResult.IsFailure)
             return Result<EditLessonResult>.Failure(editedLessonResult.Error);
+        var lessonDraft = await lessonDraftRepository.GetLessonDraftById(lesson.Id);
+        if (lessonDraft is not null)
+            await lessonDraftRepository.Delete(lessonDraft);
         var updateResult = await ExecuteRepositoryTask(
             () => lessonRepository.UpdateRangeAsync(editedLessonResult.Value),
             "Ошибка при изменении урока. Попробуйте позже.");
