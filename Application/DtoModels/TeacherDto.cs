@@ -9,4 +9,5 @@ public class TeacherDto
     public string? Description { get; set; } = string.Empty;
     public List<SchoolSubjectDto> SchoolSubjects { get; set; } = new();
     public List<StudyGroupDto> StudyGroups { get; set; } = new();
+    public string FullName =>  $"{Surname} {Name.First()}.{Patronymic.First()}.";
 }

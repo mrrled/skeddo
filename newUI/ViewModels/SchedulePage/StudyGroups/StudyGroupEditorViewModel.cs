@@ -36,6 +36,7 @@ public class StudyGroupEditorViewModel : ViewModelBase
     private readonly IWindowManager windowManager;
     private readonly IServiceScopeFactory scopeFactory;
     private readonly StudyGroupDto? editingStudyGroup;
+    private readonly Guid scheduleId;
 
     public ICommand SaveCommand { get; }
     public ICommand DeleteCommand { get; }
@@ -44,10 +45,11 @@ public class StudyGroupEditorViewModel : ViewModelBase
 
 
     // ================== СОЗДАНИЕ ==================
-    public StudyGroupEditorViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory)
+    public StudyGroupEditorViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory, Guid scheduleId)
     {
         this.windowManager = windowManager;
         this.scopeFactory = scopeFactory;
+        this.scheduleId = scheduleId;
 
         SaveCommand = new RelayCommandAsync(SaveAsync);
         HeaderText = "Добавление учебной группы";
@@ -56,8 +58,8 @@ public class StudyGroupEditorViewModel : ViewModelBase
     }
 
     // ================== РЕДАКТИРОВАНИЕ ==================
-    public StudyGroupEditorViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory, StudyGroupDto studyGroupToEdit)
-        : this(windowManager, scopeFactory)
+    public StudyGroupEditorViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory, StudyGroupDto studyGroupToEdit, Guid scheduleId)
+        : this(windowManager, scopeFactory, scheduleId)
     {
         editingStudyGroup = studyGroupToEdit;
         StudyGroupName = studyGroupToEdit.Name;
@@ -131,7 +133,7 @@ public class StudyGroupEditorViewModel : ViewModelBase
 
         if (editingStudyGroup == null)
         {
-            var createStudyGroup = new CreateStudyGroupDto { Name = StudyGroupName };
+            var createStudyGroup = new CreateStudyGroupDto { Name = StudyGroupName, ScheduleId = scheduleId };
             var studyGroupResult = await service.AddStudyGroup(createStudyGroup);
             if (studyGroupResult.IsFailure)
             {

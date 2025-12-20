@@ -28,7 +28,7 @@ public class ExportGenerator(
         var lessons = await lessonRepository.GetLessonsByScheduleIdAsync(scheduleId);
         var table = lessons.ToTable();
         var lessonNumbers = await lessonNumberRepository.GetLessonNumbersByScheduleIdAsync(scheduleId);
-        var studyGroups = await studyGroupRepository.GetStudyGroupListAsync(1);
+        var studyGroups = await studyGroupRepository.GetStudyGroupListByScheduleIdAsync(scheduleId);
 
         return new ExportDocument(table, studyGroups, lessonNumbers);
     }

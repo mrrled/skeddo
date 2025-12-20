@@ -16,8 +16,8 @@ public class DboMappingProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<SchoolSubjectDbo, SchoolSubject>().ReverseMap();
         CreateMap<StudyGroup, StudyGroupDbo>()
-            .ForMember(dest => dest.ScheduleGroupId, opt => opt.Ignore())
-            .ForMember(dest => dest.ScheduleGroup, opt => opt.Ignore())
+            .ForMember(dest => dest.ScheduleId, opt => opt.Ignore())
+            .ForMember(dest => dest.Schedule, opt => opt.Ignore())
             .ForMember(dest => dest.Teachers, opt => opt.Ignore());
         CreateMap<StudyGroupDbo, StudyGroup>();
         CreateMap<LessonNumber, LessonNumberDbo>()

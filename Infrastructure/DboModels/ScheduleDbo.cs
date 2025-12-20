@@ -15,4 +15,5 @@ public class ScheduleDbo
     public ICollection<LessonDbo> Lessons { get; set; } 
     public ICollection<LessonDraftDbo> LessonDrafts { get; set; }
     public ICollection<LessonNumberDbo> LessonNumbers { get; set; }
+    public ICollection<StudyGroupDbo> StudyGroups { get; set; } = new List<StudyGroupDbo>();
 }

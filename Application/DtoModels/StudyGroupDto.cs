@@ -3,6 +3,7 @@
 public class StudyGroupDto : IComparable<StudyGroupDto>
 {
     public Guid Id { get; set; }
+    public Guid ScheduleId { get; set; }
     public string Name { get; set; } = string.Empty;
     public List<StudySubgroupDto> StudySubgroups { get; set; } = new();
 

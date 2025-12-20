@@ -65,6 +65,7 @@ public class LessonDraftServices(
         if (studySubgroupCreateResult is not null && studySubgroupCreateResult.IsFailure)
             return Result<EditLessonResult>.Failure(studySubgroupCreateResult.Error);
         lessonDraft.SetStudySubgroup(studySubgroupCreateResult?.Value);
+        lessonDraft.SetLessonNumber(lessonNumberCreateResult?.Value);
         var classroom = lessonDraftDto.Classroom is null
             ? null
             : await classroomRepository.GetClassroomByIdAsync(lessonDraftDto.Classroom.Id);

@@ -54,7 +54,6 @@
         </Style>
 
         <Style Selector="Button.ClearBtnStack:pointerover /template/ ContentPresenter">
-            <!-- Делаем фон при наведении идеально круглым -->
             <Setter Property="Background" Value="#F5F5F5" />
             <Setter Property="Foreground" Value="#E53935" />
             <Setter Property="CornerRadius" Value="12" /> <!-- Половина от Width/Height -->
@@ -101,7 +100,7 @@
                           HorizontalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Name, FallbackValue=''}" />
+                            <TextBlock Text="{Binding FullName, FallbackValue=''}" />
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
