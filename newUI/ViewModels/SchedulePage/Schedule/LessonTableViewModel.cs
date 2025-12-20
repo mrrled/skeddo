@@ -98,6 +98,7 @@ public class LessonTableViewModel
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IStudyGroupServices>();
         var groups = await service.GetStudyGroupByScheduleId(Schedule.Id);
+        groups = groups.OrderBy(g => g.Name).ToList();
         StudyGroups = new AvaloniaList<StudyGroupDto>(groups);
         BuildColumns();
     }
