@@ -157,10 +157,15 @@ public class LessonServices(
 
     public async Task<Result> DeleteLesson(LessonDto lessonDto, Guid scheduleId)
     {
+        var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId);
+        if (schedule is null)
+            return Result.Failure("Расписание не найдено.");
         var lesson = await lessonRepository.GetLessonByIdAsync(lessonDto.Id);
         if (lesson is null)
             return Result.Failure("Урок не найден.");
+        var edited = schedule.DeleteLesson(lesson);
         await lessonRepository.Delete(lesson);
+        await lessonRepository.UpdateRangeAsync(edited);
         return await TrySaveChangesAsync("Не удалось удалить урок. Попробуйте позже.");
     }
 }

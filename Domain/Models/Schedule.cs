@@ -23,6 +23,18 @@ public class Schedule(
         _lessonDrafts.Add(lessonDraft);
     }
 
+    public List<Lesson> DeleteLesson(Lesson lesson)
+    {
+        _lessons.Remove(lesson);
+        return UpdateAllLessons();
+    }
+    
+    public List<Lesson> DeleteLessonDraft(LessonDraft lesson)
+    {
+        _lessonDrafts.Remove(lesson);
+        return UpdateAllLessons();
+    }
+
     public Result<List<Lesson>> EditLesson(Guid id, SchoolSubject? subject, LessonNumber? lessonNumber, Teacher? teacher,
         StudyGroup? studyGroup,
         Classroom? classroom,
@@ -62,7 +74,7 @@ public class Schedule(
         return Result.Success();
     }
 
-    private List<Lesson> UpdateAllLessons()
+    public List<Lesson> UpdateAllLessons()
     {
         var lessons = _lessons.ToList();
         var changedLessons = new HashSet<Lesson>();
