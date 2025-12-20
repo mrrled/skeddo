@@ -111,7 +111,7 @@ public class LessonTableViewModel
         {
             GroupHeaders.Add(group);
 
-            if (group.StudySubgroups?.Count > 0)
+            if (group.StudySubgroups != null && group.StudySubgroups.Count > 0)
             {
                 foreach (var subgroup in group.StudySubgroups)
                 {
@@ -125,16 +125,19 @@ public class LessonTableViewModel
             }
             else
             {
+                // Для групп без подгрупп добавляем одну "пустую" колонку-заглушку
                 FlatColumns.Add(new ColumnViewModel
                 {
                     StudyGroup = group,
                     StudySubgroup = null,
-                    DisplayName = group.Name
+                    DisplayName = null // Важно: null, чтобы IsSubgroupVisible сработал
                 });
             }
         }
 
-        Columns = new ObservableCollection<ColumnViewModel>(FlatColumns);
+        // Принудительно уведомляем UI об изменениях
+        OnPropertyChanged(nameof(GroupHeaders));
+        OnPropertyChanged(nameof(FlatColumns));
     }
 
     private async Task LoadLessonNumbersAsync()

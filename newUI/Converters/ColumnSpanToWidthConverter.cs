@@ -10,9 +10,13 @@ public class ColumnSpanToWidthConverter : IValueConverter
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is int span && span > 0)
-            return span * BaseWidth;
-        return BaseWidth;
+        int span = 0;
+        if (value is int s) span = s;
+    
+        // Если подгрупп 0, мы всё равно должны занять 1 колонку (150px)
+        if (span <= 0) span = 1; 
+
+        return span * BaseWidth;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
