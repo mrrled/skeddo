@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.Input;
@@ -98,7 +99,9 @@ public class LessonTableViewModel
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IStudyGroupServices>();
         var groups = await service.GetStudyGroupByScheduleId(Schedule.Id);
-        groups = groups.OrderBy(g => g.Name).ToList();
+        groups = groups
+            .OrderBy(g => Regex.Replace(g.Name, @"\d+", m => m.Value.PadLeft(10, '0')))
+            .ToList();
         StudyGroups = new AvaloniaList<StudyGroupDto>(groups);
         BuildColumns();
     }
