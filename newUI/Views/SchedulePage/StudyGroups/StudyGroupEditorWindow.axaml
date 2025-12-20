@@ -61,7 +61,7 @@
         </StackPanel>
 
         <!-- Подгруппы -->
-        <StackPanel Margin="0,15,0,0">
+        <StackPanel Margin="0,15,0,0" IsVisible="{Binding IsEditMode}">
             <TextBlock Text="Подгруппы:" 
                        FontSize="16" 
                        Margin="0,0,0,5"/>
