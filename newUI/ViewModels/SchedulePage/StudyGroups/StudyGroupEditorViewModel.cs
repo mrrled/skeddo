@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
+using Avalonia.Collections;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
 using newUI.ViewModels.Shared;
@@ -16,12 +19,18 @@ public class StudyGroupEditorViewModel : ViewModelBase
     public event Action<StudyGroupDto>? StudyGroupDeleted;
 
     private string studyGroupName = string.Empty;
+    private AvaloniaList<StudySubgroupDto> subgroups = new();
     public string StudyGroupName
     {
         get => studyGroupName;
         set => SetProperty(ref studyGroupName, value);
     }
 
+    public AvaloniaList<StudySubgroupDto> Subgroups
+    {
+        get => subgroups;
+        set => SetProperty(ref subgroups, value);
+    }
     public bool IsEditMode => editingStudyGroup != null;
 
     private readonly IWindowManager windowManager;
@@ -30,6 +39,9 @@ public class StudyGroupEditorViewModel : ViewModelBase
 
     public ICommand SaveCommand { get; }
     public ICommand DeleteCommand { get; }
+    public ICommand AddSubgroupCommand { get; }
+    public ICommand DeleteSubgroupCommand { get; }
+
 
     // ================== СОЗДАНИЕ ==================
     public StudyGroupEditorViewModel(IWindowManager windowManager, IServiceScopeFactory scopeFactory)
@@ -39,6 +51,8 @@ public class StudyGroupEditorViewModel : ViewModelBase
 
         SaveCommand = new RelayCommandAsync(SaveAsync);
         HeaderText = "Добавление учебной группы";
+        AddSubgroupCommand = new RelayCommandAsync(AddSubgroupAsync);
+        DeleteSubgroupCommand = new AsyncRelayCommand<StudySubgroupDto>(DeleteSubgroup);
     }
 
     // ================== РЕДАКТИРОВАНИЕ ==================
@@ -47,10 +61,65 @@ public class StudyGroupEditorViewModel : ViewModelBase
     {
         editingStudyGroup = studyGroupToEdit;
         StudyGroupName = studyGroupToEdit.Name;
+        subgroups = new AvaloniaList<StudySubgroupDto>(editingStudyGroup.StudySubgroups);
 
         DeleteCommand = new RelayCommandAsync(DeleteAsync);
         HeaderText = "Редактирование учебной группы";
     }
+    
+    // ================== ДОБАВЛЕНИЕ ПОДГРУППЫ ==================
+    private async Task AddSubgroupAsync()
+    {
+        var inputVm = new TextInputViewModel("Добавление подгруппы", 
+            "Введите название подгруппы:", "А");
+        
+        var result = await windowManager.ShowDialog<TextInputViewModel, string?>(inputVm);
+        
+        if (!string.IsNullOrWhiteSpace(result))
+        {
+            if (Subgroups.Any(s => s.Name.Equals(result, StringComparison.OrdinalIgnoreCase)))
+            {
+                windowManager.ShowWindow(new NotificationViewModel($"Ошибка. Подгруппа с именем '{result}' уже существует."));
+                return;
+            }
+            
+            if(editingStudyGroup is null)
+                return;
+            
+            var newSubgroup = new StudySubgroupDto
+            {
+                Name = result.Trim(),
+                StudyGroup = editingStudyGroup
+            };
+            
+            using var scope = scopeFactory.CreateScope();
+            var service = scope.ServiceProvider.GetRequiredService<IStudySubgroupService>();
+            
+            await service.AddStudySubgroup(newSubgroup);
+            Subgroups.Add(newSubgroup);
+            OnPropertyChanged(nameof(Subgroups));
+        }
+    }
+    
+    // ================== УДАЛЕНИЕ ПОДГРУППЫ ==================
+    private async Task DeleteSubgroup(StudySubgroupDto? subgroup)
+    {
+        editingStudyGroup.UpdateSubgroups();
+        if (subgroup == null) return;
+        
+        var confirmVm = new ConfirmDeleteViewModel(
+            $"Удалить подгруппу \"{subgroup.Name}\"?");
+        var result = await windowManager.ShowDialog<ConfirmDeleteViewModel, bool?>(confirmVm);
+
+        if (result != true)
+            return;
+        
+        using var scope = scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IStudySubgroupService>();
+        await service.DeleteStudySubgroup(subgroup);
+        Subgroups.Remove(subgroup);
+    }
+
 
     // ================== SAVE ==================
     private async Task SaveAsync()
@@ -96,6 +165,7 @@ public class StudyGroupEditorViewModel : ViewModelBase
     // ================== DELETE ==================
     private async Task DeleteAsync()
     {
+        
         if (editingStudyGroup == null)
             return;
 

@@ -13,27 +13,38 @@
         <Style Selector="Button.accent">
             <Setter Property="Background" Value="#2196F3" />
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="CornerRadius" Value="8" /> <Setter Property="Padding" Value="15, 8" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="15, 8" />
             <Setter Property="BorderThickness" Value="0" />
         </Style>
-
+        
         <Style Selector="Button.accent:pointerover">
             <Setter Property="Background" Value="#1976D2" />
+        </Style>
+        
+        <Style Selector="Button.subgroup-delete">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#E53935" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
         </Style>
     </Window.Styles>
 
     <StackPanel Margin="20" Spacing="10">
-
         <TextBlock Text="{Binding HeaderText}"
-                   FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"
+                   FontSize="20" FontWeight="Bold" 
+                   HorizontalAlignment="Center"
                    Margin="0,0,0,10" />
 
+        <!-- Название группы -->
         <StackPanel Orientation="Horizontal" Spacing="10">
             <TextBlock Text="Название:"
                        Width="100"
                        VerticalAlignment="Center"
                        FontSize="16" />
-
             <Border CornerRadius="8"
                     BorderBrush="#BDBDBD"
                     BorderThickness="1"
@@ -49,12 +60,54 @@
             </Border>
         </StackPanel>
 
+        <!-- Подгруппы -->
+        <StackPanel Margin="0,15,0,0" IsVisible="{Binding IsEditMode}">
+            <TextBlock Text="Подгруппы:" 
+                       FontSize="16" 
+                       Margin="0,0,0,5"/>
+            
+            <!-- Список подгрупп -->
+            <ItemsControl ItemsSource="{Binding Subgroups}"
+                          Margin="10,0,0,10">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Text="{Binding Name}" 
+                                       VerticalAlignment="Center"
+                                       Grid.Column="0"/>
+                                      
+                            <Button Content="✕" 
+                                    Classes="subgroup-delete"
+                                    Command="{Binding $parent[ItemsControl].((editors:StudyGroupEditorViewModel)DataContext).DeleteSubgroupCommand}"
+                                    CommandParameter="{Binding}"
+                                    Grid.Column="1"
+                                    ToolTip.Tip="Удалить подгруппу"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+            <!-- Кнопка добавления -->
+            <Button Content="+ Добавить подгруппу" 
+                    Command="{Binding AddSubgroupCommand}"
+                    HorizontalAlignment="Left"
+                    Margin="10,0,0,0"
+                    Padding="10,5"
+                    Background="Transparent"
+                    BorderBrush="#2196F3"
+                    BorderThickness="1"/>
+        </StackPanel>
+
+        <!-- Кнопки сохранения/удаления -->
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Spacing="10"
                     Margin="0,20,0,0">
-
-            <!-- Удалить -->
             <Button Content="Удалить"
                     Command="{Binding DeleteCommand}"
                     IsVisible="{Binding IsEditMode}"
@@ -62,8 +115,7 @@
                     Foreground="White"
                     CornerRadius="8"
                     Padding="15,8" />
-
-            <!-- Сохранить -->
+                    
             <Button Content="Сохранить"
                     Command="{Binding SaveCommand}"
                     Classes="accent" />
