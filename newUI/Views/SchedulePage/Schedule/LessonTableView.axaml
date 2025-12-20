@@ -9,9 +9,8 @@
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              xmlns:global="clr-namespace:"
              x:Class="newUI.Views.SchedulePage.Schedule.LessonTableView"
-             x:DataType="vm:LessonTableViewModel">
-
-    <UserControl.Resources>
+             x:DataType="vm:LessonTableViewModel"
+             UseLayoutRounding="True"> <UserControl.Resources>
         <converters:GroupWideBackgroundConverter x:Key="GroupWideBackgroundConverter" />
         <converters:ColumnSpanToWidthConverter x:Key="ColumnSpanToWidthConverter" />
         <converters:SubgroupCountToHeightConverter x:Key="SubgroupCountToHeightConverter" />
@@ -31,9 +30,9 @@
     </UserControl.Styles>
 
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="60" /> <RowDefinition Height="*" />
+        <Grid HorizontalAlignment="Left"> <Grid.RowDefinitions>
+                <RowDefinition Height="60" /> 
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -44,19 +43,18 @@
             <Border Grid.Row="0" Grid.Column="0" Width="50" Height="60"
                     Background="LightGray" BorderBrush="Gray" BorderThickness="1" />
 
-            <Grid Grid.Row="0" Grid.Column="1">
-
+            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left">
+                
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Height="30" Panel.ZIndex="1">
                     <ItemsControl x:Name="SubgroupItemsControl" ItemsSource="{Binding FlatColumns}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" />
+                                <StackPanel Orientation="Horizontal" Spacing="0" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="global:ColumnViewModel">
-                                <Panel Width="150" Height="30">
-                                    <Border BorderThickness="1,0,1,1" 
+                                <Panel Width="150" Height="30" Margin="-1,0,0,0"> <Border BorderThickness="1" 
                                             BorderBrush="Gray" 
                                             Background="LightCyan"
                                             IsVisible="{Binding IsSubgroupVisible}"> 
@@ -72,22 +70,21 @@
                     </ItemsControl>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Panel.ZIndex="10">
+                <Grid ColumnDefinitions="Auto, Auto" VerticalAlignment="Top">
                     <ItemsControl x:Name="GroupItemsControl" ItemsSource="{Binding GroupHeaders}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" />
+                                <StackPanel Orientation="Horizontal" Spacing="0" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="dto:StudyGroupDto">
-                                <Button
-                                    Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditStudyGroupCommand}"
-                                    CommandParameter="{Binding}"
-                                    Padding="0" BorderThickness="1" BorderBrush="Gray" CornerRadius="0"
-                                    Background="LightBlue"
-                                    VerticalAlignment="Top">
-                                    <Button.Width>
+                                <Button Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditStudyGroupCommand}"
+                                        CommandParameter="{Binding}"
+                                        Padding="0" BorderThickness="1" BorderBrush="Gray" CornerRadius="0"
+                                        Background="LightBlue"
+                                        VerticalAlignment="Top"
+                                        Margin="-1,0,0,0"> <Button.Width>
                                         <MultiBinding Converter="{StaticResource ColumnSpanToWidthMultiConverter}">
                                             <Binding Path="StudySubgroups.Count" />
                                         </MultiBinding>
@@ -103,23 +100,23 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <Button Width="30" Height="30" Margin="2,0,0,0"
+                    <Button Grid.Column="1" Width="30" Height="30" Margin="5,0,0,0"
                             Command="{Binding AddStudyGroupCommand}" Classes="IconButton">
                         <icons:MaterialIcon Kind="Plus" Width="16" Height="16" />
                     </Button>
-                </StackPanel>
+                </Grid>
             </Grid>
 
-            <StackPanel Grid.Row="1" Grid.Column="0">
+            <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top">
                 <ItemsControl ItemsSource="{Binding Rows}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button
-                                Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditLessonNumberCommand}"
-                                CommandParameter="{Binding RowHeader}"
-                                Padding="0" BorderThickness="1" BorderBrush="Gray" CornerRadius="0"
-                                Width="50" Height="{DynamicResource LessonCardHeight}"
-                                Background="LightGray">
+                            <Button Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditLessonNumberCommand}"
+                                    CommandParameter="{Binding RowHeader}"
+                                    Padding="0" BorderThickness="1" BorderBrush="Gray" CornerRadius="0"
+                                    Width="50" Height="{DynamicResource LessonCardHeight}"
+                                    Background="LightGray"
+                                    Margin="0,-1,0,0">
                                 <TextBlock Text="{Binding RowHeader.Number}" FontWeight="Bold"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center" />
@@ -127,27 +124,27 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <Button Width="50" Height="30" Margin="0,2,0,0"
+                <Button Width="50" Height="30" Margin="0,5,0,0"
                         Command="{Binding AddLessonNumberCommand}" Classes="IconButton">
                     <icons:MaterialIcon Kind="Plus" Width="16" Height="16" />
                 </Button>
             </StackPanel>
 
-            <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Rows}">
+            <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Rows}" HorizontalAlignment="Left">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <ItemsControl ItemsSource="{Binding Cells}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" />
+                                    <StackPanel Orientation="Horizontal" Spacing="0" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border BorderBrush="Gray" BorderThickness="1"
                                             Width="{Binding ColumnSpan, Converter={StaticResource ColumnSpanToWidthConverter}}"
-                                            Height="{DynamicResource LessonCardHeight}">
-                                        <Border.Background>
+                                            Height="{DynamicResource LessonCardHeight}"
+                                            Margin="-1,-1,0,0"> <Border.Background>
                                             <Binding Path="IsGroupWideLesson"
                                                      Converter="{StaticResource GroupWideBackgroundConverter}" />
                                         </Border.Background>
