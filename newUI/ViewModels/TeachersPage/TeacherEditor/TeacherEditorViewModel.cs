@@ -4,6 +4,8 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using Microsoft.Extensions.DependencyInjection;
+using newUI.Services;
+using newUI.ViewModels.Shared;
 
 namespace newUI.ViewModels.TeachersPage.TeacherEditor;
 
@@ -38,20 +40,22 @@ public class TeacherEditorViewModel : ViewModelBase
 
     private readonly IServiceScopeFactory scopeFactory;
     private readonly TeacherDto? editingTeacher;
+    private readonly IWindowManager windowManager;
 
     public ICommand SaveCommand { get; }
 
     // Для создания нового
-    public TeacherEditorViewModel(IServiceScopeFactory scopeFactory)
+    public TeacherEditorViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager)
     {
         this.scopeFactory = scopeFactory;
+        this.windowManager = windowManager;
         SaveCommand = new RelayCommandAsync(SaveAsync);
         HeaderText = "Добавление преподавателя";
     }
 
     // Для редактирования существующего
-    public TeacherEditorViewModel(IServiceScopeFactory scopeFactory, TeacherDto teacherToEdit)
-        : this(scopeFactory)
+    public TeacherEditorViewModel(IServiceScopeFactory scopeFactory, TeacherDto teacherToEdit, IWindowManager windowManager)
+        : this(scopeFactory, windowManager)
     {
         editingTeacher = teacherToEdit;
         TeacherSurname = teacherToEdit.Surname;
@@ -75,7 +79,14 @@ public class TeacherEditorViewModel : ViewModelBase
                 Name = TeacherName,
                 Patronymic = TeacherPatronymic
             };
-            teacher = (await service.AddTeacher(createTeacher)).Value; //TODO: показ ошибки
+            var teacherResult = await service.AddTeacher(createTeacher);
+            if (teacherResult.IsFailure)
+            {
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel(teacherResult.Error));
+                return;
+            }
+            teacher = teacherResult.Value;
         }
         else
         {
@@ -87,7 +98,13 @@ public class TeacherEditorViewModel : ViewModelBase
                 Name = TeacherName,
                 Patronymic = TeacherPatronymic
             };
-            await service.EditTeacher(teacher);
+            var teacherEditResult = await service.EditTeacher(teacher);
+            if (teacherEditResult.IsFailure)
+            {
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel(teacherEditResult.Error));
+                return;
+            }
         }
 
         TeacherSaved?.Invoke(teacher);

@@ -63,7 +63,14 @@ public class StudyGroupEditorViewModel : ViewModelBase
         if (editingStudyGroup == null)
         {
             var createStudyGroup = new CreateStudyGroupDto { Name = StudyGroupName };
-            studyGroup = (await service.AddStudyGroup(createStudyGroup)).Value; //TODO: показ ошибки
+            var studyGroupResult = await service.AddStudyGroup(createStudyGroup);
+            if (studyGroupResult.IsFailure)
+            {
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel(studyGroupResult.Error));
+                return;
+            }
+            studyGroup = studyGroupResult.Value;
         }
         else
         {
@@ -73,7 +80,13 @@ public class StudyGroupEditorViewModel : ViewModelBase
                 Name = StudyGroupName
             };
 
-            await service.EditStudyGroup(studyGroup);
+            var studyGroupEditResult = await service.EditStudyGroup(studyGroup);
+            if (studyGroupEditResult.IsFailure)
+            {
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel(studyGroupEditResult.Error));
+                return;
+            }
         }
 
         StudyGroupSaved?.Invoke(studyGroup);

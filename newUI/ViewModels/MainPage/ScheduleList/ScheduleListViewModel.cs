@@ -108,7 +108,7 @@ public class ScheduleListViewModel : ViewModelBase
         itemVm.RequestEdit += async item =>
         {
             using var scope = scopeFactory.CreateScope();
-            var vm = new ScheduleEditorViewModel(scopeFactory, item.Schedule);
+            var vm = new ScheduleEditorViewModel(scopeFactory, item.Schedule, windowManager);
 
             vm.ScheduleSaved += updatedSchedule =>
             {
@@ -126,7 +126,7 @@ public class ScheduleListViewModel : ViewModelBase
     private async Task AddSchedule()
     {
         using var scope = scopeFactory.CreateScope();
-        var vm = new ScheduleEditorViewModel(scopeFactory);
+        var vm = new ScheduleEditorViewModel(scopeFactory, windowManager);
 
         vm.ScheduleSaved += async schedule =>
         {

@@ -4,6 +4,8 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using Microsoft.Extensions.DependencyInjection;
+using newUI.Services;
+using newUI.ViewModels.Shared;
 
 namespace newUI.ViewModels.ClassroomsPage.ClassroomEditor;
 
@@ -22,20 +24,22 @@ public class ClassroomEditorViewModel : ViewModelBase
 
     private readonly IServiceScopeFactory scopeFactory;
     private readonly ClassroomDto? editingClassroom;
+    private readonly IWindowManager windowManager;
 
     public ICommand SaveCommand { get; }
 
     // Для создания нового
-    public ClassroomEditorViewModel(IServiceScopeFactory scopeFactory)
+    public ClassroomEditorViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager)
     {
         this.scopeFactory = scopeFactory;
         SaveCommand = new RelayCommandAsync(SaveAsync);
         HeaderText = "Добавление аудитории";
+        this.windowManager = windowManager;
     }
 
     // Для редактирования существующего
-    public ClassroomEditorViewModel(IServiceScopeFactory scopeFactory, ClassroomDto classroomToEdit)
-        : this(scopeFactory)
+    public ClassroomEditorViewModel(IServiceScopeFactory scopeFactory, ClassroomDto classroomToEdit, IWindowManager windowManager)
+        : this(scopeFactory, windowManager)
     {
         editingClassroom = classroomToEdit;
         ClassroomName = classroomToEdit.Name;
@@ -52,13 +56,26 @@ public class ClassroomEditorViewModel : ViewModelBase
         {
             // Создание нового
             var createClassroom = new CreateClassroomDto { Name = ClassroomName };
-            classroom = (await service.AddClassroom(createClassroom)).Value; //TODO: показ ошибки
+            var classroomResult = await service.AddClassroom(createClassroom);
+            if (classroomResult.IsFailure)
+            {
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel(classroomResult.Error));
+                return;
+            }
+            classroom = classroomResult.Value;
         }
         else
         {
             // Редактирование существующего
             classroom = new ClassroomDto { Id = editingClassroom.Id, Name = ClassroomName };
-            await service.EditClassroom(classroom);
+            var classroomEdit = await service.EditClassroom(classroom);
+            if (classroomEdit.IsFailure)
+            {
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel(classroomEdit.Error));
+                return;
+            }
         }
 
         ClassroomSaved?.Invoke(classroom);

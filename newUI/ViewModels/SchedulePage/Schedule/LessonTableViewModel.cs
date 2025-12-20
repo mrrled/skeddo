@@ -13,6 +13,7 @@ using Application.DtoModels;
 using Application.IServices;
 using newUI.ViewModels.SchedulePage.StudyGroups;
 using newUI.ViewModels.SchedulePage.LessonNumbers;
+using newUI.ViewModels.Shared;
 
 namespace newUI.ViewModels.SchedulePage.Schedule;
 
@@ -164,7 +165,15 @@ public class LessonTableViewModel
         using var scope = scopeFactory.CreateScope();
 
         var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleServices>();
-        var currentSchedule = (await scheduleService.GetScheduleByIdAsync(Schedule.Id)).Value; //TODO: показ ошибки
+        var scheduleResult = await scheduleService.GetScheduleByIdAsync(Schedule.Id);
+        if (scheduleResult.IsFailure)
+        {
+            await windowManager.ShowDialog<NotificationViewModel, object?>(
+                new NotificationViewModel(scheduleResult.Error));
+            return new();
+        }
+
+        var currentSchedule = scheduleResult.Value;
         if (currentSchedule != null)
             Schedule = currentSchedule;
 

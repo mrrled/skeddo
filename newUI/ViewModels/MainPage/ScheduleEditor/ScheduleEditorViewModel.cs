@@ -4,6 +4,8 @@ using System.Windows.Input;
 using Application.DtoModels;
 using Application.IServices;
 using Microsoft.Extensions.DependencyInjection;
+using newUI.Services;
+using newUI.ViewModels.Shared;
 
 namespace newUI.ViewModels.MainPage.ScheduleEditor;
 
@@ -22,20 +24,22 @@ public class ScheduleEditorViewModel : ViewModelBase
 
     private readonly IServiceScopeFactory scopeFactory;
     private readonly ScheduleDto? editingSchedule;
+    private readonly IWindowManager windowManager;
 
     public ICommand SaveCommand { get; }
 
     // Для создания нового
-    public ScheduleEditorViewModel(IServiceScopeFactory scopeFactory)
+    public ScheduleEditorViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager)
     {
         this.scopeFactory = scopeFactory;
+        this.windowManager = windowManager;
         SaveCommand = new RelayCommandAsync(SaveAsync);
         HeaderText = "Создание расписания";
     }
 
     // Для редактирования существующего
-    public ScheduleEditorViewModel(IServiceScopeFactory scopeFactory, ScheduleDto scheduleToEdit)
-        : this(scopeFactory)
+    public ScheduleEditorViewModel(IServiceScopeFactory scopeFactory, ScheduleDto scheduleToEdit, IWindowManager windowManager)
+        : this(scopeFactory, windowManager)
     {
         editingSchedule = scheduleToEdit;
         ScheduleName = scheduleToEdit.Name;
@@ -52,13 +56,26 @@ public class ScheduleEditorViewModel : ViewModelBase
         {
             // Создание нового
             var createSchedule = new CreateScheduleDto { Name = ScheduleName };
-            schedule = (await service.AddSchedule(createSchedule)).Value; //TODO: показ ошибки
+            var scheduleResult = await service.AddSchedule(createSchedule);
+            if (scheduleResult.IsFailure)
+            {
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel(scheduleResult.Error));
+                return;
+            }
+            schedule = scheduleResult.Value;
         }
         else
         {
             // Редактирование существующего
             schedule = new ScheduleDto { Id = editingSchedule.Id, Name = ScheduleName };
-            await service.EditSchedule(schedule);
+            var scheduleEditResult = await service.EditSchedule(schedule);
+            if (scheduleEditResult.IsFailure)
+            {
+                await windowManager.ShowDialog<NotificationViewModel, object?>(
+                    new NotificationViewModel(scheduleEditResult.Error));
+                return;
+            }
         }
 
         ScheduleSaved?.Invoke(schedule);

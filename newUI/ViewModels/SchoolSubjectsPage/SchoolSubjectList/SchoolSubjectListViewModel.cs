@@ -92,7 +92,7 @@ public class SchoolSubjectListViewModel : ViewModelBase
         itemVm.RequestEdit += async item =>
         {
             using var scope = scopeFactory.CreateScope();
-            var vm = new SchoolSubjectEditorViewModel(scopeFactory, item.SchoolSubject);
+            var vm = new SchoolSubjectEditorViewModel(scopeFactory, item.SchoolSubject, windowManager);
 
             vm.SchoolSubjectSaved += updatedSchoolSubject =>
             {
@@ -110,7 +110,7 @@ public class SchoolSubjectListViewModel : ViewModelBase
     private async Task AddSchoolSubject()
     {
         using var scope = scopeFactory.CreateScope();
-        var vm = new SchoolSubjectEditorViewModel(scopeFactory);
+        var vm = new SchoolSubjectEditorViewModel(scopeFactory, windowManager);
 
         vm.SchoolSubjectSaved += async schoolSubject =>
         {

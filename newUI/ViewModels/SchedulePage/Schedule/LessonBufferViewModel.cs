@@ -79,7 +79,11 @@ public class LessonBufferViewModel : ViewModelBase
         var service = scope.ServiceProvider.GetRequiredService<ILessonDraftServices>();
         var result = await service.ClearDraftsByScheduleId(scheduleId);
         if (result.IsFailure)
-            return; //TODO: показ ошибки
+        {
+            await windowManager.ShowDialog<NotificationViewModel, object?>(
+                new NotificationViewModel(result.Error));
+            return;
+        }
         await RefreshAsync();
     }
 }
