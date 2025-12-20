@@ -22,6 +22,7 @@ public class LessonBufferViewModel : ViewModelBase
     public ObservableCollection<LessonCardViewModel> LessonCards { get; } = new();
     public event Action? RequestTableRefresh;
     public ICommand ClearCommand { get; }
+    public event Action<LessonDto>? RequestEditLesson;
 
     public LessonBufferViewModel(IServiceScopeFactory scopeFactory, IWindowManager windowManager, Guid scheduleId)
     {
@@ -44,10 +45,18 @@ public class LessonBufferViewModel : ViewModelBase
                 IsVisible = true
             };
 
+            // 2. Подписываемся на клик по карточке в буфере
+            // В LessonCardViewModel должен быть либо EditRequested, либо ClickCommand вызывающий событие
+            card.EditRequested += (lesson) => 
+            {
+                RequestEditLesson?.Invoke(lesson);
+            };
+
+            // Оставляем ваши существующие подписки, если они используются для Drag-and-Drop или быстрых действий
             card.LessonUpdated += async _ =>
             {
-                RequestTableRefresh?.Invoke(); // Обновить таблицу (урок добавился)
-                await RefreshAsync(); // Обновить буфер (черновик исчез)
+                RequestTableRefresh?.Invoke();
+                await RefreshAsync();
             };
 
             card.LessonDeleted += async _ =>

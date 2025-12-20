@@ -43,6 +43,7 @@ public class LessonTableViewModel
     public IRelayCommand AddLessonNumberCommand { get; }
     public IRelayCommand<StudyGroupDto> EditStudyGroupCommand { get; }
     public IRelayCommand<LessonNumberDto> EditLessonNumberCommand { get; }
+    public event Action<LessonDto>? RequestEditLesson;
 
     public LessonTableViewModel(
         ScheduleDto schedule,
@@ -231,21 +232,26 @@ public class LessonTableViewModel
                     }
                 }
 
-                LessonCardViewModel card =
-                    new LessonCardViewModel(scopeFactory, windowManager, Refresh, isVisible: lessonToUse != null)
+                LessonCardViewModel card = new LessonCardViewModel(scopeFactory, windowManager, Refresh, isVisible: lessonToUse != null)
+                {
+                    Lesson = lessonToUse ?? new LessonDto
                     {
-                        Lesson = lessonToUse ?? new LessonDto
-                        {
-                            StudyGroup = currentColumn.StudyGroup,
-                            StudySubgroup = currentColumn.StudySubgroup,
-                            LessonNumber = lessonNumber,
-                            ScheduleId = Schedule.Id
-                        },
-                        ColumnSpan = span,
-                        IsGroupWideLesson = isGroupWide
-                    };
+                        StudyGroup = currentColumn.StudyGroup,
+                        StudySubgroup = currentColumn.StudySubgroup,
+                        LessonNumber = lessonNumber,
+                        ScheduleId = Schedule.Id
+                    },
+                    ColumnSpan = span,
+                    IsGroupWideLesson = isGroupWide
+                };
 
-                // Подписка на понижение до черновика (Мердж из 2 файла)
+// 2. ПОДПИСКА НА КЛИК ПО КАРТОЧКЕ
+                card.EditRequested += (lesson) => 
+                {
+                    RequestEditLesson?.Invoke(lesson);
+                };
+
+// Подписка на понижение до черновика (уже есть у вас)
                 card.LessonDowngraded += draft =>
                 {
                     LessonMovedToBuffer?.Invoke(draft);

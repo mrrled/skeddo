@@ -72,6 +72,9 @@ public class LessonCardViewModel : ViewModelBase
         WarningType.Warning => "LemonChiffon",
         _ => "Transparent"
     };
+    
+    public event Action<LessonDto>? EditRequested;
+    
 
     public ICommand ClickCommand { get; }
 
@@ -120,6 +123,6 @@ public class LessonCardViewModel : ViewModelBase
             refreshCallback?.Invoke();
         };
 
-        await windowManager.ShowDialog<LessonEditorViewModel, object?>(editVm);
+        EditRequested?.Invoke(Lesson);
     }
 }

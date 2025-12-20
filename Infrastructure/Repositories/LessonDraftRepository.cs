@@ -49,6 +49,7 @@ public class LessonDraftRepository(ScheduleDbContext context) : ILessonDraftRepo
             .Include(x => x.Teacher)
             .Include(x => x.Classroom)
             .Include(x => x.StudyGroup)
+            .ThenInclude(x => x.StudySubgroups)
             .Include(x => x.SchoolSubject)
             .Include(x => x.LessonNumber)
             .Include(x => x.StudySubgroup)

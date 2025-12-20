@@ -193,16 +193,41 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
         }
         else
         {
-            // Только если вкладки нет, создаем новую
             var tableViewModel = new LessonTableViewModel(schedule, scopeFactory, windowManager);
             var bufferViewModel = new LessonBufferViewModel(scopeFactory, windowManager, id);
 
-            bufferViewModel.RequestTableRefresh += async () => await tableViewModel.RefreshAsync();
-            tableViewModel.LessonMovedToBuffer += draft => bufferViewModel.AddMany(new[] { draft });
+            // СВЯЗКА ТАБЛИЦЫ С РЕДАКТОРОМ
+            tableViewModel.RequestEditLesson += async lesson => 
+            {
+                await EditLessonAsync(lesson);
+            };
+
+            // Если в буфере тоже нужно редактирование по клику:
+            bufferViewModel.RequestEditLesson += async lesson => 
+            {
+                await EditLessonAsync(lesson);
+            };
+            bufferViewModel.RequestTableRefresh += async () => await RefreshActiveTabContentAsync();
+            tableViewModel.LessonMovedToBuffer += async draft => await RefreshActiveTabContentAsync();
 
             var tab = new ScheduleTabViewModel(schedule, tableViewModel, scopeFactory, CloseTabById, bufferViewModel);
             Tabs.Add(tab);
             SelectedTab = tab;
+        }
+    }
+    private async Task RefreshActiveTabContentAsync()
+    {
+        // 1. Обновляем буфер (черновики)
+        if (Buffer != null)
+        {
+            await Buffer.RefreshAsync();
+        }
+
+        // 2. Обновляем всю таблицу (уроки)
+        if (CurrentScheduleTable != null)
+        {
+            // Передаем текущее ID расписания, чтобы таблица заново скачала данные из БД
+            await CurrentScheduleTable.RefreshAsync();
         }
     }
 
@@ -226,23 +251,41 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
         if (id == null) return;
 
         var vm = new LessonEditorViewModel(scopeFactory, windowManager, id.Value);
-
-        vm.LessonSaved += async result =>
-        {
-            // Всегда обновляем буфер, чтобы новый черновик появился там
-            if (Buffer != null)
-            {
-                await Buffer.RefreshAsync();
-            }
-
-            // Если это полноценный урок, обновляем таблицу
-            if (!result.IsDraft && CurrentScheduleTable != null)
-            {
-                await CurrentScheduleTable.RefreshAsync();
-            }
-        };
+    
+        // При сохранении обновляем всё
+        vm.LessonSaved += async result => await RefreshActiveTabContentAsync();
 
         await windowManager.ShowDialog<LessonEditorViewModel, object?>(vm);
+    }
+
+    public async Task EditLessonAsync(LessonDto lesson)
+    {
+        var id = CurrentSchedule?.Id;
+        if (id == null) return;
+
+        var vm = new LessonEditorViewModel(scopeFactory, windowManager, lesson);
+
+        // При сохранении — обновляем всё
+        vm.LessonSaved += async result => await RefreshActiveTabContentAsync();
+    
+        // При удалении — тоже обновляем всё
+        vm.LessonDeleted += async _ => await RefreshActiveTabContentAsync();
+
+        await windowManager.ShowDialog<LessonEditorViewModel, object?>(vm);
+    }
+
+// Вынесем общую логику сохранения в отдельный метод (для Add и Edit)
+    private async Task OnLessonSavedAsync(EditLessonResult result)
+    {
+        if (Buffer != null)
+        {
+            await Buffer.RefreshAsync();
+        }
+
+        if (!result.IsDraft && CurrentScheduleTable != null)
+        {
+            await CurrentScheduleTable.RefreshAsync();
+        }
     }
 
     private async Task SaveScheduleAsync() => await Task.CompletedTask;

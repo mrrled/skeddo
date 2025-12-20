@@ -41,7 +41,7 @@ public class LessonDraftServices(
         var schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId);
         if (schedule is null)
             return Result<EditLessonResult>.Failure("Расписание не найдено.");
-        var lessonDraft = schedule.LessonDrafts.FirstOrDefault(x => x.Id == lessonDraftDto.Id);
+        var lessonDraft = await lessonDraftRepository.GetLessonDraftById(lessonDraftDto.Id);
         if (lessonDraft is null)
             return Result<EditLessonResult>.Failure("Урок не найден.");
         var schoolSubject = await schoolSubjectRepository.GetSchoolSubjectByIdAsync(lessonDraftDto.SchoolSubject.Id);
@@ -58,11 +58,13 @@ public class LessonDraftServices(
         var studyGroup = lessonDraftDto.StudyGroup is null
             ? null
             : await studyGroupRepository.GetStudyGroupByIdAsync(lessonDraftDto.StudyGroup.Id);
+        lessonDraft.SetStudyGroup(studyGroup);
         var studySubgroupCreateResult = lessonDraftDto.StudySubgroup is null || studyGroup is null
             ? null
             : StudySubgroup.CreateStudySubgroup(studyGroup, lessonDraftDto.StudySubgroup.Name);
         if (studySubgroupCreateResult is not null && studySubgroupCreateResult.IsFailure)
             return Result<EditLessonResult>.Failure(studySubgroupCreateResult.Error);
+        lessonDraft.SetStudySubgroup(studySubgroupCreateResult?.Value);
         var classroom = lessonDraftDto.Classroom is null
             ? null
             : await classroomRepository.GetClassroomByIdAsync(lessonDraftDto.Classroom.Id);
