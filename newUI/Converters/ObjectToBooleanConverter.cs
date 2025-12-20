@@ -1,18 +1,16 @@
-using Avalonia.Data.Converters;
-using System;
+﻿using System;
 using System.Globalization;
+using Avalonia.Data.Converters;
 
 namespace newUI.Converters;
 
-public class ColumnSpanToWidthConverter : IValueConverter
+public class ObjectToBooleanConverter : IValueConverter
 {
-    private const double BaseWidth = 150;
+    public static ObjectToBooleanConverter Instance { get; } = new();
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is int span && span > 0)
-            return span * BaseWidth;
-        return BaseWidth;
+        return value != null;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

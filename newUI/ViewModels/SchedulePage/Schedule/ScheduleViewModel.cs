@@ -55,23 +55,23 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
         Toolbar.RequestPdfExport += async () =>
         {
-            
             if (CurrentSchedule == null)
                 return;
             var file = await fileService.SaveFileAsync(
-                "Сохранить PDF-расписание", 
-                ".pdf", 
+                "Сохранить PDF-расписание",
+                ".pdf",
                 $"Расписание_{CurrentSchedule.Name}.pdf"
             );
 
             if (file == null) return;
 
-            try 
+            try
             {
                 await using (var stream = await file.OpenWriteAsync())
                 {
                     await exportServices.GeneratePdfAsync(CurrentSchedule.Id, stream);
                 }
+
                 await windowManager.ShowDialog<NotificationViewModel, object?>(
                     new NotificationViewModel("Экспорт в PDF успешно завершен!"));
             }
@@ -87,19 +87,20 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
             if (CurrentSchedule == null)
                 return;
             var file = await fileService.SaveFileAsync(
-                "Сохранить Excel-расписание", 
+                "Сохранить Excel-расписание",
                 ".xlsx",
                 $"Расписание_{CurrentSchedule.Name}.xlsx"
             );
 
             if (file == null) return;
 
-            try 
+            try
             {
                 await using (var stream = await file.OpenWriteAsync())
                 {
                     await exportServices.GenerateExcelAsync(CurrentSchedule.Id, stream);
                 }
+
                 await windowManager.ShowDialog<NotificationViewModel, object?>(
                     new NotificationViewModel("Экспорт в Excel успешно завершен!"));
             }
@@ -171,7 +172,6 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
     public async Task LoadSchedule(Guid id)
     {
-        // 1. Сначала ищем вкладку, чтобы не делать лишних запросов, если она уже есть
         var existingTab = Tabs.FirstOrDefault(t => t.Id == id);
 
         using var scope = scopeFactory.CreateScope();
@@ -183,17 +183,16 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
                 new NotificationViewModel(scheduleResult.Error));
             return;
         }
+
         var schedule = scheduleResult.Value;
 
         if (existingTab != null)
         {
-            // Если вкладка есть, просто обновляем её данные (это не создаст новую вкладку)
             existingTab.Update(schedule);
             SelectedTab = existingTab;
         }
         else
         {
-            // Только если вкладки нет, создаем новую
             var tableViewModel = new LessonTableViewModel(schedule, scopeFactory, windowManager);
             var bufferViewModel = new LessonBufferViewModel(scopeFactory, windowManager, id);
 
@@ -229,13 +228,11 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
         vm.LessonSaved += async result =>
         {
-            // Всегда обновляем буфер, чтобы новый черновик появился там
             if (Buffer != null)
             {
                 await Buffer.RefreshAsync();
             }
 
-            // Если это полноценный урок, обновляем таблицу
             if (!result.IsDraft && CurrentScheduleTable != null)
             {
                 await CurrentScheduleTable.RefreshAsync();
