@@ -59,6 +59,11 @@
                            FontSize="10"
                            Foreground="#B0B0B0"
                            TextAlignment="Center" />
+
+                <TextBlock Text="{Binding Lesson.LessonNumber.Number, FallbackValue='', TargetNullValue=''}"
+                           FontSize="10"
+                           Foreground="#B0B0B0"
+                           TextAlignment="Center" />
             </StackPanel>
         </Border>
     </Button>
