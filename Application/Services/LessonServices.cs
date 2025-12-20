@@ -126,6 +126,8 @@ public class LessonServices(
                 "Ошибка при добавлении урока. Попробуйте позже.");
             if (addResult.IsFailure)
                 return Result<EditLessonResult>.Failure(addResult.Error);
+            var updatedLessons = schedule.DeleteLesson(lesson); 
+            await lessonRepository.UpdateRangeAsync(updatedLessons);
             await lessonRepository.Delete(lesson);
             return await TrySaveChangesAsync(EditLessonResult.Downgraded(draft.ToLessonDraftDto()),
                 "Не удалось изменить урок. Попробуйте позже.");

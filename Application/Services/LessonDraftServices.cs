@@ -94,6 +94,8 @@ public class LessonDraftServices(
             "Ошибка при изменении урока. Попробуйте позже");
         if (addResult.IsFailure)
             return Result<EditLessonResult>.Failure(addResult.Error);
+        var updatedLessons = schedule.DeleteLessonDraft(lessonDraft);
+        await lessonRepository.UpdateRangeAsync(updatedLessons);
         await lessonDraftRepository.Delete(lessonDraft);
         return await TrySaveChangesAsync(EditLessonResult.Success(lesson.ToLessonDto()),
             "Не удалось изменить урок. Попробуйте позже.");
