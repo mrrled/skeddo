@@ -9,6 +9,7 @@ using Avalonia.Collections;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using newUI.Services;
+using newUI.ViewModels.SchedulePage.StudySubgroups;
 using newUI.ViewModels.Shared;
 
 namespace newUI.ViewModels.SchedulePage.StudyGroups;
@@ -77,10 +78,9 @@ public class StudyGroupEditorViewModel : ViewModelBase
     // ================== ДОБАВЛЕНИЕ ПОДГРУППЫ ==================
     private async Task AddSubgroupAsync()
     {
-        var inputVm = new TextInputViewModel("Добавление подгруппы", 
-            "Введите название подгруппы:", "А");
+        var inputVm = new StudySubgroupCreatorViewModel();
         
-        var result = await windowManager.ShowDialog<TextInputViewModel, string?>(inputVm);
+        var result = await windowManager.ShowDialog<StudySubgroupCreatorViewModel, string?>(inputVm);
         
         if (!string.IsNullOrWhiteSpace(result))
         {

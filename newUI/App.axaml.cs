@@ -25,6 +25,7 @@ using newUI.ViewModels.SchedulePage.LessonNumbers;
 using newUI.ViewModels.SchedulePage.Schedule;
 using newUI.ViewModels.SchedulePage.Lessons;
 using newUI.ViewModels.SchedulePage.StudyGroups;
+using newUI.ViewModels.SchedulePage.StudySubgroups;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectEditor;
 using newUI.ViewModels.SchoolSubjectsPage.SchoolSubjectList;
 using newUI.ViewModels.TeachersPage.TeacherEditor;
@@ -43,6 +44,7 @@ using newUI.Views.TeachersPage.TeacherList;
 using newUI.Views.TeachersPage.TeacherEditor;
 using newUI.Views.SchedulePage.LessonNumbers;
 using newUI.Views.SchedulePage.StudyGroups;
+using StudySubgroupCreatorWindow = newUI.Views.SchedulePage.StudySubgroup.StudySubgroupCreatorWindow;
 
 namespace newUI;
 
@@ -108,8 +110,8 @@ public partial class App : Avalonia.Application
         
         services.AddSingleton<IWindowManager, WindowManager>();
 
-        services.AddTransient<TextInputWindow>();
-        services.AddTransient<TextInputViewModel>();
+        services.AddTransient<StudySubgroupCreatorWindow>();
+        services.AddTransient<StudySubgroupCreatorViewModel>();
         
         services.AddTransient<ScheduleListView>();
         services.AddTransient<ScheduleListViewModel>();
@@ -182,7 +184,7 @@ public partial class App : Avalonia.Application
         
         ViewMappingService.RegisterWindow<ConfirmDeleteViewModel, ConfirmDeleteWindow>();
         
-        ViewMappingService.RegisterWindow<TextInputViewModel, TextInputWindow>();
+        ViewMappingService.RegisterWindow<StudySubgroupCreatorViewModel, StudySubgroupCreatorWindow>();
         
         ViewMappingService.RegisterWindow<LessonNumberEditorViewModel, LessonNumberEditorWindow>();
         ViewMappingService.RegisterWindow<StudyGroupEditorViewModel, StudyGroupEditorWindow>();

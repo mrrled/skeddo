@@ -1,8 +1,9 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using newUI.ViewModels;
 
-public class TextInputViewModel : ViewModelBase
+namespace newUI.ViewModels.SchedulePage.StudySubgroups;
+
+public class StudySubgroupCreatorViewModel : ViewModelBase
 {
     public string Title { get; }
     public string Prompt { get; }
@@ -18,11 +19,9 @@ public class TextInputViewModel : ViewModelBase
     public ICommand ConfirmCommand { get; }
     public ICommand CancelCommand { get; }
 
-    public TextInputViewModel(string title, string prompt, string? watermark = null)
+    public StudySubgroupCreatorViewModel()
     {
-        Title = title;
-        Prompt = prompt;
-        Watermark = watermark;
+        Title = "Добавление подгруппы";
 
         // Команда подтверждения
         ConfirmCommand = new RelayCommand(() =>

@@ -98,9 +98,14 @@
       <DependentUpon>LessonNumberEditorWindow.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\SchedulePage\StudySubgroup\StudySubgroupCreatorWindow.axaml.cs">
+      <DependentUpon>TextInputWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="Views\SchedulePage\Schedule\LessonTableView.axaml" />
+    <AdditionalFiles Include="Views\SchedulePage\StudySubgroups\TextInputWindow.axaml" />
   </ItemGroup>
 </Project>
