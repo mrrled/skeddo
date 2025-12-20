@@ -17,6 +17,7 @@ public class StudyGroupEditorViewModel : ViewModelBase
     public string HeaderText { get; }
     public event Action<StudyGroupDto>? StudyGroupSaved;
     public event Action<StudyGroupDto>? StudyGroupDeleted;
+    public event Action<StudySubgroupDto>? StudySubgroupDeleted; 
 
     private string studyGroupName = string.Empty;
     private AvaloniaList<StudySubgroupDto> subgroups = new();
@@ -120,6 +121,7 @@ public class StudyGroupEditorViewModel : ViewModelBase
         var service = scope.ServiceProvider.GetRequiredService<IStudySubgroupService>();
         await service.DeleteStudySubgroup(subgroup);
         Subgroups.Remove(subgroup);
+        StudySubgroupDeleted?.Invoke(subgroup);
     }
 
 
