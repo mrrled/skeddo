@@ -83,7 +83,7 @@
                                       
                             <Button Content="✕" 
                                     Classes="subgroup-delete"
-                                    Command="{Binding $parent[ItemsControl].DataContext.DeleteSubgroupCommand}"
+                                    Command="{Binding $parent[ItemsControl].((editors:StudyGroupEditorViewModel)DataContext).DeleteSubgroupCommand}"
                                     CommandParameter="{Binding}"
                                     Grid.Column="1"
                                     ToolTip.Tip="Удалить подгруппу"/>
