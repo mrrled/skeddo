@@ -51,5 +51,6 @@
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <converters:ColumnSpanToWidthConverter x:Key="ColumnSpanToWidthConverter" />
         <converters:ObjectToBooleanConverter x:Key="ObjectToBooleanConverter" />
+        <converters:ColumnSpanToWidthMultiConverter x:Key="ColumnSpanToWidthMultiConverter" />
     </Application.Resources>
 </Application>
