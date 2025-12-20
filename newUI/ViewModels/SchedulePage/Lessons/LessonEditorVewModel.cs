@@ -171,7 +171,7 @@ public class LessonEditorViewModel : ViewModelBase
         var classrooms = await scope.ServiceProvider.GetRequiredService<IClassroomServices>()
             .FetchClassroomsFromBackendAsync();
         var groups = await scope.ServiceProvider.GetRequiredService<IStudyGroupServices>()
-            .FetchStudyGroupsFromBackendAsync();
+            .GetStudyGroupByScheduleId(scheduleId);
         var subjects = await scope.ServiceProvider.GetRequiredService<ISchoolSubjectServices>()
             .FetchSchoolSubjectsFromBackendAsync();
         var slots = await scope.ServiceProvider.GetRequiredService<ILessonNumberServices>()

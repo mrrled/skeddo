@@ -100,7 +100,7 @@ public class LessonTableViewModel
     {
         using var scope = scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IStudyGroupServices>();
-        var groups = await service.FetchStudyGroupsFromBackendAsync();
+        var groups = await service.GetStudyGroupByScheduleId(Schedule.Id);
         StudyGroups = new AvaloniaList<StudyGroupDto>(groups);
 
         BuildColumns();
@@ -273,7 +273,7 @@ public class LessonTableViewModel
     // Методы редакторов (без изменений, соответствуют обоим файлам)
     private async void OpenAddStudyGroupEditor()
     {
-        var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory);
+        var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory, Schedule.Id);
         vm.StudyGroupSaved += async _ => await RefreshAsync();
         vm.StudyGroupDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
@@ -281,7 +281,7 @@ public class LessonTableViewModel
 
     private async void OpenEditStudyGroupEditor(StudyGroupDto studyGroup)
     {
-        var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory, studyGroup);
+        var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory, studyGroup, Schedule.Id);
         vm.StudyGroupSaved += async _ => await RefreshAsync();
         vm.StudyGroupDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);

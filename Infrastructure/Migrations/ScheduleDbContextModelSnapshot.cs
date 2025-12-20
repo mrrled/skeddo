@@ -222,12 +222,12 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ScheduleGroupId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("ScheduleId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ScheduleGroupId");
+                    b.HasIndex("ScheduleId");
 
                     b.ToTable("StudyGroups");
                 });
@@ -457,13 +457,13 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.DboModels.StudyGroupDbo", b =>
                 {
-                    b.HasOne("Infrastructure.DboModels.ScheduleGroupDbo", "ScheduleGroup")
+                    b.HasOne("Infrastructure.DboModels.ScheduleDbo", "Schedule")
                         .WithMany("StudyGroups")
-                        .HasForeignKey("ScheduleGroupId")
+                        .HasForeignKey("ScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ScheduleGroup");
+                    b.Navigation("Schedule");
                 });
 
             modelBuilder.Entity("Infrastructure.DboModels.StudySubgroupDbo", b =>
@@ -525,6 +525,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("LessonNumbers");
 
                     b.Navigation("Lessons");
+
+                    b.Navigation("StudyGroups");
                 });
 
             modelBuilder.Entity("Infrastructure.DboModels.ScheduleGroupDbo", b =>
@@ -534,8 +536,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Schedules");
 
                     b.Navigation("SchoolSubjects");
-
-                    b.Navigation("StudyGroups");
 
                     b.Navigation("Teachers");
                 });

@@ -8,11 +8,19 @@ namespace Infrastructure.Repositories;
 
 public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupRepository
 {
-    public async Task<List<StudyGroup>> GetStudyGroupListAsync(int scheduleGroupId)
+    public async Task<List<StudyGroup>> GetStudyGroupListAsync()
     {
         var studyGroupDbos = await context.StudyGroups
             .Include(x => x.StudySubgroups)
-            .Where(x => x.ScheduleGroupId == scheduleGroupId)
+            .ToListAsync();
+        return studyGroupDbos.ToStudyGroups();
+    }
+
+    public async Task<List<StudyGroup>> GetStudyGroupListByScheduleIdAsync(Guid scheduleId)
+    {
+        var studyGroupDbos = await context.StudyGroups
+            .Include(x => x.StudySubgroups)
+            .Where(x => x.ScheduleId == scheduleId)
             .ToListAsync();
         return studyGroupDbos.ToStudyGroups();
     }
@@ -34,15 +42,15 @@ public class StudyGroupRepository(ScheduleDbContext context) : IStudyGroupReposi
         return studyGroupDbos.ToStudyGroups();
     }
 
-    public async Task AddAsync(StudyGroup studyGroup, int scheduleGroupId)
+    public async Task AddAsync(StudyGroup studyGroup, Guid scheduleId)
     {
         var studyGroupDbo = studyGroup.ToStudyGroupDbo();
-        var scheduleGroup = await context.ScheduleGroups
-            .Where(x => x.Id == scheduleGroupId)
+        var scheduleGroup = await context.Schedules
+            .Where(x => x.Id == scheduleId)
             .FirstOrDefaultAsync();
         if (scheduleGroup is null)
-            throw new InvalidOperationException($"Schedule with id {scheduleGroupId} not found.");
-        studyGroupDbo.ScheduleGroupId = scheduleGroupId;
+            throw new InvalidOperationException($"Schedule with id {scheduleId} not found.");
+        studyGroupDbo.ScheduleId = scheduleId;
         await context.StudyGroups.AddAsync(studyGroupDbo);
     }
 

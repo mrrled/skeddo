@@ -8,22 +8,33 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class StudyGroupServices(IStudyGroupRepository studyGroupRepository, IUnitOfWork unitOfWork, ILogger<StudyGroupServices> logger) : BaseService(unitOfWork, logger), IStudyGroupServices
+public class StudyGroupServices(IStudyGroupRepository studyGroupRepository,
+    IScheduleRepository scheduleRepository,
+    IUnitOfWork unitOfWork, ILogger<StudyGroupServices> logger) : BaseService(unitOfWork, logger), IStudyGroupServices
 {
     public async Task<List<StudyGroupDto>> FetchStudyGroupsFromBackendAsync()
     {
-        var studyGroupList = await studyGroupRepository.GetStudyGroupListAsync(1);
+        var studyGroupList = await studyGroupRepository.GetStudyGroupListAsync();
+        return studyGroupList.ToStudyGroupsDto();
+    }
+
+    public async Task<List<StudyGroupDto>> GetStudyGroupByScheduleId(Guid scheduleId)
+    {
+        var studyGroupList = await studyGroupRepository.GetStudyGroupListByScheduleIdAsync(scheduleId);
         return studyGroupList.ToStudyGroupsDto();
     }
 
     public async Task<Result<StudyGroupDto>> AddStudyGroup(CreateStudyGroupDto studyGroupDto)
     {
+        var schedule = await scheduleRepository.GetScheduleByIdAsync(studyGroupDto.ScheduleId);
+        if (schedule is null)
+            return Result<StudyGroupDto>.Failure("Расписание не найдено");
         var studyGroupId = Guid.NewGuid();
-        var studyGroupCreateResult = StudyGroup.CreateStudyGroup(studyGroupId, studyGroupDto.Name);
+        var studyGroupCreateResult = StudyGroup.CreateStudyGroup(studyGroupId, schedule.Id , studyGroupDto.Name);
         if (studyGroupCreateResult.IsFailure)
             return Result<StudyGroupDto>.Failure(studyGroupCreateResult.Error);
         var addResult = await ExecuteRepositoryTask(
-            () => studyGroupRepository.AddAsync(studyGroupCreateResult.Value, 1),
+            () => studyGroupRepository.AddAsync(studyGroupCreateResult.Value, schedule.Id),
             "Ошибка при добавлении учебной группы. Попробуйте позже.");
         if (addResult.IsFailure)
             return Result<StudyGroupDto>.Failure(addResult.Error);

@@ -1,15 +1,16 @@
 namespace Domain.Models;
 
-public class StudyGroup(Guid id, string name, List<StudySubgroup> studySubgroups) : Entity<Guid>(id)
+public class StudyGroup(Guid id, Guid scheduleId ,string name, List<StudySubgroup> studySubgroups) : Entity<Guid>(id)
 {
     public string Name { get; private set; } = name;
+    public Guid ScheduleId { get; set; } = scheduleId;
     public List<StudySubgroup> StudySubgroups => studySubgroups;
 
-    public static Result<StudyGroup> CreateStudyGroup(Guid id, string? name)
+    public static Result<StudyGroup> CreateStudyGroup(Guid id, Guid scheduleId, string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return Result<StudyGroup>.Failure("Название учебной группы не может быть пустым.");
-        return Result<StudyGroup>.Success(new StudyGroup(id, name, new()));
+        return Result<StudyGroup>.Success(new StudyGroup(id, scheduleId, name, new()));
     }
     
     public Result SetName(string? name)
