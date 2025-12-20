@@ -55,23 +55,19 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
         Toolbar.RequestPdfExport += async () =>
         {
-            
-            if (CurrentSchedule == null)
-                return;
+            if (CurrentSchedule == null) return;
+
             var file = await fileService.SaveFileAsync(
-                "Сохранить PDF-расписание", 
-                ".pdf", 
+                "Сохранить PDF-расписание",
+                ".pdf",
                 $"Расписание_{CurrentSchedule.Name}.pdf"
             );
-
             if (file == null) return;
 
-            try 
+            try
             {
-                await using (var stream = await file.OpenWriteAsync())
-                {
-                    await exportServices.GeneratePdfAsync(CurrentSchedule.Id, stream);
-                }
+                await using var stream = await file.OpenWriteAsync();
+                await exportServices.GeneratePdfAsync(CurrentSchedule.Id, stream);
                 await windowManager.ShowDialog<NotificationViewModel, object?>(
                     new NotificationViewModel("Экспорт в PDF успешно завершен!"));
             }
@@ -84,22 +80,19 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
         Toolbar.RequestExcelExport += async () =>
         {
-            if (CurrentSchedule == null)
-                return;
+            if (CurrentSchedule == null) return;
+
             var file = await fileService.SaveFileAsync(
-                "Сохранить Excel-расписание", 
+                "Сохранить Excel-расписание",
                 ".xlsx",
                 $"Расписание_{CurrentSchedule.Name}.xlsx"
             );
-
             if (file == null) return;
 
-            try 
+            try
             {
-                await using (var stream = await file.OpenWriteAsync())
-                {
-                    await exportServices.GenerateExcelAsync(CurrentSchedule.Id, stream);
-                }
+                await using var stream = await file.OpenWriteAsync();
+                await exportServices.GenerateExcelAsync(CurrentSchedule.Id, stream);
                 await windowManager.ShowDialog<NotificationViewModel, object?>(
                     new NotificationViewModel("Экспорт в Excel успешно завершен!"));
             }
@@ -171,7 +164,6 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
 
     public async Task LoadSchedule(Guid id)
     {
-        // 1. Сначала ищем вкладку, чтобы не делать лишних запросов, если она уже есть
         var existingTab = Tabs.FirstOrDefault(t => t.Id == id);
 
         using var scope = scopeFactory.CreateScope();
@@ -183,11 +175,11 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
                 new NotificationViewModel(scheduleResult.Error));
             return;
         }
+
         var schedule = scheduleResult.Value;
 
         if (existingTab != null)
         {
-            // Если вкладка есть, просто обновляем её данные (это не создаст новую вкладку)
             existingTab.Update(schedule);
             SelectedTab = existingTab;
         }
@@ -196,17 +188,8 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
             var tableViewModel = new LessonTableViewModel(schedule, scopeFactory, windowManager);
             var bufferViewModel = new LessonBufferViewModel(scopeFactory, windowManager, id);
 
-            // СВЯЗКА ТАБЛИЦЫ С РЕДАКТОРОМ
-            tableViewModel.RequestEditLesson += async lesson => 
-            {
-                await EditLessonAsync(lesson);
-            };
-
-            // Если в буфере тоже нужно редактирование по клику:
-            bufferViewModel.RequestEditLesson += async lesson => 
-            {
-                await EditLessonAsync(lesson);
-            };
+            tableViewModel.RequestEditLesson += async lesson => await EditLessonAsync(lesson);
+            bufferViewModel.RequestEditLesson += async lesson => await EditLessonAsync(lesson);
             bufferViewModel.RequestTableRefresh += async () => await RefreshActiveTabContentAsync();
             tableViewModel.LessonMovedToBuffer += async draft => await RefreshActiveTabContentAsync();
 
@@ -215,20 +198,14 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
             SelectedTab = tab;
         }
     }
+
     private async Task RefreshActiveTabContentAsync()
     {
-        // 1. Обновляем буфер (черновики)
         if (Buffer != null)
-        {
             await Buffer.RefreshAsync();
-        }
 
-        // 2. Обновляем всю таблицу (уроки)
         if (CurrentScheduleTable != null)
-        {
-            // Передаем текущее ID расписания, чтобы таблица заново скачала данные из БД
             await CurrentScheduleTable.RefreshAsync();
-        }
     }
 
     private void CloseTabById(Guid tabId)
@@ -251,10 +228,7 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
         if (id == null) return;
 
         var vm = new LessonEditorViewModel(scopeFactory, windowManager, id.Value);
-    
-        // При сохранении обновляем всё
         vm.LessonSaved += async result => await RefreshActiveTabContentAsync();
-
         await windowManager.ShowDialog<LessonEditorViewModel, object?>(vm);
     }
 
@@ -264,28 +238,9 @@ public class ScheduleViewModel : ViewModelBase, IRecipient<ScheduleDeletedMessag
         if (id == null) return;
 
         var vm = new LessonEditorViewModel(scopeFactory, windowManager, lesson);
-
-        // При сохранении — обновляем всё
         vm.LessonSaved += async result => await RefreshActiveTabContentAsync();
-    
-        // При удалении — тоже обновляем всё
         vm.LessonDeleted += async _ => await RefreshActiveTabContentAsync();
-
         await windowManager.ShowDialog<LessonEditorViewModel, object?>(vm);
-    }
-
-// Вынесем общую логику сохранения в отдельный метод (для Add и Edit)
-    private async Task OnLessonSavedAsync(EditLessonResult result)
-    {
-        if (Buffer != null)
-        {
-            await Buffer.RefreshAsync();
-        }
-
-        if (!result.IsDraft && CurrentScheduleTable != null)
-        {
-            await CurrentScheduleTable.RefreshAsync();
-        }
     }
 
     private async Task SaveScheduleAsync() => await Task.CompletedTask;

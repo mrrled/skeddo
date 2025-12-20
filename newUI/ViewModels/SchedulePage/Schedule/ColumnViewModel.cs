@@ -1,13 +1,15 @@
 using Application.DtoModels;
 
-namespace newUI.ViewModels.SchedulePage.Schedule;
-
 public class ColumnViewModel
 {
     public StudyGroupDto StudyGroup { get; set; }
-    public StudySubgroupDto StudySubgroup { get; set; } // null = вся группа
+    public StudySubgroupDto StudySubgroup { get; set; }
     public string DisplayName { get; set; }
-    
+
+    // Добавьте это свойство
+    public bool IsSubgroupVisible => !string.IsNullOrEmpty(DisplayName) && StudySubgroup != null;
+
+    public bool IsGroupColumn => StudySubgroup == null;
     public bool HasSubgroups => StudyGroup.StudySubgroups?.Count > 0;
-    public int ColumnSpan => StudyGroup.StudySubgroups?.Count > 0 ? StudyGroup.StudySubgroups.Count : 1;
+    public int ColumnSpan => 1;
 }

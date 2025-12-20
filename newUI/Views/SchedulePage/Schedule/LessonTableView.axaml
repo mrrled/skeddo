@@ -7,11 +7,14 @@
              xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             xmlns:global="clr-namespace:"
              x:Class="newUI.Views.SchedulePage.Schedule.LessonTableView"
              x:DataType="vm:LessonTableViewModel">
 
     <UserControl.Resources>
         <converters:GroupWideBackgroundConverter x:Key="GroupWideBackgroundConverter" />
+        <converters:ColumnSpanToWidthConverter x:Key="ColumnSpanToWidthConverter" />
+        <converters:SubgroupCountToHeightConverter x:Key="SubgroupCountToHeightConverter" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -21,18 +24,17 @@
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="4" />
         </Style>
-
-        <Style Selector="Button.IconButton:pointerover">
-            <Setter Property="Background" Value="#E0E0E0" />
+        
+        <Style Selector="ItemsControl#SubgroupItemsControl > ContentPresenter" x:DataType="global:ColumnViewModel">
+            <Setter Property="IsVisible" Value="{Binding IsSubgroupVisible}" />
         </Style>
     </UserControl.Styles>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                  VerticalScrollBarVisibility="Auto">
-
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" /> <RowDefinition Height="Auto" /> <RowDefinition Height="*" />
+                <RowDefinition Height="60" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -40,130 +42,87 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Row="0" Grid.Column="0"
-                    Grid.RowSpan="2"
-                    Width="50"
-                    Height="60"
-                    Background="LightGray"
-                    BorderBrush="Gray"
-                    BorderThickness="1" />
+            <Border Grid.Row="0" Grid.Column="0" Width="50" Height="60"
+                    Background="LightGray" BorderBrush="Gray" BorderThickness="1" />
 
-            <StackPanel Grid.Row="0" Grid.Column="1"
-                        Orientation="Horizontal"
-                        Height="30">
+            <Grid Grid.Row="0" Grid.Column="1">
 
-                <ItemsControl ItemsSource="{Binding GroupHeaders}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Height="30" Panel.ZIndex="1">
+                    <ItemsControl x:Name="SubgroupItemsControl" ItemsSource="{Binding FlatColumns}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="global:ColumnViewModel">
+                                <Border BorderThickness="1,0,1,1" BorderBrush="Gray" Background="LightCyan"
+                                        Width="150" Height="30">
+                                    <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" FontSize="12"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="dto:StudyGroupDto">
-                            <Button
-                                Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditStudyGroupCommand}"
-                                CommandParameter="{Binding}"
-                                Padding="0"
-                                BorderThickness="1"
-                                BorderBrush="Gray"
-                                CornerRadius="0"
-                                Width="{Binding ColumnSpan, Converter={StaticResource ColumnSpanToWidthConverter}}"
-                                Height="30"
-                                Background="LightBlue"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Panel.ZIndex="10">
+                    <ItemsControl ItemsSource="{Binding GroupHeaders}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="dto:StudyGroupDto">
+                                <Button
+                                    Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditStudyGroupCommand}"
+                                    CommandParameter="{Binding}"
+                                    Padding="0" BorderThickness="1" BorderBrush="Gray" CornerRadius="0"
+                                    Width="{Binding ColumnSpan, Converter={StaticResource ColumnSpanToWidthConverter}}"
+                                    Background="LightBlue"
+                                    VerticalAlignment="Top">
+                                    <Button.Height>
+                                        <Binding Path="StudySubgroups.Count"
+                                                 Converter="{StaticResource SubgroupCountToHeightConverter}" />
+                                    </Button.Height>
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-                                <TextBlock Text="{Binding Name}"
-                                           FontWeight="Bold"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                    <Button Width="30" Height="30" Margin="2,0,0,0"
+                            Command="{Binding AddStudyGroupCommand}" Classes="IconButton">
+                        <icons:MaterialIcon Kind="Plus" Width="16" Height="16" />
+                    </Button>
+                </StackPanel>
+            </Grid>
 
-                <Button Width="30"
-                        Height="30"
-                        Margin="2,0,0,0"
-                        Command="{Binding AddStudyGroupCommand}"
-                        Classes="IconButton">
-                    <Viewbox Width="16" Height="16">
-                        <icons:MaterialIcon Kind="Plus" />
-                    </Viewbox>
-                </Button>
-            </StackPanel>
-
-            <StackPanel Grid.Row="1" Grid.Column="1"
-                        Orientation="Horizontal"
-                        Height="30">
-
-                <ItemsControl ItemsSource="{Binding FlatColumns}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Padding="0"
-                                    BorderThickness="1"
-                                    BorderBrush="Gray"
-                                    CornerRadius="0"
-                                    Width="{DynamicResource LessonCardWidth}"
-                                    Height="30"
-                                    Background="LightCyan"
-                                    HorizontalContentAlignment="Center"
-                                    VerticalContentAlignment="Center">
-
-                                <TextBlock Text="{Binding DisplayName}"
-                                           FontWeight="Bold"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-
-            <StackPanel Grid.Row="2" Grid.Column="0">
+            <StackPanel Grid.Row="1" Grid.Column="0">
                 <ItemsControl ItemsSource="{Binding Rows}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button
                                 Command="{Binding $parent[ItemsControl].((vm:LessonTableViewModel)DataContext).EditLessonNumberCommand}"
                                 CommandParameter="{Binding RowHeader}"
-                                Padding="0"
-                                BorderThickness="1"
-                                BorderBrush="Gray"
-                                CornerRadius="0"
-                                Width="50"
-                                Height="{DynamicResource LessonCardHeight}"
+                                Padding="0" BorderThickness="1" BorderBrush="Gray" CornerRadius="0"
+                                Width="50" Height="{DynamicResource LessonCardHeight}"
                                 Background="LightGray">
-
-                                <TextBlock Text="{Binding RowHeader.Number}"
-                                           FontWeight="Bold"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding RowHeader.Number}" FontWeight="Bold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-
-                <Button Width="50"
-                        Height="30"
-                        Margin="0,2,0,0"
-                        Command="{Binding AddLessonNumberCommand}"
-                        Classes="IconButton">
-                    <Viewbox Width="16" Height="16">
-                        <icons:MaterialIcon Kind="Plus" />
-                    </Viewbox>
+                <Button Width="50" Height="30" Margin="0,2,0,0"
+                        Command="{Binding AddLessonNumberCommand}" Classes="IconButton">
+                    <icons:MaterialIcon Kind="Plus" Width="16" Height="16" />
                 </Button>
             </StackPanel>
 
-            <ItemsControl Grid.Row="2" Grid.Column="1"
-                          ItemsSource="{Binding Rows}">
+            <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Rows}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <ItemsControl ItemsSource="{Binding Cells}">
@@ -172,27 +131,20 @@
                                     <StackPanel Orientation="Horizontal" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
-
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="Gray"
-                                            BorderThickness="1"
-                                            Width="{Binding ColumnSpan, 
-                                                     Converter={StaticResource ColumnSpanToWidthConverter},
-                                                     FallbackValue={StaticResource LessonCardWidth}}"
+                                    <Border BorderBrush="Gray" BorderThickness="1"
+                                            Width="{Binding ColumnSpan, Converter={StaticResource ColumnSpanToWidthConverter}, FallbackValue=150}"
                                             Height="{DynamicResource LessonCardHeight}">
-
                                         <Border.Background>
                                             <Binding Path="IsGroupWideLesson"
                                                      Converter="{StaticResource GroupWideBackgroundConverter}" />
                                         </Border.Background>
-
                                         <i:Interaction.Behaviors>
                                             <ia:EventTriggerBehavior EventName="PointerPressed">
                                                 <ia:InvokeCommandAction Command="{Binding ClickCommand}" />
                                             </ia:EventTriggerBehavior>
                                         </i:Interaction.Behaviors>
-
                                         <lessons:LessonCardView />
                                     </Border>
                                 </DataTemplate>

@@ -21,8 +21,6 @@ public class LessonTableViewModel
     : DynamicGridViewModel<LessonCardViewModel, ColumnViewModel, LessonNumberDto>
 {
     public event Action? TableUpdated;
-
-    // Событие для перемещения черновика в буфер (из второго файла)
     public event Action<LessonDraftDto>? LessonMovedToBuffer;
 
     private readonly IServiceScopeFactory scopeFactory;
@@ -34,11 +32,10 @@ public class LessonTableViewModel
 
     public AvaloniaList<StudyGroupDto> StudyGroups { get; private set; } = new();
     public AvaloniaList<LessonNumberDto> LessonNumbers { get; private set; } = new();
-
     public ObservableCollection<ColumnViewModel> FlatColumns { get; } = new();
     public ObservableCollection<StudyGroupDto> GroupHeaders { get; } = new();
+    public bool HasSubgroupHeaders => FlatColumns.Any(c => c.StudySubgroup != null);
 
-    // Команды
     public IRelayCommand AddStudyGroupCommand { get; }
     public IRelayCommand AddLessonNumberCommand { get; }
     public IRelayCommand<StudyGroupDto> EditStudyGroupCommand { get; }
@@ -81,7 +78,7 @@ public class LessonTableViewModel
             await LoadStudyGroupsAsync();
             await LoadLessonNumbersAsync();
             await LoadDataToGrid();
-
+            OnPropertyChanged(nameof(HasSubgroupHeaders));
             TableUpdated?.Invoke();
         }
         finally
@@ -102,7 +99,6 @@ public class LessonTableViewModel
         var service = scope.ServiceProvider.GetRequiredService<IStudyGroupServices>();
         var groups = await service.FetchStudyGroupsFromBackendAsync();
         StudyGroups = new AvaloniaList<StudyGroupDto>(groups);
-
         BuildColumns();
     }
 
@@ -123,7 +119,7 @@ public class LessonTableViewModel
                     {
                         StudyGroup = group,
                         StudySubgroup = subgroup,
-                        DisplayName = subgroup.Name ?? group.Name
+                        DisplayName = subgroup.Name
                     });
                 }
             }
@@ -151,12 +147,10 @@ public class LessonTableViewModel
 
     private async Task LoadDataToGrid()
     {
-        // Используем await для корректного порядка выполнения
         var data = await LoadData();
         LoadDataFromBackend(data);
         OnPropertyChanged(nameof(Rows));
         OnPropertyChanged(nameof(Columns));
-        DebugRows();
     }
 
     private async Task<List<(LessonNumberDto RowHeader, Dictionary<ColumnViewModel, LessonCardViewModel?> CellData)>>
@@ -198,8 +192,9 @@ public class LessonTableViewModel
             {
                 var currentColumn = FlatColumns[columnIndex];
                 var currentGroupId = currentColumn.StudyGroup.Id;
+                var currentSubgroupName = currentColumn.StudySubgroup?.Name;
 
-                var specificLessonKey = (lessonNumber.Number, currentGroupId, currentColumn.StudySubgroup?.Name);
+                var specificLessonKey = (lessonNumber.Number, currentGroupId, currentSubgroupName);
                 var groupWideLessonKey = (lessonNumber.Number, currentGroupId, (string?)null);
 
                 bool hasSpecificLesson = lessonDictionary.TryGetValue(specificLessonKey, out var specificLesson);
@@ -218,7 +213,6 @@ public class LessonTableViewModel
                     lessonToUse = groupWideLesson;
                     isGroupWide = true;
 
-                    // Расчет Span для общей лекции группы
                     while (columnIndex + span < FlatColumns.Count)
                     {
                         var nextColumn = FlatColumns[columnIndex + span];
@@ -245,13 +239,11 @@ public class LessonTableViewModel
                     IsGroupWideLesson = isGroupWide
                 };
 
-// 2. ПОДПИСКА НА КЛИК ПО КАРТОЧКЕ
                 card.EditRequested += (lesson) => 
                 {
                     RequestEditLesson?.Invoke(lesson);
                 };
 
-// Подписка на понижение до черновика (уже есть у вас)
                 card.LessonDowngraded += draft =>
                 {
                     LessonMovedToBuffer?.Invoke(draft);
@@ -270,7 +262,6 @@ public class LessonTableViewModel
 
     private void Refresh() => _ = RefreshAsync();
 
-    // Методы редакторов (без изменений, соответствуют обоим файлам)
     private async void OpenAddStudyGroupEditor()
     {
         var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory);
@@ -313,7 +304,6 @@ public class LessonTableViewModel
 
     private int GetNextLessonNumber() => !LessonNumbers.Any() ? 1 : LessonNumbers.Max(x => x.Number) + 1;
 
-    // Костыль из первого файла для поддержки сложной структуры колонок
     public override List<TableDataRow<LessonCardViewModel, ColumnViewModel, LessonNumberDto>>
         CreateRows(List<(LessonNumberDto RowHeader, Dictionary<ColumnViewModel, LessonCardViewModel?> CellData)> data,
             List<ColumnViewModel> newColumns)
@@ -323,7 +313,7 @@ public class LessonTableViewModel
         {
             var columns = new List<ColumnViewModel>();
             var cells = new List<LessonCardViewModel>();
-            foreach (var column in FlatColumns)
+            foreach (var column in newColumns)
             {
                 if (cellsDict.TryGetValue(column, out var cellData) && cellData != null)
                 {
@@ -342,10 +332,5 @@ public class LessonTableViewModel
         }
 
         return newRows;
-    }
-
-    public void DebugRows()
-    {
-        Console.WriteLine($"=== ДЕБАГ ROWS: {Rows.Count} ===");
     }
 }
