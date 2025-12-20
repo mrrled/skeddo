@@ -274,7 +274,6 @@ public class LessonTableViewModel
         var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory, Schedule.Id);
         vm.StudyGroupSaved += async _ => await RefreshAsync();
         vm.StudyGroupDeleted += async _ => await RefreshAsync();
-        vm.StudySubgroupDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
     }
 
@@ -283,7 +282,6 @@ public class LessonTableViewModel
         var vm = new StudyGroupEditorViewModel(windowManager, scopeFactory, studyGroup, Schedule.Id);
         vm.StudyGroupSaved += async _ => await RefreshAsync();
         vm.StudyGroupDeleted += async _ => await RefreshAsync();
-        vm.StudySubgroupDeleted += async _ => await RefreshAsync();
         await windowManager.ShowDialog<StudyGroupEditorViewModel, StudyGroupDto>(vm);
     }
 

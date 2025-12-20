@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -17,10 +18,13 @@ public class StudyGroupEditorViewModel : ViewModelBase
     public string HeaderText { get; }
     public event Action<StudyGroupDto>? StudyGroupSaved;
     public event Action<StudyGroupDto>? StudyGroupDeleted;
-    public event Action<StudySubgroupDto>? StudySubgroupDeleted; 
 
     private string studyGroupName = string.Empty;
     private AvaloniaList<StudySubgroupDto> subgroups = new();
+    
+    private List<StudySubgroupDto> subgroupsAdded = new();
+    private List<StudySubgroupDto> subgroupsRemoved = new();
+    
     public string StudyGroupName
     {
         get => studyGroupName;
@@ -95,10 +99,7 @@ public class StudyGroupEditorViewModel : ViewModelBase
                 StudyGroup = editingStudyGroup
             };
             
-            using var scope = scopeFactory.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<IStudySubgroupService>();
-            
-            await service.AddStudySubgroup(newSubgroup);
+            subgroupsAdded.Add(newSubgroup);
             Subgroups.Add(newSubgroup);
             OnPropertyChanged(nameof(Subgroups));
         }
@@ -117,11 +118,9 @@ public class StudyGroupEditorViewModel : ViewModelBase
         if (result != true)
             return;
         
-        using var scope = scopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetRequiredService<IStudySubgroupService>();
-        await service.DeleteStudySubgroup(subgroup);
+        subgroupsRemoved.Add(subgroup);
         Subgroups.Remove(subgroup);
-        StudySubgroupDeleted?.Invoke(subgroup);
+        OnPropertyChanged(nameof(Subgroups));
     }
 
 
@@ -159,6 +158,16 @@ public class StudyGroupEditorViewModel : ViewModelBase
                 await windowManager.ShowDialog<NotificationViewModel, object?>(
                     new NotificationViewModel(studyGroupEditResult.Error));
                 return;
+            }
+            
+            var subgroupService = scope.ServiceProvider.GetRequiredService<IStudySubgroupService>();
+            foreach (var subgroup in subgroupsAdded)
+            {
+                await subgroupService.AddStudySubgroup(subgroup);
+            }
+            foreach (var subgroup in subgroupsRemoved)
+            {
+                await subgroupService.DeleteStudySubgroup(subgroup);
             }
         }
 
