@@ -56,11 +56,13 @@
                            TextAlignment="Center" />
 
                 <TextBlock Text="{Binding Lesson.StudyGroup.Name, FallbackValue='', TargetNullValue=''}"
+                           Classes="CardText"
                            FontSize="10"
                            Foreground="#B0B0B0"
                            TextAlignment="Center" />
 
                 <TextBlock Text="{Binding Lesson.LessonNumber.Number, FallbackValue='', TargetNullValue=''}"
+                           Classes="CardText"
                            FontSize="10"
                            Foreground="#B0B0B0"
                            TextAlignment="Center" />

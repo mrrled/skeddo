@@ -235,7 +235,13 @@
                         IsVisible="{Binding HasSelectedTab}">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   VerticalScrollBarVisibility="Auto">
-                        <schedule:LessonTableView DataContext="{Binding SelectedTab.TableViewModel}" />
+                        <schedule:LessonTableView DataContext="{Binding SelectedTab.TableViewModel}">
+                            <schedule:LessonTableView.Styles>
+                                <Style Selector="TextBlock.CardText">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </Style>
+                            </schedule:LessonTableView.Styles>
+                        </schedule:LessonTableView>
                     </ScrollViewer>
                 </Border>
             </Grid>
