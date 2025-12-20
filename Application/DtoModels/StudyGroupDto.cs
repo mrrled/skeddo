@@ -5,6 +5,14 @@ public class StudyGroupDto : IComparable<StudyGroupDto>
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public List<StudySubgroupDto> StudySubgroups { get; set; } = new();
+
+    public void UpdateSubgroups()
+    {
+        foreach (var studySubgroup in StudySubgroups)
+        {
+            studySubgroup.StudyGroup = this;
+        }
+    }
     
     public override string ToString() => Name;
 

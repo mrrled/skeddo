@@ -106,6 +106,9 @@ public partial class App : Avalonia.Application
         services.AddTransient<MainWindow>();
         
         services.AddSingleton<IWindowManager, WindowManager>();
+
+        services.AddTransient<TextInputWindow>();
+        services.AddTransient<TextInputViewModel>();
         
         services.AddTransient<ScheduleListView>();
         services.AddTransient<ScheduleListViewModel>();
@@ -177,6 +180,8 @@ public partial class App : Avalonia.Application
         ViewMappingService.RegisterWindow<MainViewModel, MainWindow>();
         
         ViewMappingService.RegisterWindow<ConfirmDeleteViewModel, ConfirmDeleteWindow>();
+        
+        ViewMappingService.RegisterWindow<TextInputViewModel, TextInputWindow>();
         
         ViewMappingService.RegisterWindow<LessonNumberEditorViewModel, LessonNumberEditorWindow>();
         ViewMappingService.RegisterWindow<StudyGroupEditorViewModel, StudyGroupEditorWindow>();
