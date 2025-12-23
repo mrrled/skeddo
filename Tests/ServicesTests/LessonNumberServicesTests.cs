@@ -1,748 +1,676 @@
-// using Application.DtoModels;
-// using Application.Services;
-// using Domain.IRepositories;
-// using Domain.Models;
-// using Application;
-// using Moq;
-// using Xunit;
-// // ReSharper disable PreferConcreteValueOverDefault
-//
-// namespace Tests.ServicesTests
-// {
-//     public class LessonNumberServicesTests
-//     {
-//         private readonly Mock<ILessonNumberRepository> _mockLessonNumberRepository;
-//         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
-//         private readonly LessonNumberServices _lessonNumberServices;
-//
-//         public LessonNumberServicesTests()
-//         {
-//             _mockLessonNumberRepository = new Mock<ILessonNumberRepository>();
-//             _mockUnitOfWork = new Mock<IUnitOfWork>();
-//             _lessonNumberServices = new LessonNumberServices(
-//                 _mockLessonNumberRepository.Object,
-//                 _mockUnitOfWork.Object
-//             );
-//         }
-//
-//         #region GetLessonNumbersByScheduleId Tests
-//
-//         [Fact]
-//         public async Task GetLessonNumbersByScheduleId_ShouldReturnLessonNumbers_WhenScheduleExists()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumbers = new List<LessonNumber>
-//             {
-//                 LessonNumber.CreateLessonNumber(1, "08:00-08:45"),
-//                 LessonNumber.CreateLessonNumber(2, "09:00-09:45"),
-//                 LessonNumber.CreateLessonNumber(3, "10:00-10:45")
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId))
-//                 .ReturnsAsync(lessonNumbers);
-//
-//             // Act
-//             var result = await _lessonNumberServices.GetLessonNumbersByScheduleId(scheduleId);
-//
-//             // Assert
-//             Assert.NotNull(result);
-//             Assert.Equal(3, result.Count);
-//             Assert.Equal(1, result[0].Number);
-//             Assert.Equal("08:00-08:45", result[0].Time);
-//             Assert.Equal(2, result[1].Number);
-//             Assert.Equal(3, result[2].Number);
-//
-//             _mockLessonNumberRepository.Verify(
-//                 repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId),
-//                 Times.Once
-//             );
-//         }
-//
-//         [Fact]
-//         public async Task GetLessonNumbersByScheduleId_ShouldReturnEmptyList_WhenNoLessonNumbersExist()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var emptyList = new List<LessonNumber>();
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId))
-//                 .ReturnsAsync(emptyList);
-//
-//             // Act
-//             var result = await _lessonNumberServices.GetLessonNumbersByScheduleId(scheduleId);
-//
-//             // Assert
-//             Assert.NotNull(result);
-//             Assert.Empty(result);
-//         }
-//
-//         [Fact]
-//         public async Task GetLessonNumbersByScheduleId_ShouldThrowException_WhenRepositoryThrowsException()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId))
-//                 .ThrowsAsync(new NullReferenceException("Schedule not found"));
-//
-//             // Act & Assert
-//             await Assert.ThrowsAsync<NullReferenceException>(() =>
-//                 _lessonNumberServices.GetLessonNumbersByScheduleId(scheduleId)
-//             );
-//         }
-//
-//         #endregion
-//
-//         #region AddLessonNumber Tests
-//
-//         [Fact]
-//         public async Task AddLessonNumber_ShouldAddLessonNumberAndSaveChanges_WhenValidInput()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 4,
-//                 Time = "11:00-11:45"
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(default))
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId);
-//
-//             // Assert
-//             _mockLessonNumberRepository.Verify(
-//                 repo => repo.AddAsync(
-//                     It.Is<LessonNumber>(ln => 
-//                         ln.Number == lessonNumberDto.Number && 
-//                         ln.Time == lessonNumberDto.Time
-//                     ),
-//                     scheduleId
-//                 ),
-//                 Times.Once
-//             );
-//
-//             _mockUnitOfWork.Verify(
-//                 uow => uow.SaveChangesAsync(default),
-//                 Times.Once
-//             );
-//         }
-//
-//         [Theory]
-//         [InlineData(0, "08:00-08:45")]
-//         [InlineData(1, null)]
-//         [InlineData(1, "")]
-//         public async Task AddLessonNumber_ShouldCreateLessonNumberWithVariousInputs(int number, string time)
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = number,
-//                 Time = time
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(default))
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId);
-//
-//             // Assert
-//             _mockLessonNumberRepository.Verify(
-//                 repo => repo.AddAsync(
-//                     It.Is<LessonNumber>(ln => 
-//                         ln.Number == number && 
-//                         ln.Time == time
-//                     ),
-//                     scheduleId
-//                 ),
-//                 Times.Once
-//             );
-//         }
-//
-//         [Fact]
-//         public async Task AddLessonNumber_ShouldThrowException_WhenRepositoryThrowsException()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = "08:00-08:45"
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
-//                 .ThrowsAsync(new NullReferenceException("Schedule not found"));
-//
-//             // Act & Assert
-//             await Assert.ThrowsAsync<NullReferenceException>(() =>
-//                 _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId)
-//             );
-//
-//             _mockUnitOfWork.Verify(
-//                 uow => uow.SaveChangesAsync(default),
-//                 Times.Never
-//             );
-//         }
-//
-//         [Fact]
-//         public async Task AddLessonNumber_ShouldNotSaveChanges_WhenRepositoryThrowsException()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = "08:00-08:45"
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
-//                 .ThrowsAsync(new InvalidOperationException());
-//
-//             // Act & Assert
-//             await Assert.ThrowsAsync<InvalidOperationException>(() =>
-//                 _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId)
-//             );
-//
-//             _mockUnitOfWork.Verify(
-//                 uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()),
-//                 Times.Never
-//             );
-//         }
-//
-//         #endregion
-//
-//         #region EditLessonNumber Tests
-//
-//         [Fact]
-//         public async Task EditLessonNumber_ShouldUpdateLessonNumberAndSaveChanges_WhenValidInput()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var oldLessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = "08:00-08:45"
-//             };
-//             var newLessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = "08:00-09:00" // Updated time
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.UpdateAsync(
-//                     It.IsAny<LessonNumber>(), 
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(default))
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.EditLessonNumber(
-//                 oldLessonNumberDto, 
-//                 newLessonNumberDto, 
-//                 scheduleId
-//             );
-//
-//             // Assert
-//             _mockLessonNumberRepository.Verify(
-//                 repo => repo.UpdateAsync(
-//                     It.Is<LessonNumber>(oldLn => 
-//                         oldLn.Number == oldLessonNumberDto.Number && 
-//                         oldLn.Time == oldLessonNumberDto.Time
-//                     ),
-//                     It.Is<LessonNumber>(newLn => 
-//                         newLn.Number == newLessonNumberDto.Number && 
-//                         newLn.Time == newLessonNumberDto.Time
-//                     ),
-//                     scheduleId
-//                 ),
-//                 Times.Once
-//             );
-//
-//             _mockUnitOfWork.Verify(
-//                 uow => uow.SaveChangesAsync(default),
-//                 Times.Once
-//             );
-//         }
-//
-//         [Fact]
-//         public async Task EditLessonNumber_ShouldHandleDifferentNumbers_WhenLessonNumberChanged()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var oldLessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = "08:00-08:45"
-//             };
-//             var newLessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 2, // Different number
-//                 Time = "09:00-09:45"
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.UpdateAsync(
-//                     It.IsAny<LessonNumber>(), 
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(default))
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.EditLessonNumber(
-//                 oldLessonNumberDto, 
-//                 newLessonNumberDto, 
-//                 scheduleId
-//             );
-//
-//             // Assert
-//             _mockLessonNumberRepository.Verify(
-//                 repo => repo.UpdateAsync(
-//                     It.Is<LessonNumber>(oldLn => oldLn.Number == 1),
-//                     It.Is<LessonNumber>(newLn => newLn.Number == 2),
-//                     scheduleId
-//                 ),
-//                 Times.Once
-//             );
-//         }
-//
-//         [Fact]
-//         public async Task EditLessonNumber_ShouldThrowException_WhenRepositoryThrowsException()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var oldLessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = "08:00-08:45"
-//             };
-//             var newLessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = "08:00-09:00"
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.UpdateAsync(
-//                     It.IsAny<LessonNumber>(), 
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .ThrowsAsync(new NullReferenceException("Schedule or lesson number not found"));
-//
-//             // Act & Assert
-//             await Assert.ThrowsAsync<NullReferenceException>(() =>
-//                 _lessonNumberServices.EditLessonNumber(
-//                     oldLessonNumberDto, 
-//                     newLessonNumberDto, 
-//                     scheduleId
-//                 )
-//             );
-//
-//             _mockUnitOfWork.Verify(
-//                 uow => uow.SaveChangesAsync(default),
-//                 Times.Never
-//             );
-//         }
-//
-//         #endregion
-//
-//         #region DeleteLessonNumber Tests
-//
-//         [Fact]
-//         public async Task DeleteLessonNumber_ShouldDeleteLessonNumberAndSaveChanges_WhenValidInput()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = "08:00-08:45"
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.Delete(
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(default))
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.DeleteLessonNumber(lessonNumberDto, scheduleId);
-//
-//             // Assert
-//             _mockLessonNumberRepository.Verify(
-//                 repo => repo.Delete(
-//                     It.Is<LessonNumber>(ln => 
-//                         ln.Number == lessonNumberDto.Number && 
-//                         ln.Time == lessonNumberDto.Time
-//                     ),
-//                     scheduleId
-//                 ),
-//                 Times.Once
-//             );
-//
-//             _mockUnitOfWork.Verify(
-//                 uow => uow.SaveChangesAsync(default),
-//                 Times.Once
-//             );
-//         }
-//
-//         [Fact]
-//         public async Task DeleteLessonNumber_ShouldHandleNullTime_WhenLessonNumberHasNoTime()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = null
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.Delete(
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(default))
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.DeleteLessonNumber(lessonNumberDto, scheduleId);
-//
-//             // Assert
-//             _mockLessonNumberRepository.Verify(
-//                 repo => repo.Delete(
-//                     It.Is<LessonNumber>(ln => 
-//                         ln.Number == 1 && 
-//                         ln.Time == null
-//                     ),
-//                     scheduleId
-//                 ),
-//                 Times.Once
-//             );
-//         }
-//
-//         [Fact]
-//         public async Task DeleteLessonNumber_ShouldThrowException_WhenRepositoryThrowsException()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = "08:00-08:45"
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.Delete(
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .ThrowsAsync(new NullReferenceException("Schedule or lesson number not found"));
-//
-//             // Act & Assert
-//             await Assert.ThrowsAsync<NullReferenceException>(() =>
-//                 _lessonNumberServices.DeleteLessonNumber(lessonNumberDto, scheduleId)
-//             );
-//
-//             _mockUnitOfWork.Verify(
-//                 uow => uow.SaveChangesAsync(default),
-//                 Times.Never
-//             );
-//         }
-//
-//         [Fact]
-//         public async Task DeleteLessonNumber_ShouldVerifySaveChangesCalled_WhenOperationSuccessful()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = "08:00-08:45"
-//             };
-//             int saveChangesCallCount = 0;
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.Delete(
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(default))
-//                 .Callback(() => saveChangesCallCount++)
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.DeleteLessonNumber(lessonNumberDto, scheduleId);
-//
-//             // Assert
-//             Assert.Equal(1, saveChangesCallCount);
-//         }
-//
-//         #endregion
-//
-//         #region Integration-style Tests
-//
-//         [Fact]
-//         public async Task AllMethods_ShouldCallSaveChangesExactlyOnce_WhenOperationsSuccess()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "08:00-08:45" };
-//             var newLessonNumberDto = new LessonNumberDto { Number = 1, Time = "08:00-09:00" };
-//             
-//             var saveChangesCalls = new List<string>();
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId))
-//                 .ReturnsAsync(new List<LessonNumber>());
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.UpdateAsync(
-//                     It.IsAny<LessonNumber>(), 
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.Delete(
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(default))
-//                 .Callback(() => saveChangesCalls.Add("SaveChanges"))
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId);
-//             await _lessonNumberServices.EditLessonNumber(lessonNumberDto, newLessonNumberDto, scheduleId);
-//             await _lessonNumberServices.DeleteLessonNumber(newLessonNumberDto, scheduleId);
-//
-//             // Assert
-//             Assert.Equal(3, saveChangesCalls.Count);
-//             Assert.All(saveChangesCalls, call => Assert.Equal("SaveChanges", call));
-//         }
-//
-//         #endregion
-//
-//         #region Edge Cases and Validation Tests
-//
-//         [Fact]
-//         public async Task AddLessonNumber_ShouldHandleMaxIntegerNumber()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = int.MaxValue,
-//                 Time = "23:59-00:00"
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(default))
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId);
-//
-//             // Assert
-//             _mockLessonNumberRepository.Verify(
-//                 repo => repo.AddAsync(
-//                     It.Is<LessonNumber>(ln => ln.Number == int.MaxValue),
-//                     scheduleId
-//                 ),
-//                 Times.Once
-//             );
-//         }
-//
-//         [Fact]
-//         public async Task EditLessonNumber_ShouldHandleSameDtoForOldAndNew()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var sameDto = new LessonNumberDto
-//             {
-//                 Number = 1,
-//                 Time = "08:00-08:45"
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.UpdateAsync(
-//                     It.IsAny<LessonNumber>(), 
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(default))
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.EditLessonNumber(sameDto, sameDto, scheduleId);
-//
-//             // Assert
-//             _mockLessonNumberRepository.Verify(
-//                 repo => repo.UpdateAsync(
-//                     It.IsAny<LessonNumber>(), 
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ),
-//                 Times.Once
-//             );
-//         }
-//
-//         [Fact]
-//         public async Task DeleteLessonNumber_ShouldHandleZeroNumber()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto
-//             {
-//                 Number = 0,
-//                 Time = "00:00-00:00"
-//             };
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.Delete(
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(default))
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.DeleteLessonNumber(lessonNumberDto, scheduleId);
-//
-//             // Assert
-//             _mockLessonNumberRepository.Verify(
-//                 repo => repo.Delete(
-//                     It.Is<LessonNumber>(ln => ln.Number == 0),
-//                     scheduleId
-//                 ),
-//                 Times.Once
-//             );
-//         }
-//
-//         #endregion
-//
-//         #region CancellationToken Tests
-//
-//         [Fact]
-//         public async Task AllMethods_ShouldPassDefaultCancellationToken_ToSaveChanges()
-//         {
-//             // Arrange
-//             var scheduleId = Guid.NewGuid();
-//             var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "08:00-08:45" };
-//             var newLessonNumberDto = new LessonNumberDto { Number = 1, Time = "08:00-09:00" };
-//
-//             CancellationToken capturedToken = default;
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.UpdateAsync(
-//                     It.IsAny<LessonNumber>(), 
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockLessonNumberRepository
-//                 .Setup(repo => repo.Delete(
-//                     It.IsAny<LessonNumber>(), 
-//                     scheduleId
-//                 ))
-//                 .Returns(Task.CompletedTask);
-//
-//             _mockUnitOfWork
-//                 .Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
-//                 .Callback<CancellationToken>(ct => capturedToken = ct)
-//                 .ReturnsAsync(1);
-//
-//             // Act
-//             await _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId);
-//             
-//             // Assert for Add
-//             Assert.Equal(default, capturedToken);
-//
-//             // Reset
-//             capturedToken = new CancellationToken(true);
-//
-//             // Act for Edit
-//             await _lessonNumberServices.EditLessonNumber(lessonNumberDto, newLessonNumberDto, scheduleId);
-//             
-//             // Assert for Edit
-//             Assert.Equal(default, capturedToken);
-//
-//             // Reset
-//             capturedToken = new CancellationToken(true);
-//
-//             // Act for Delete
-//             await _lessonNumberServices.DeleteLessonNumber(newLessonNumberDto, scheduleId);
-//             
-//             // Assert for Delete
-//             Assert.Equal(default, capturedToken);
-//         }
-//
-//         #endregion
-//     }
-// }
+using Xunit;
+using Moq;
+using Application.Services;
+using Application.DtoModels;
+using Domain.Models;
+using Domain.IRepositories;
+using Application;
+using Microsoft.Extensions.Logging;
+#pragma warning disable CS8604 // Possible null reference argument.
+
+namespace Tests.ServicesTests
+{
+    public class LessonNumberServicesTests
+    {
+        private readonly Mock<ILessonNumberRepository> _lessonNumberRepositoryMock;
+        private readonly Mock<IScheduleRepository> _scheduleRepositoryMock;
+        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+        private readonly LessonNumberServices _lessonNumberServices;
+
+        public LessonNumberServicesTests()
+        {
+            _lessonNumberRepositoryMock = new Mock<ILessonNumberRepository>();
+            _scheduleRepositoryMock = new Mock<IScheduleRepository>();
+            _unitOfWorkMock = new Mock<IUnitOfWork>();
+            Mock<ILogger<LessonNumberServices>> loggerMock = new Mock<ILogger<LessonNumberServices>>();
+            
+            _lessonNumberServices = new LessonNumberServices(
+                _lessonNumberRepositoryMock.Object,
+                _scheduleRepositoryMock.Object,
+                _unitOfWorkMock.Object,
+                loggerMock.Object
+            );
+        }
+
+        #region GetLessonNumbersByScheduleId Tests
+
+        [Fact]
+        public async Task GetLessonNumbersByScheduleId_ShouldReturnLessonNumbers_WhenScheduleExists()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumbers = new List<LessonNumber>
+            {
+                LessonNumber.CreateLessonNumber(1, "09:00").Value,
+                LessonNumber.CreateLessonNumber(2, "10:00").Value
+            };
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId))
+                .ReturnsAsync(lessonNumbers);
+
+            // Act
+            var result = await _lessonNumberServices.GetLessonNumbersByScheduleId(scheduleId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
+            Assert.Equal(1, result[0].Number);
+            Assert.Equal("09:00", result[0].Time);
+            Assert.Equal(2, result[1].Number);
+            Assert.Equal("10:00", result[1].Time);
+        }
+
+        [Fact]
+        public async Task GetLessonNumbersByScheduleId_ShouldReturnEmptyList_WhenNoLessonNumbers()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var emptyList = new List<LessonNumber>();
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId))
+                .ReturnsAsync(emptyList);
+
+            // Act
+            var result = await _lessonNumberServices.GetLessonNumbersByScheduleId(scheduleId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetLessonNumbersByScheduleId_ShouldHandleRepositoryException()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId))
+                .ThrowsAsync(new InvalidOperationException("Database error"));
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => _lessonNumberServices.GetLessonNumbersByScheduleId(scheduleId));
+        }
+
+        #endregion
+
+        #region AddLessonNumber Tests
+
+        [Fact]
+        public async Task AddLessonNumber_ShouldReturnSuccess_WhenScheduleExistsAndDataValid()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
+            var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
+            _ = LessonNumber.CreateLessonNumber(1, "09:00").Value;
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync(schedule);
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
+                .Returns(Task.CompletedTask);
+
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            // Act
+            var result = await _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            _lessonNumberRepositoryMock.Verify(
+                repo => repo.AddAsync(It.Is<LessonNumber>(ln => ln.Number == 1 && ln.Time == "09:00"), scheduleId),
+                Times.Once);
+            _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task AddLessonNumber_ShouldReturnFailure_WhenScheduleNotFound()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync((Schedule?)null);
+
+            // Act
+            var result = await _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsFailure);
+            Assert.Equal("Расписание не найдено", result.Error);
+            _lessonNumberRepositoryMock.Verify(
+                repo => repo.AddAsync(It.IsAny<LessonNumber>(), It.IsAny<Guid>()), Times.Never);
+            _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData(-1, "09:00")]
+        [InlineData(1, "")]
+        [InlineData(1, null)]
+        public async Task AddLessonNumber_ShouldReturnFailure_WhenLessonNumberDataInvalid(int number, string time)
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumberDto = new LessonNumberDto { Number = number, Time = time };
+            var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync(schedule);
+
+            // Act
+            var result = await _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsFailure);
+            Assert.Contains("Номер урока", result.Error);
+            _lessonNumberRepositoryMock.Verify(
+                repo => repo.AddAsync(It.IsAny<LessonNumber>(), It.IsAny<Guid>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AddLessonNumber_ShouldReturnFailure_WhenRepositoryThrowsException()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
+            var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync(schedule);
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
+                .ThrowsAsync(new InvalidOperationException("Repository error"));
+
+            // Act
+            var result = await _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsFailure);
+            Assert.Equal("Запись не найдена в базе данных.", result.Error);
+            _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AddLessonNumber_ShouldLogError_WhenExceptionOccurs()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
+            var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync(schedule);
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
+                .ThrowsAsync(new Exception("Critical error"));
+
+            // Act
+            var result = await _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsFailure);
+        }
+
+        #endregion
+
+        #region EditLessonNumber Tests
+
+        [Fact]
+        public async Task EditLessonNumber_ShouldReturnSuccess_WhenDataValid()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var oldLessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
+            var newLessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:30" };
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.UpdateAsync(
+                    It.IsAny<LessonNumber>(),
+                    It.IsAny<LessonNumber>(),
+                    scheduleId))
+                .Returns(Task.CompletedTask);
+
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            // Act
+            var result = await _lessonNumberServices.EditLessonNumber(oldLessonNumberDto, newLessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            _lessonNumberRepositoryMock.Verify(
+                repo => repo.UpdateAsync(
+                    It.Is<LessonNumber>(ln => ln.Number == 1 && ln.Time == "09:00"),
+                    It.Is<LessonNumber>(ln => ln.Number == 1 && ln.Time == "09:30"),
+                    scheduleId),
+                Times.Once);
+            _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Theory]
+        [InlineData(-1, "09:00", 1, "09:30")]
+        [InlineData(1, "09:00", -1, "09:30")]
+        [InlineData(1, "", 1, "09:30")]
+        [InlineData(1, "09:00", 1, "")]
+        public async Task EditLessonNumber_ShouldReturnFailure_WhenLessonNumberDataInvalid(
+            int oldNumber, string oldTime, int newNumber, string newTime)
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var oldLessonNumberDto = new LessonNumberDto { Number = oldNumber, Time = oldTime };
+            var newLessonNumberDto = new LessonNumberDto { Number = newNumber, Time = newTime };
+
+            // Act
+            var result = await _lessonNumberServices.EditLessonNumber(oldLessonNumberDto, newLessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsFailure);
+            Assert.Contains("Номер урока", result.Error);
+            _lessonNumberRepositoryMock.Verify(
+                repo => repo.UpdateAsync(It.IsAny<LessonNumber>(), It.IsAny<LessonNumber>(), It.IsAny<Guid>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task EditLessonNumber_ShouldReturnFailure_WhenRepositoryThrowsException()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var oldLessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
+            var newLessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:30" };
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.UpdateAsync(It.IsAny<LessonNumber>(), It.IsAny<LessonNumber>(), scheduleId))
+                .ThrowsAsync(new InvalidOperationException("Repository error"));
+
+            // Act
+            var result = await _lessonNumberServices.EditLessonNumber(oldLessonNumberDto, newLessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsFailure);
+            Assert.Equal("Запись не найдена в базе данных.", result.Error);
+            _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task EditLessonNumber_ShouldHandleSameNumberDifferentTime()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var oldLessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
+            var newLessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:30" };
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.UpdateAsync(It.IsAny<LessonNumber>(), It.IsAny<LessonNumber>(), scheduleId))
+                .Returns(Task.CompletedTask);
+
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            // Act
+            var result = await _lessonNumberServices.EditLessonNumber(oldLessonNumberDto, newLessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
+        public async Task EditLessonNumber_ShouldHandleDifferentNumberSameTime()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var oldLessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
+            var newLessonNumberDto = new LessonNumberDto { Number = 2, Time = "09:00" };
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.UpdateAsync(It.IsAny<LessonNumber>(), It.IsAny<LessonNumber>(), scheduleId))
+                .Returns(Task.CompletedTask);
+
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            // Act
+            var result = await _lessonNumberServices.EditLessonNumber(oldLessonNumberDto, newLessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+        }
+
+        #endregion
+
+        #region DeleteLessonNumber Tests
+
+        [Fact]
+        public async Task DeleteLessonNumber_ShouldReturnSuccess_WhenScheduleExistsAndDataValid()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
+            var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync(schedule);
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.Delete(It.IsAny<LessonNumber>(), scheduleId))
+                .Returns(Task.CompletedTask);
+
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            // Act
+            var result = await _lessonNumberServices.DeleteLessonNumber(lessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            _lessonNumberRepositoryMock.Verify(
+                repo => repo.Delete(It.Is<LessonNumber>(ln => ln.Number == 1 && ln.Time == "09:00"), scheduleId),
+                Times.Once);
+            _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteLessonNumber_ShouldReturnFailure_WhenScheduleNotFound()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync((Schedule?)null);
+
+            // Act
+            var result = await _lessonNumberServices.DeleteLessonNumber(lessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsFailure);
+            Assert.Equal("Расписание не найдено", result.Error);
+            _lessonNumberRepositoryMock.Verify(
+                repo => repo.Delete(It.IsAny<LessonNumber>(), It.IsAny<Guid>()), Times.Never);
+            _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData(-1, "09:00")]
+        public async Task DeleteLessonNumber_ShouldReturnFailure_WhenLessonNumberDataInvalid(int number, string time)
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumberDto = new LessonNumberDto { Number = number, Time = time };
+            var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync(schedule);
+
+            // Act
+            var result = await _lessonNumberServices.DeleteLessonNumber(lessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsFailure);
+            Assert.Contains("Номер урока", result.Error);
+            _lessonNumberRepositoryMock.Verify(
+                repo => repo.Delete(It.IsAny<LessonNumber>(), It.IsAny<Guid>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task DeleteLessonNumber_ShouldWorkWithNullTime()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumberDto = new LessonNumberDto { Number = 1, Time = null };
+            var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync(schedule);
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.Delete(It.IsAny<LessonNumber>(), scheduleId))
+                .Returns(Task.CompletedTask);
+
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            // Act
+            var result = await _lessonNumberServices.DeleteLessonNumber(lessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            _lessonNumberRepositoryMock.Verify(
+                repo => repo.Delete(It.Is<LessonNumber>(ln => ln.Number == 1 && ln.Time == null), scheduleId),
+                Times.Once);
+        }
+
+        #endregion
+
+        #region Edge Cases and Integration Tests
+
+        [Fact]
+        public async Task AddLessonNumber_ShouldUseCorrectCancellationToken()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
+            var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
+            var cancellationToken = new CancellationToken(true);
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync(schedule);
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
+                .Returns(Task.CompletedTask);
+
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(It.Is<CancellationToken>(ct => ct == cancellationToken)))
+                .ReturnsAsync(1);
+
+            // Act
+            var result = await _lessonNumberServices.AddLessonNumber(lessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            _unitOfWorkMock.Verify(
+                uow => uow.SaveChangesAsync(It.Is<CancellationToken>(ct => ct == cancellationToken)),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task EditLessonNumber_ShouldPreserveNumberWhenTimeIsNull()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var oldLessonNumberDto = new LessonNumberDto { Number = 1, Time = null };
+            var newLessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:30" };
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.UpdateAsync(It.IsAny<LessonNumber>(), It.IsAny<LessonNumber>(), scheduleId))
+                .Returns(Task.CompletedTask);
+
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            // Act
+            var result = await _lessonNumberServices.EditLessonNumber(oldLessonNumberDto, newLessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
+        public async Task MultipleOperations_ShouldNotInterfere()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
+            var lessonNumbers = new List<LessonNumber>
+            {
+                LessonNumber.CreateLessonNumber(1, "09:00").Value,
+                LessonNumber.CreateLessonNumber(2, "10:00").Value
+            };
+            
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId))
+                .ReturnsAsync(lessonNumbers);
+            
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync(schedule);
+
+            _unitOfWorkMock
+                .SetupSequence(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1)
+                .ReturnsAsync(1);
+
+            // Act - Get
+            var getResult = await _lessonNumberServices.GetLessonNumbersByScheduleId(scheduleId);
+
+            // Assert - Get
+            Assert.Equal(2, getResult.Count);
+
+            // Act - Add
+            var addDto = new LessonNumberDto { Number = 3, Time = "11:00" };
+            var addResult = await _lessonNumberServices.AddLessonNumber(addDto, scheduleId);
+
+            // Assert - Add
+            Assert.True(addResult.IsSuccess);
+            
+            _lessonNumberRepositoryMock.Verify(
+                repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId), Times.Once);
+            _lessonNumberRepositoryMock.Verify(
+                repo => repo.AddAsync(It.Is<LessonNumber>(ln => ln.Number == 3), scheduleId), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteLessonNumber_ShouldReorderOtherNumbers()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var lessonNumberDto = new LessonNumberDto { Number = 2, Time = "10:00" };
+            var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync(schedule);
+            
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.Delete(It.IsAny<LessonNumber>(), scheduleId))
+                .Callback<LessonNumber, Guid>((_, _) =>
+                {
+                })
+                .Returns(Task.CompletedTask);
+
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            // Act
+            var result = await _lessonNumberServices.DeleteLessonNumber(lessonNumberDto, scheduleId);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+        }
+
+        #endregion
+
+        #region Null and Default Value Tests
+
+        [Fact]
+        public async Task GetLessonNumbersByScheduleId_ShouldHandleDefaultGuid()
+        {
+            // Arrange
+            var scheduleId = Guid.Empty;
+            var emptyList = new List<LessonNumber>();
+
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId))
+                .ReturnsAsync(emptyList);
+
+            // Act
+            var result = await _lessonNumberServices.GetLessonNumbersByScheduleId(scheduleId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+        
+
+        [Fact]
+        public async Task EditLessonNumber_ShouldHandleNullDtos()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NullReferenceException>(
+                () => _lessonNumberServices.EditLessonNumber(null, null, scheduleId));
+        }
+
+        #endregion
+
+        #region Concurrency Tests
+
+        [Fact]
+        public async Task AddLessonNumber_ShouldHandleConcurrentAdditions()
+        {
+            // Arrange
+            var scheduleId = Guid.NewGuid();
+            var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
+            var lessonNumberDto1 = new LessonNumberDto { Number = 1, Time = "09:00" };
+            var lessonNumberDto2 = new LessonNumberDto { Number = 2, Time = "10:00" };
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
+                .ReturnsAsync(schedule);
+
+            // Simulate concurrent additions
+            int callCount = 0;
+            _lessonNumberRepositoryMock
+                .Setup(repo => repo.AddAsync(It.IsAny<LessonNumber>(), scheduleId))
+                .Callback(() => callCount++)
+                .Returns(Task.CompletedTask);
+
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            // Act - Run two additions "concurrently"
+            var task1 = _lessonNumberServices.AddLessonNumber(lessonNumberDto1, scheduleId);
+            var task2 = _lessonNumberServices.AddLessonNumber(lessonNumberDto2, scheduleId);
+
+            await Task.WhenAll(task1, task2);
+
+            // Assert
+            Assert.True(task1.Result.IsSuccess);
+            Assert.True(task2.Result.IsSuccess);
+            Assert.Equal(2, callCount);
+        }
+
+        #endregion
+    }
+}

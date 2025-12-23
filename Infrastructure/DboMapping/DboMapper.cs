@@ -51,7 +51,7 @@ public static class DboMapper
         return Mapper.Map<List<Lesson>>(lessons);
     }
 
-    public static LessonNumberDbo ToLessonNumberDbo(LessonNumber dboLessonNumber)
+    public static LessonNumberDbo ToLessonNumberDbo(LessonNumber? dboLessonNumber)
     {
         return Mapper.Map<LessonNumberDbo>(dboLessonNumber);
     }
@@ -131,7 +131,7 @@ public static class DboMapper
         return Mapper.Map<List<StudyGroup>>(studyGroups);
     }
 
-    public static TeacherDbo ToTeacherDbo(Teacher teacher)
+    public static TeacherDbo ToTeacherDbo(Teacher? teacher)
     {
         return Mapper.Map<TeacherDbo>(teacher);
     }

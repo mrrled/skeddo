@@ -7,7 +7,7 @@ namespace Application.DtoExtensions;
 
 public static class TeacherDtoExtensions
 {
-    public static TeacherDto ToTeacherDto(this Teacher teacher)
+    public static TeacherDto ToTeacherDto(this Teacher? teacher)
     {
         return DtoMapper.ToTeacherDto(teacher);
     }

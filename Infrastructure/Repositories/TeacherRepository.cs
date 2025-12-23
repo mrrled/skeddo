@@ -25,7 +25,7 @@ public class TeacherRepository(ScheduleDbContext context) : ITeacherRepository
         return teacher?.ToTeacher();
     }
 
-    public async Task AddAsync(Teacher teacher, int scheduleGroupId)
+    public async Task AddAsync(Teacher? teacher, int scheduleGroupId)
     {
         var teacherDbo = teacher.ToTeacherDbo();
         var scheduleGroup = await context.ScheduleGroups.FirstOrDefaultAsync();
