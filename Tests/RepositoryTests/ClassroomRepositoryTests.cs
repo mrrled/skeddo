@@ -48,8 +48,8 @@ namespace Tests.RepositoryTests
             // Arrange
             var dbos = new List<ClassroomDbo>
             {
-                new ClassroomDbo { Id = Guid.NewGuid(), Name = "101", ScheduleGroupId = 1 },
-                new ClassroomDbo { Id = Guid.NewGuid(), Name = "102", ScheduleGroupId = 1 }
+                new() { Id = Guid.NewGuid(), Name = "101", ScheduleGroupId = 1 },
+                new() { Id = Guid.NewGuid(), Name = "102", ScheduleGroupId = 1 }
             };
 
             // Act
@@ -58,7 +58,7 @@ namespace Tests.RepositoryTests
             // Assert
             Assert.NotNull(result);
             Assert.Equal(2, result.Count);
-            Assert.All(result, c => Assert.NotNull(c));
+            Assert.All(result, Assert.NotNull);
         }
 
         [Fact]
