@@ -73,7 +73,7 @@ public static class DtoMapper
         return Mapper.Map<List<StudyGroupDto>>(studyGroups);
     }
     
-    public static TeacherDto ToTeacherDto(Teacher teacher)
+    public static TeacherDto ToTeacherDto(Teacher? teacher)
     {
         return Mapper.Map<TeacherDto>(teacher);
     }

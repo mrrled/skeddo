@@ -17,7 +17,7 @@ public static class TeacherDboExtensions
         return DboMapper.ToTeacher(teachers);
     }
     
-    public static TeacherDbo ToTeacherDbo(this Teacher teacher)
+    public static TeacherDbo ToTeacherDbo(this Teacher? teacher)
     {
         return DboMapper.ToTeacherDbo(teacher);
     }

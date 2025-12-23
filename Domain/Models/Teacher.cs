@@ -57,7 +57,7 @@ public class Teacher(
         StudyGroups = studyGroups;
     }
     
-    public static Result<Teacher> CreateTeacher(Guid teacherId,
+    public static Result<Teacher?> CreateTeacher(Guid teacherId,
         string? name, string? surname, string? patronymic,
         List<SchoolSubject> schoolSubjects, List<StudyGroup> studyGroups)
     {

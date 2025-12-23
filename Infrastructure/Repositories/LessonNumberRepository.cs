@@ -18,7 +18,7 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
         return schedule.LessonNumbers.ToLessonNumbers();
     }
 
-    public async Task AddAsync(LessonNumber lessonNumber, Guid scheduleId)
+    public async Task AddAsync(LessonNumber? lessonNumber, Guid scheduleId)
     {
         var lessonNumberDbo = lessonNumber.ToLessonNumberDbo();
         lessonNumberDbo.ScheduleId = scheduleId;
@@ -31,7 +31,7 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
         await context.LessonNumbers.AddAsync(lessonNumberDbo);
     }
 
-    public async Task UpdateAsync(LessonNumber oldLessonNumber, LessonNumber newLessonNumber, Guid scheduleId)
+    public async Task UpdateAsync(LessonNumber? oldLessonNumber, LessonNumber? newLessonNumber, Guid scheduleId)
     {
         var lessonNumberDbo = await context.LessonNumbers
             .FirstOrDefaultAsync(x => x.ScheduleId == scheduleId && x.Number == oldLessonNumber.Number);
@@ -43,7 +43,7 @@ public class LessonNumberRepository(ScheduleDbContext context) : ILessonNumberRe
         DboMapper.Mapper.Map(newLessonNumberDbo, lessonNumberDbo);
     }
 
-    public async Task Delete(LessonNumber lessonNumber, Guid scheduleId)
+    public async Task Delete(LessonNumber? lessonNumber, Guid scheduleId)
     {
         var dbo = await context.LessonNumbers
             .FirstAsync(x => x.ScheduleId == scheduleId && x.Number == lessonNumber.Number);

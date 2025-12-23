@@ -17,7 +17,7 @@ public static class LessonNumberDboExtension
         return DboMapper.ToLessonNumber(lessons);
     }
     
-    public static LessonNumberDbo ToLessonNumberDbo(this LessonNumber lesson)
+    public static LessonNumberDbo ToLessonNumberDbo(this LessonNumber? lesson)
     {
         return DboMapper.ToLessonNumberDbo(lesson);
     }
