@@ -7,11 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
-public class StudySubgroupService(
+public class StudySubgroupServices(
     IStudyGroupRepository studyGroupRepository,
     IStudySubgroupRepository studySubgroupRepository,
     IUnitOfWork unitOfWork,
-    ILogger<StudySubgroupService> logger) : BaseService(unitOfWork, logger), IStudySubgroupService
+    ILogger<StudySubgroupServices> logger) : BaseService(unitOfWork, logger), IStudySubgroupService
 {
     public async Task<Result> AddStudySubgroup(StudySubgroupDto studySubgroupDto)
     {

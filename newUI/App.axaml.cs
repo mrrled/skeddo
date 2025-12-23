@@ -161,7 +161,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IStudyGroupServices, StudyGroupServices>();
         services.AddScoped<ITeacherServices, TeacherServices>();
         services.AddScoped<ILessonDraftServices, LessonDraftServices>();
-        services.AddScoped<IStudySubgroupService, StudySubgroupService>();
+        services.AddScoped<IStudySubgroupService, StudySubgroupServices>();
         services.AddSingleton<IFileService, FileService>();
     }
 
