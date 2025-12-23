@@ -13,19 +13,18 @@ namespace Tests.ServicesTests
     {
         private readonly Mock<ISchoolSubjectRepository> _schoolSubjectRepositoryMock;
         private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-        private readonly Mock<ILogger<SchoolSubjectServices>> _loggerMock;
         private readonly SchoolSubjectServices _schoolSubjectServices;
 
         public SchoolSubjectServicesTests()
         {
             _schoolSubjectRepositoryMock = new Mock<ISchoolSubjectRepository>();
             _unitOfWorkMock = new Mock<IUnitOfWork>();
-            _loggerMock = new Mock<ILogger<SchoolSubjectServices>>();
+            Mock<ILogger<SchoolSubjectServices>> loggerMock = new Mock<ILogger<SchoolSubjectServices>>();
             
             _schoolSubjectServices = new SchoolSubjectServices(
                 _schoolSubjectRepositoryMock.Object,
                 _unitOfWorkMock.Object,
-                _loggerMock.Object
+                loggerMock.Object
             );
         }
 
@@ -129,7 +128,7 @@ namespace Tests.ServicesTests
                 .ReturnsAsync(subjects);
 
             // Act
-            var result = await _schoolSubjectServices.FetchSchoolSubjectsFromBackendAsync();
+            await _schoolSubjectServices.FetchSchoolSubjectsFromBackendAsync();
 
             // Assert
             _schoolSubjectRepositoryMock.Verify(repo => repo.GetSchoolSubjectListAsync(1), Times.Once);
@@ -145,7 +144,7 @@ namespace Tests.ServicesTests
         {
             // Arrange
             var createDto = new CreateSchoolSubjectDto { Name = "Mathematics" };
-            var subject = CreateTestSchoolSubject("Mathematics");
+            CreateTestSchoolSubject("Mathematics");
 
             _schoolSubjectRepositoryMock
                 .Setup(repo => repo.AddAsync(It.IsAny<SchoolSubject>(), 1))
@@ -248,7 +247,7 @@ namespace Tests.ServicesTests
                 .ReturnsAsync(1);
 
             // Act
-            var result = await _schoolSubjectServices.AddSchoolSubject(createDto);
+            await _schoolSubjectServices.AddSchoolSubject(createDto);
 
             // Assert
             _schoolSubjectRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<SchoolSubject>(), 1), Times.Once);
@@ -270,7 +269,6 @@ namespace Tests.ServicesTests
 
             // Assert
             Assert.True(result.IsFailure);
-            // Verify logging occurred (though we can't easily assert on the logger without specific setup)
         }
 
         #endregion
@@ -379,7 +377,7 @@ namespace Tests.ServicesTests
 
             // Assert
             Assert.True(result.IsSuccess);
-            // Even though name hasn't changed, UpdateAsync should still be called
+            
             _schoolSubjectRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<SchoolSubject>()), Times.Once);
         }
 
@@ -409,21 +407,13 @@ namespace Tests.ServicesTests
         }
 
         [Fact]
-        public async Task EditSchoolSubject_ShouldHandleNameChangeFromNullToValid()
-        {
-            // Note: SchoolSubject doesn't allow null names in constructor, so this scenario isn't possible
-            // This test would be relevant if the business rules allowed null names
-        }
-
-        [Fact]
         public async Task EditSchoolSubject_ShouldHandleSubjectUsedInLessons()
         {
             // Arrange
             var subjectId = Guid.NewGuid();
             var subjectDto = new SchoolSubjectDto { Id = subjectId, Name = "Updated Mathematics" };
             var existingSubject = CreateTestSchoolSubject("Original Mathematics", subjectId);
-
-            // If subject is used in lessons, the repository update should still work
+            
             _schoolSubjectRepositoryMock
                 .Setup(repo => repo.GetSchoolSubjectByIdAsync(subjectId))
                 .ReturnsAsync(existingSubject);
@@ -512,7 +502,7 @@ namespace Tests.ServicesTests
             var subjectDto = new SchoolSubjectDto { Id = subjectId, Name = "Updated Subject" };
             var deleteDto = new SchoolSubjectDto { Id = subjectId, Name = "Updated Subject" };
             
-            var createdSubject = CreateTestSchoolSubject("New Subject");
+            CreateTestSchoolSubject("New Subject");
             var existingSubject = CreateTestSchoolSubject("New Subject", subjectId);
 
             // Setup for Add
@@ -568,7 +558,7 @@ namespace Tests.ServicesTests
             var subject2 = CreateTestSchoolSubject("Subject 2", subjectId2);
 
             // Setup repository to handle concurrent calls
-            int callCount = 0;
+            var callCount = 0;
             _schoolSubjectRepositoryMock
                 .Setup(repo => repo.GetSchoolSubjectByIdAsync(It.IsAny<Guid>()))
                 .Callback(() => callCount++)
@@ -599,7 +589,7 @@ namespace Tests.ServicesTests
         public async Task Subject_WithVeryLongName_ShouldBeHandled()
         {
             // Arrange
-            var longName = new string('A', 1000); // Very long name
+            var longName = new string('A', 1000); 
             var createDto = new CreateSchoolSubjectDto { Name = longName };
 
             _schoolSubjectRepositoryMock
@@ -623,7 +613,7 @@ namespace Tests.ServicesTests
         public async Task Subject_WithSpecialCharactersInName_ShouldBeHandled()
         {
             // Arrange
-            var nameWithSpecialChars = "Mathematics @#$%^&*()_+{}|:\"<>?[]\\;',./";
+            const string nameWithSpecialChars = "Mathematics @#$%^&*()_+{}|:\"<>?[]\\;',./";
             var createDto = new CreateSchoolSubjectDto { Name = nameWithSpecialChars };
 
             _schoolSubjectRepositoryMock
@@ -676,19 +666,17 @@ namespace Tests.ServicesTests
                 .ReturnsAsync(1);
 
             // Act - Fetch initial state
-            var initialFetch = await _schoolSubjectServices.FetchSchoolSubjectsFromBackendAsync();
+            await _schoolSubjectServices.FetchSchoolSubjectsFromBackendAsync();
 
             // Act - Add new subject
             var addResult = await _schoolSubjectServices.AddSchoolSubject(
                 new CreateSchoolSubjectDto { Name = "Chemistry" });
 
             // Act - Fetch after add
-            var afterAddFetch = await _schoolSubjectServices.FetchSchoolSubjectsFromBackendAsync();
+            await _schoolSubjectServices.FetchSchoolSubjectsFromBackendAsync();
 
             // Assert
             Assert.True(addResult.IsSuccess);
-            // Note: The fetch returns mocked data, not real updated data
-            // In a real scenario, the repository would return updated data
         }
 
         [Fact]
@@ -696,7 +684,7 @@ namespace Tests.ServicesTests
         {
             // Arrange
             var subjectId = Guid.NewGuid();
-            var subjectName = "Same Name";
+            const string subjectName = "Same Name";
             var subjectDto = new SchoolSubjectDto { Id = subjectId, Name = subjectName };
             var existingSubject = CreateTestSchoolSubject(subjectName, subjectId);
 
@@ -717,7 +705,7 @@ namespace Tests.ServicesTests
 
             // Assert
             Assert.True(result.IsSuccess);
-            // Even with same name, the update should proceed
+            
             _schoolSubjectRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<SchoolSubject>()), Times.Once);
         }
 
@@ -745,7 +733,7 @@ namespace Tests.ServicesTests
             // Arrange
             var createDto = new CreateSchoolSubjectDto { Name = "Mathematics" };
 
-            // Business logic doesn't prevent duplicate names, so this should succeed
+            
             _schoolSubjectRepositoryMock
                 .Setup(repo => repo.AddAsync(It.IsAny<SchoolSubject>(), 1))
                 .Returns(Task.CompletedTask);
@@ -771,7 +759,7 @@ namespace Tests.ServicesTests
             // Arrange
             var createDto = new CreateSchoolSubjectDto { Name = "Mathematics" };
 
-            // Test that ExecuteRepositoryTask and TrySaveChangesAsync are called through base service
+            
             _schoolSubjectRepositoryMock
                 .Setup(repo => repo.AddAsync(It.IsAny<SchoolSubject>(), 1))
                 .Returns(Task.CompletedTask);
@@ -785,15 +773,13 @@ namespace Tests.ServicesTests
 
             // Assert
             Assert.True(result.IsSuccess);
-            // The base service methods should have been invoked
-            // We can verify this indirectly by checking that repository and unit of work were called
         }
 
         #endregion
 
         #region Helper Methods
 
-        private SchoolSubject CreateTestSchoolSubject(string name, Guid? id = null)
+        private static SchoolSubject CreateTestSchoolSubject(string name, Guid? id = null)
         {
             return SchoolSubject.CreateSchoolSubject(id ?? Guid.NewGuid(), name).Value;
         }
