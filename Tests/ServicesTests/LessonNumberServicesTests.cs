@@ -2,17 +2,11 @@ using Xunit;
 using Moq;
 using Application.Services;
 using Application.DtoModels;
-using Domain;
 using Domain.Models;
 using Domain.IRepositories;
 using Application;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Application.DtoExtensions;
+#pragma warning disable CS8604 // Possible null reference argument.
 
 namespace Tests.ServicesTests
 {
@@ -21,7 +15,6 @@ namespace Tests.ServicesTests
         private readonly Mock<ILessonNumberRepository> _lessonNumberRepositoryMock;
         private readonly Mock<IScheduleRepository> _scheduleRepositoryMock;
         private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-        private readonly Mock<ILogger<LessonNumberServices>> _loggerMock;
         private readonly LessonNumberServices _lessonNumberServices;
 
         public LessonNumberServicesTests()
@@ -29,13 +22,13 @@ namespace Tests.ServicesTests
             _lessonNumberRepositoryMock = new Mock<ILessonNumberRepository>();
             _scheduleRepositoryMock = new Mock<IScheduleRepository>();
             _unitOfWorkMock = new Mock<IUnitOfWork>();
-            _loggerMock = new Mock<ILogger<LessonNumberServices>>();
+            Mock<ILogger<LessonNumberServices>> loggerMock = new Mock<ILogger<LessonNumberServices>>();
             
             _lessonNumberServices = new LessonNumberServices(
                 _lessonNumberRepositoryMock.Object,
                 _scheduleRepositoryMock.Object,
                 _unitOfWorkMock.Object,
-                _loggerMock.Object
+                loggerMock.Object
             );
         }
 
@@ -113,7 +106,7 @@ namespace Tests.ServicesTests
             var scheduleId = Guid.NewGuid();
             var lessonNumberDto = new LessonNumberDto { Number = 1, Time = "09:00" };
             var schedule = Schedule.CreateSchedule(Guid.NewGuid(), "Test Schedule").Value;
-            var lessonNumber = LessonNumber.CreateLessonNumber(1, "09:00").Value;
+            _ = LessonNumber.CreateLessonNumber(1, "09:00").Value;
 
             _scheduleRepositoryMock
                 .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
@@ -231,7 +224,6 @@ namespace Tests.ServicesTests
 
             // Assert
             Assert.True(result.IsFailure);
-            // Проверяем, что логгер был вызван (хотя мы не можем проверить конкретное сообщение без дополнительных настроек Moq)
         }
 
         #endregion
@@ -541,13 +533,11 @@ namespace Tests.ServicesTests
                 LessonNumber.CreateLessonNumber(1, "09:00").Value,
                 LessonNumber.CreateLessonNumber(2, "10:00").Value
             };
-
-            // Setup for GetLessonNumbersByScheduleId
+            
             _lessonNumberRepositoryMock
                 .Setup(repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId))
                 .ReturnsAsync(lessonNumbers);
-
-            // Setup for AddLessonNumber
+            
             _scheduleRepositoryMock
                 .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
                 .ReturnsAsync(schedule);
@@ -569,8 +559,7 @@ namespace Tests.ServicesTests
 
             // Assert - Add
             Assert.True(addResult.IsSuccess);
-
-            // Verify all setups were used
+            
             _lessonNumberRepositoryMock.Verify(
                 repo => repo.GetLessonNumbersByScheduleIdAsync(scheduleId), Times.Once);
             _lessonNumberRepositoryMock.Verify(
@@ -588,14 +577,11 @@ namespace Tests.ServicesTests
             _scheduleRepositoryMock
                 .Setup(repo => repo.GetScheduleByIdAsync(scheduleId))
                 .ReturnsAsync(schedule);
-
-            // Repository should handle reordering of other lesson numbers when one is deleted
+            
             _lessonNumberRepositoryMock
                 .Setup(repo => repo.Delete(It.IsAny<LessonNumber>(), scheduleId))
-                .Callback<LessonNumber, Guid>((ln, id) =>
+                .Callback<LessonNumber, Guid>((_, _) =>
                 {
-                    // Simulate reordering in repository
-                    // This is testing that the repository handles reordering internally
                 })
                 .Returns(Task.CompletedTask);
 
@@ -618,7 +604,7 @@ namespace Tests.ServicesTests
         public async Task GetLessonNumbersByScheduleId_ShouldHandleDefaultGuid()
         {
             // Arrange
-            var scheduleId = default(Guid);
+            var scheduleId = Guid.Empty;
             var emptyList = new List<LessonNumber>();
 
             _lessonNumberRepositoryMock
