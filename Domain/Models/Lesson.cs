@@ -4,7 +4,7 @@ public class Lesson(
     Guid id,
     Guid scheduleId,
     SchoolSubject schoolSubject,
-    LessonNumber? lessonNumber,
+    LessonNumber lessonNumber,
     Teacher? teacher,
     StudyGroup studyGroup,
     Classroom? classroom,
@@ -15,7 +15,7 @@ public class Lesson(
 {
     public Guid ScheduleId { get; private set; } = scheduleId;
     public SchoolSubject SchoolSubject { get; private set; } = schoolSubject;
-    public LessonNumber? LessonNumber { get; private set; } = lessonNumber;
+    public LessonNumber LessonNumber { get; private set; } = lessonNumber;
     public Teacher? Teacher { get; private set; } = teacher;
     public StudyGroup StudyGroup { get; private set; } = studyGroup;
     public StudySubgroup? StudySubgroup { get; private set; } = studySubgroup;

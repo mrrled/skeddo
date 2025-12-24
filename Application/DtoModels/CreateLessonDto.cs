@@ -12,5 +12,4 @@ public class CreateLessonDto
     public StudySubgroupDto? StudySubgroup { get; set; }
     public ClassroomDto? Classroom { get; set; }
     public string? Comment { get; set; }
-    public WarningType WarningType { get; set; }
 }
