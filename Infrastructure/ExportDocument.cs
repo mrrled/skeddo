@@ -285,7 +285,8 @@ public class ExportDocument : IDocument
     {
         return teacher is null
             ? ""
-            : $"{teacher.Surname} {teacher.Name.FirstOrDefault()}.{teacher.Patronymic.FirstOrDefault()}.";
+            : $"{teacher.Surname} {teacher.Name.FirstOrDefault()}." 
+              + (string.IsNullOrEmpty(teacher.Patronymic) ? "" : $"{teacher.Patronymic.First()}.");
     }
 
     private string SchoolFormat(Classroom? classroom, SchoolSubject subject, Teacher? teacher)

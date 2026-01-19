@@ -36,7 +36,7 @@ public class LessonDraft(
     public Result SetSchoolSubject(SchoolSubject? subject)
     {
         if (subject is null)
-            return Result.Failure("Урок не может быть предмета");
+            return Result.Failure("Урок не может быть без предмета");
         SchoolSubject = subject;
         return Result.Success();
     }

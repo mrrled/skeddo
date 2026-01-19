@@ -1,19 +1,17 @@
-using Microsoft.IdentityModel.Tokens;
-
 namespace Domain.Models;
 
 public class Teacher(
     Guid id,
     string name,
     string surname,
-    string patronymic,
+    string? patronymic,
     List<SchoolSubject> schoolSubjects,
     List<StudyGroup> studyGroups,
     string? description = null) : Entity<Guid>(id)
 {
     public string Name { get; private set; } = name;
     public string Surname { get; private set; } = surname;
-    public string Patronymic { get; private set; } = patronymic;
+    public string? Patronymic { get; private set; } = patronymic;
     public string? Description { get; private set; } = description;
     public List<SchoolSubject> SchoolSubjects { get; private set; } = schoolSubjects;
     public List<StudyGroup> StudyGroups { get; private set; } = studyGroups;
@@ -36,10 +34,8 @@ public class Teacher(
 
     public Result SetPatronymic(string? patronymic)
     {
-        if (string.IsNullOrWhiteSpace(patronymic))
-            return Result.Failure("Отчество учителя не может быть пустым.");
         Patronymic = patronymic;
-        return  Result.Success();
+        return Result.Success();
     }
 
     public void SetDescription(string? description)
@@ -56,17 +52,15 @@ public class Teacher(
     {
         StudyGroups = studyGroups;
     }
-    
+
     public static Result<Teacher> CreateTeacher(Guid teacherId,
         string? name, string? surname, string? patronymic,
         List<SchoolSubject> schoolSubjects, List<StudyGroup> studyGroups)
     {
-        if (name is null)
+        if (string.IsNullOrWhiteSpace(name))
             return Result<Teacher>.Failure("Имя учителя не может быть пустым.");
-        if (surname is null)
+        if (string.IsNullOrWhiteSpace(surname))
             return Result<Teacher>.Failure("Фамилия учителя не может быть пустой");
-        if (patronymic is null)
-            return Result<Teacher>.Failure("Отчество учителя не может быть пустым");
         return Result<Teacher>.Success(new Teacher(teacherId, name, surname, patronymic, schoolSubjects, studyGroups));
     }
 }
