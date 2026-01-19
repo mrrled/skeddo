@@ -1,4 +1,5 @@
-﻿using ClosedXML.Excel;
+﻿using System.Text.RegularExpressions;
+using ClosedXML.Excel;
 using Domain.Models;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -22,7 +23,9 @@ public class ExportDocument : IDocument
     {
         _lessons = lessons;
         _rows = lessonNumbers.OrderBy(x => x.Number).ToList();
-        _cols = studyGroups.OrderBy(x => x.Name).ToList();
+        _cols = studyGroups
+            .OrderBy(g => Regex.Replace(g.Name, @"\d+", m => m.Value.PadLeft(10, '0')))
+            .ToList();
         _totalColumn = _cols.Sum(c => c.StudySubgroups.Any() ? c.StudySubgroups.Count : 1);
         _flatColumns = new List<ColumnMap>();
         foreach (var group in _cols)
